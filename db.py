@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
+import getpass
 from uuid import uuid4
 from pymongo import MongoClient
 
+from member import Member
 
 class MemberDatabase(object):
     def __init__(self, db_address, db_name, reset=False):
@@ -24,8 +26,8 @@ class MemberDatabase(object):
         for member in self.db.find():
             yield member
 
-    def add_member(self, json_member):
-        json = json_member
+    def add_member(self, member_obj):
+        json = member_obj.json
         json['_id'] = str(uuid4())
         self.db.insert_one(json)
 
@@ -35,20 +37,18 @@ class MemberDatabase(object):
 
 if __name__ == '__main__':
     db = MemberDatabase('mongodb://localhost:27017/', 'pep-test', True)
-    db.add_member({'name': 'Simpson', 'first_name': 'Homer'})
-    db.add_member(
-        {
-            'name': 'Burns',
-            'first_name': 'Charles',
-            'middle_name': 'Montgomery'
-        })
+    db.add_member(Member('Homer', 'Simpson', 'm', 'homer@simpson.com'))
+
+    mr_burns = Member('Charles', 'Burns', 'm', 'burns@burns.com')
+    mr_burns['middle_name'] = 'Montgomery'
+    db.add_member(mr_burns)
 
     print('Number of members:', db.size())
 
     for member in db.list_members():
         print(member)
 
-    found_member = db.find_member({'name': 'Simpson'})
+    found_member = db.find_member({'last_name': 'Simpson'})
     print('Member found:', found_member)
 
     member_id = found_member['_id']
