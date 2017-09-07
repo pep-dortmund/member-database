@@ -15,5 +15,10 @@ brew services start mongodb
 ## Testing
 
 ```bash
-python db.py 
+pip install -e .
+
+python database/db.py
+python database/member.py
+
+FLASK_APP=database FLASK_DEBUG=true flask run
 ```
