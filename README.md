@@ -16,7 +16,7 @@ brew services start mongodb
 
 ```bash
 pacman -S python-pip
-pip install pymongo=2.8
+pip install pymongo==2.8
 pip install mongoengine
 ```
 
