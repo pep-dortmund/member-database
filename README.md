@@ -12,6 +12,14 @@ brew install mongodb
 brew services start mongodb
 ```
 
+### Arch Linux
+
+```bash
+pacman -S python-pip
+pip install pymongo=2.8
+pip install mongoengine
+```
+
 ## Testing
 
 ```bash
