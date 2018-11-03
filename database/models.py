@@ -5,6 +5,13 @@ from datetime import date
 db = SQLAlchemy()
 
 
+def as_dict(instance):
+    return {
+        c.name: getattr(instance, c.name)
+        for c in instance.__table__.columns
+    }
+
+
 class Person(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)

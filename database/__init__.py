@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flask_migrate import Migrate
 
 from .config import Config
-from .models import db, Person
+from .models import db, Person, as_dict
 
 
 app = Flask(__name__)
@@ -10,13 +10,6 @@ app.config.from_object(Config)
 
 db.init_app(app)
 migrate = Migrate(app, db)
-
-
-def as_dict(instance):
-    return {
-        c.name: getattr(instance, c.name)
-        for c in instance.__table__.columns
-    }
 
 
 @app.route('/persons', methods=['GET'])
