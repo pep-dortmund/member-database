@@ -1,8 +1,8 @@
-"""Persons table
+"""First version of Person table
 
-Revision ID: 3f418a3fe442
+Revision ID: e6cfd157d26d
 Revises: 
-Create Date: 2018-11-03 18:50:20.345378
+Create Date: 2018-11-03 20:57:01.170818
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '3f418a3fe442'
+revision = 'e6cfd157d26d'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -26,7 +26,7 @@ def upgrade():
     sa.Column('email', sa.String(length=120), nullable=False),
     sa.Column('email_valid', sa.Boolean(), nullable=True),
     sa.Column('date_of_birth', sa.Date(), nullable=True),
-    sa.Column('joing_date', sa.Date(), nullable=True),
+    sa.Column('joining_date', sa.Date(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )

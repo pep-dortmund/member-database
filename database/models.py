@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import date
 
 
 db = SQLAlchemy()
@@ -16,4 +17,4 @@ class Person(db.Model):
     email_valid = db.Column(db.Boolean, default=False)
 
     date_of_birth = db.Column(db.Date, nullable=True)
-    joing_date = db.Column(db.Date, nullable=True)
+    joining_date = db.Column(db.Date, default=date.today, nullable=True)
