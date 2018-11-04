@@ -166,11 +166,13 @@ def applications():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    
+
     form = LoginForm()
     if form.validate_on_submit():
         user_or_email = form.user_or_email.data
-        user = User.query.filter((User.username == user_or_email) | (Person.email == user_or_email)).first()
+        user = User.query.filter(
+            (User.username == user_or_email) | (Person.email == user_or_email)
+        ).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid user or password')
             return redirect(url_for('login'))
