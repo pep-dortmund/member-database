@@ -35,6 +35,10 @@ def get_persons():
 
 @app.route('/persons', methods=['POST'])
 def add_person():
+    '''
+    Add a new person via a http post request using a json payload
+    that has name and email.
+    '''
     data = request.get_json()
 
     try:
@@ -57,6 +61,7 @@ def add_person():
 
 @app.route('/members', methods=['GET'])
 def get_members():
+    '''Return a json list with all current members'''
     members = Person.query.filter_by(member=True, member_approved=True).all()
     persons = [as_dict(member) for member in members]
     return jsonify(status='success', persons=persons)
@@ -64,6 +69,11 @@ def get_members():
 
 @app.route('/members', methods=['POST'])
 def add_member():
+    '''
+    Create a new Person or find an existing one by email
+    and set it's member attribute to True.
+    Send an email to the board to notify them of a new membership application.
+    '''
     data = request.get_json()
 
     try:
@@ -77,14 +87,14 @@ def add_member():
             status='error',
             message='Missing required parameter {}'.format(e.args[0])
         ), 422
-    
+
     if p.member:
         return jsonify(status='error', message='Already member'), 422
-    
+
     p.member = True
     db.session.add(p)
     db.session.commit()
-    
+
     msg = Message(
         'Neuer Mitgliedsantrag',
         sender=app.config['MAIL_SENDER'],
@@ -102,13 +112,16 @@ def add_member():
 
 @app.route('/request_edit', methods=['POST'])
 def send_edit_token():
+    '''
+    Request a link to edit personal data
+    '''
     email = request.form['email']
 
     p = Person.query.filter_by(email=email).first()
     if p is None:
         return jsonify(status='error', message='No such person'), 422
 
-    token = ts.dumps(email, salt='recover-key')
+    token = ts.dumps(email, salt='edit-key')
 
     msg = Message(
         'PeP et al. e.V. Mitgliedsdatenänderung',
