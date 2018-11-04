@@ -1,0 +1,11 @@
+export DATABASE_URL='sqlite:///test.sqlite'
+export SERVER_NAME=""
+export USE_HTTPS=true
+export SECRET_KEY=''
+
+export MAIL_SENDER=''
+export MAIL_SERVER=''
+export MAIL_PORT=587
+export MAIL_TLS=true
+export MAIL_USERNAME=''
+export MAIL_PASSWORD=''

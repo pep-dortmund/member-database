@@ -8,6 +8,8 @@ flask = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
 pymysql = "*"
+flask-mail = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

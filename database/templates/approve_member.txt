@@ -1,0 +1,15 @@
+Lieber PeP-Vorstand
+
+Es gibt einen neuen Mitgliedsantrag von:
+
+Name: {{ new_member.name }}
+Email: {{ new_member.email }}
+
+
+Bitte überprüft den Antrag auf
+{{ url }}
+
+
+Viele Grüße
+Die PeP Migliederverwaltung
+
