@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request, url_for, render_template, redirect, flash
 from flask_migrate import Migrate
 from flask_mail import Mail, Message
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from itsdangerous import URLSafeTimedSerializer
 from functools import partial
 
@@ -158,8 +158,10 @@ def save_edit(token):
 
 
 @app.route('/applications')
+@login_required
 def applications():
-    pass
+    applications = Person.query.filter_by(member=True, member_approved=False).all()
+    return render_template('applications.html', applications=applications)
 
 
 @app.route('/login', methods=['GET', 'POST'])

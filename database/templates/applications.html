@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <ul>
+  {% for application in applications %}
+  <li> {{ application.joining_date }} {{ application.name }} {{ application.email }} </li>
+  {% endfor %}
+  </ul>
+{% endblock %}
