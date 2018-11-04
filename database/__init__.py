@@ -12,17 +12,18 @@ from .config import Config
 from .models import db, Person, User, as_dict
 from .utils import get_or_create
 from .authentication import login, LoginForm
+from .mail import mail, send_email
 
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
 db.init_app(app)
-migrate = Migrate(app, db)
+mail.init_app(app)
 login.init_app(app)
+migrate = Migrate(app, db)
 
 ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
-mail = Mail(app)
 
 
 ext_url_for = partial(
@@ -105,17 +106,16 @@ def add_member():
     db.session.add(p)
     db.session.commit()
 
-    msg = Message(
-        'Neuer Mitgliedsantrag',
+    send_email(
+        subject='Neuer Mitgliedsantrag',
         sender=app.config['MAIL_SENDER'],
         recipients=[app.config['APPROVE_MAIL']],
+        body=render_template(
+            'mail/approve_member.txt',
+            new_member=p,
+            url=ext_url_for('applications'),
+        )
     )
-    msg.body = render_template(
-        'approve_member.txt',
-        new_member=p,
-        url=ext_url_for('applications'),
-    )
-    mail.send(msg)
 
     return jsonify(status='success')
 
@@ -133,16 +133,15 @@ def send_edit_token():
 
     token = ts.dumps(email, salt='edit-key')
 
-    msg = Message(
-        'PeP et al. e.V. Mitgliedsdatenänderung',
+    send_email(
+        subject='PeP et al. e.V. Mitgliedsdatenänderung',
         sender=app.config['MAIL_SENDER'],
         recipients=[email],
+        body=render_template(
+            'mail/edit_mail.txt',
+            edit_link=ext_url_for('edit', token=token),
+        )
     )
-    msg.body = render_template(
-        'edit_mail.txt',
-        edit_link=ext_url_for('edit', token=token),
-    )
-    mail.send(msg)
 
     return jsonify(status='success', message='Edit mail sent.')
 
