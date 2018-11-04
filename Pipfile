@@ -10,6 +10,8 @@ flask-migrate = "*"
 pymysql = "*"
 flask-mail = "*"
 python-dotenv = "*"
+flask-login = "*"
+flask-wtf = "*"
 
 [dev-packages]
 

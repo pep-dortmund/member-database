@@ -1,13 +1,17 @@
-from flask import Flask, jsonify, request, url_for, abort, render_template
+from flask import Flask, jsonify, request, url_for, render_template, redirect, flash
 from flask_migrate import Migrate
 from flask_mail import Mail, Message
+from flask_login import current_user, login_user, logout_user
 from itsdangerous import URLSafeTimedSerializer
-from sqlalchemy.exc import IntegrityError
 from functools import partial
 
+from sqlalchemy.exc import IntegrityError
+
+
 from .config import Config
-from .models import db, Person, as_dict
+from .models import db, Person, User, as_dict
 from .utils import get_or_create
+from .authentication import login, LoginForm
 
 
 app = Flask(__name__)
@@ -15,6 +19,7 @@ app.config.from_object(Config)
 
 db.init_app(app)
 migrate = Migrate(app, db)
+login.init_app(app)
 
 ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 mail = Mail(app)
@@ -25,6 +30,11 @@ ext_url_for = partial(
     _external=True,
     _scheme='https' if app.config['USE_HTTPS'] else 'http',
 )
+
+
+@app.route('/')
+def index():
+    return render_template('base.html')
 
 
 @app.route('/persons', methods=['GET'])
@@ -150,3 +160,26 @@ def save_edit(token):
 @app.route('/applications')
 def applications():
     pass
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    form = LoginForm()
+    if form.validate_on_submit():
+        user_or_email = form.user_or_email.data
+        user = User.query.filter((User.username == user_or_email) | (Person.email == user_or_email)).first()
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid user or password')
+            return redirect(url_for('login'))
+        login_user(user)
+        return redirect(url_for('index'))
+    return render_template('login.html', title='Login', form=form)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
