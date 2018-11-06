@@ -1,4 +1,5 @@
-export DATABASE_URL='sqlite:///$(pwd)/test.sqlite'
+# e.g. "sqlite:////home/maxnoe/pepdb.sqlite"
+export DATABASE_URL="sqlite:///<add an absolute path here>"
 export SERVER_NAME=""
 export USE_HTTPS=true
 export SECRET_KEY=''
