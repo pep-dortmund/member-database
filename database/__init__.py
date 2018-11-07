@@ -5,13 +5,27 @@ from itsdangerous import URLSafeTimedSerializer
 from functools import partial
 
 from sqlalchemy.exc import IntegrityError
-
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
+from sqlite3 import Connection as SQLite3Connection
 
 from .config import Config
 from .models import db, Person, User, as_dict
 from .utils import get_or_create
 from .authentication import login, LoginForm
 from .mail import mail, send_email
+
+
+@event.listens_for(Engine, 'connect')
+def pragma_on_cconnect(dbapi_con, con_record):
+    '''
+    Make sure sqlite uses foreing key constraints
+    https://stackoverflow.com/a/15542046/3838691
+    '''
+    if isinstance(dbapi_con, SQLite3Connection):
+        cursor = dbapi_con.cursor()
+        cursor.execute('PRAGMA foreign_keys = ON;')
+        cursor.close()
 
 
 app = Flask(__name__)
@@ -38,6 +52,7 @@ def index():
 
 
 @app.route('/persons', methods=['GET'])
+@login_required
 def get_persons():
     persons = [as_dict(person) for person in Person.query.all()]
     return jsonify(status='success', persons=persons)
