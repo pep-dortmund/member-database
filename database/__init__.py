@@ -87,7 +87,7 @@ def add_person():
 @app.route('/members', methods=['GET'])
 def get_members():
     '''Return a json list with all current members'''
-    members = Person.query.filter_by(member=True, member_approved=True).all()
+    members = Person.query.filter_by(member=True).all()
     persons = [as_dict(member) for member in members]
     return jsonify(status='success', persons=persons)
 
@@ -116,7 +116,7 @@ def add_member():
     if p.member:
         return jsonify(status='error', message='Already member'), 422
 
-    p.member = True
+    p.membership_pending = True
     db.session.add(p)
     db.session.commit()
 
@@ -173,7 +173,7 @@ def save_edit(token):
 @app.route('/applications')
 @login_required
 def applications():
-    applications = Person.query.filter_by(member=True, member_approved=False).all()
+    applications = Person.query.filter_by(membership_pending=True).all()
     return render_template('applications.html', applications=applications)
 
 
