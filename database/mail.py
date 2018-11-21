@@ -19,13 +19,15 @@ def send_email(subject, sender, recipients, body):
     '''
     Send an email async using a background thread
     '''
-
     msg = Message(subject, sender=sender, recipients=recipients)
     msg.body = body
 
-    # See https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-a-better-application-structure
-    # For an explanation of the current_app magic
-    Thread(
-        target=send_async_email,
-        args=(current_app._get_current_object(), msg)
-    ).start()
+    if current_app.config['DEBUG'] is True:
+        print(body)
+    else:
+        # See https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-a-better-application-structure
+        # For an explanation of the current_app magic
+        Thread(
+            target=send_async_email,
+            args=(current_app._get_current_object(), msg)
+        ).start()
