@@ -17,7 +17,7 @@ from .mail import mail, send_email
 
 
 @event.listens_for(Engine, 'connect')
-def pragma_on_cconnect(dbapi_con, con_record):
+def pragma_on_connect(dbapi_con, con_record):
     '''
     Make sure sqlite uses foreing key constraints
     https://stackoverflow.com/a/15542046/3838691
