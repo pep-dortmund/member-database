@@ -15,6 +15,7 @@ flask-wtf = "*"
 
 [dev-packages]
 ipython = "*"
+httpie = "*"
 
 [requires]
 python_version = "3.7"
