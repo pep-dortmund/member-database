@@ -21,9 +21,10 @@ class Config:
     MAIL_SENDER = os.environ['MAIL_SENDER']
     MAIL_SERVER = os.environ['MAIL_SERVER']
     MAIL_PORT = int(os.environ['MAIL_PORT'])
-    MAIL_USE_TLS = os.getenv('MAIL_TLS', '').lower() == 'true'
+    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', '').lower() == 'true'
     MAIL_USERNAME = os.environ['MAIL_USERNAME']
     MAIL_PASSWORD = os.environ['MAIL_PASSWORD']
 
     # who gets a notification when there is a new membership application
     APPROVE_MAIL = os.environ['APPROVE_MAIL']
+    ADMINS = os.environ['ADMINS'].split(',')
