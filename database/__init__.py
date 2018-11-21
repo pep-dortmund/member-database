@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, url_for, render_template, redirect, f
 from flask_migrate import Migrate
 from flask_login import current_user, login_user, logout_user, login_required
 from itsdangerous import URLSafeTimedSerializer
+from itsdangerous.exc import SignatureExpired
 from functools import partial
 
 from sqlalchemy.exc import IntegrityError
@@ -120,14 +121,16 @@ def add_member():
     db.session.add(p)
     db.session.commit()
 
+    token = ts.dumps(p.email, salt='edit-key')
+
     send_email(
-        subject='Neuer Mitgliedsantrag',
+        subject='Willkommen bei PeP et al. e.V.',
         sender=app.config['MAIL_SENDER'],
-        recipients=[app.config['APPROVE_MAIL']],
+        recipients=[p.email],
         body=render_template(
-            'mail/approve_member.txt',
+            'mail/welcome.txt',
             new_member=p,
-            url=ext_url_for('applications'),
+            url=ext_url_for('edit', token=token),
         )
     )
 
@@ -162,6 +165,33 @@ def send_edit_token():
 
 @app.route('/edit/<token>')
 def edit(token):
+    try:
+        email = ts.loads(token, salt='edit-key')
+    except SignatureExpired:
+        abort(404)
+
+    p = Person.query.filter_by(email=email).first()
+    if p is None:
+        abort(404)
+
+    # guessing the member just signed up if the email is not validated yet
+    if not p.email_valid:
+        send_email(
+            subject='Neuer Mitgliedsantrag',
+            sender=app.config['MAIL_SENDER'],
+            recipients=[app.config['APPROVE_MAIL']],
+            body=render_template(
+                'mail/approve_member.txt',
+                new_member=p,
+                url=ext_url_for('applications'),
+            )
+        )
+        flash('Willkommen bei PeP et al. e.V.!')
+
+        p.email_valid = True
+        db.session.add(p)
+        db.session.commit()
+
     pass
 
 
