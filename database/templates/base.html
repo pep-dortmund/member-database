@@ -1,31 +1,32 @@
-<html lang="de">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% if title %}
-    <title>{{ title }} - Mitgliederverwaltung</title>
-    {% else %}
-    <title>PeP et. al. Mitgliederverwaltung</title>
-    {% endif %}
-  </head>
-  <body>
+{% extends 'bootstrap/base.html' %}
 
+{% block title %}
+  {% if title %}{{ title }} - Mitgliederverwaltung{% else %}PeP et. al. Mitgliederverwaltung{% endif %}
+{% endblock %}
+
+{% block navbar %}
+  <nav class="navbar navbar-default">
+    ... navigation bar here (see complete code on GitHub) ...
+  </nav>
+{% endblock %}
+
+{% block content %}
+  <div class="container">
     {% with messages = get_flashed_messages(with_categories=True) %}
     {% if messages %}
-    <ul class="flashes">
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+      {% endfor %}
     {% endif %}
     {% endwith %}
 
-    {% block content %}{% endblock %}
-
-    {% if current_user.is_authenticated %}
-      Logged in as {{ current_user.username }}
-    {% else %}
-      Not logged in
-    {% endif %}
-  </body>
-</html>
+    {# application content needs to be provided in the app_content block #}
+    {% block app_content %}
+      {% if current_user.is_authenticated %}
+        Logged in as {{ current_user.username }}
+      {% else %}
+        Not logged in
+      {% endif %}
+    {% endblock %}
+  </div>
+{% endblock %}

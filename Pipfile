@@ -12,6 +12,7 @@ flask-mail = "*"
 python-dotenv = "*"
 flask-login = "*"
 flask-wtf = "*"
+flask-bootstrap = "*"
 
 [dev-packages]
 ipython = "*"

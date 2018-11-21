@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, url_for, render_template, redirect, flash
 from flask_migrate import Migrate
 from flask_login import current_user, login_user, logout_user, login_required
+from flask_bootstrap import Bootstrap
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired
 from functools import partial
@@ -36,6 +37,7 @@ db.init_app(app)
 mail.init_app(app)
 login.init_app(app)
 migrate = Migrate(app, db)
+bootstrap = Bootstrap(app)
 
 ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
@@ -220,7 +222,7 @@ def login():
             (User.username == user_or_email) | (Person.email == user_or_email)
         ).first()
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid user or password')
+            flash('Invalid user or password', 'danger')
             return redirect(url_for('login', next=request.args.get('next')))
         login_user(user)
         return redirect(request.args.get('next', url_for('index')))
