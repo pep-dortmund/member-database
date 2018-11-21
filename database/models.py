@@ -19,7 +19,7 @@ class Person(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.UnicodeText(), nullable=False)
 
-    applied_for_mship = db.Column(db.Boolean, default=False)
+    membership_pending = db.Column(db.Boolean, default=False)
     member = db.Column(db.Boolean, default=False)
 
     email = db.Column(db.String(120), unique=True, nullable=False)
