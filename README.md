@@ -42,3 +42,48 @@ We strongly recommend to read through the first chapters of the [the flask mega 
   ```
 
 1. Start the server using `FLASK_DEBUG=true pipenv run flask run`
+
+### Adding Users
+
+To authenticate to certain endpoints you need to add a user. The simplest way
+for now is to do this interactively in an iPython shell.
+
+1. Make sure you installed the development dependencies `pipenv install --dev`
+
+1. Fire up iPython via `pipenv run iphython`
+
+1. Setup the global namespace with everything you need
+   ```python
+   In [1]: from database import app, db
+   In [2]: from database.models import Person, User
+   ```
+
+1. Every User needs to be linked to a Person, so first you need to create a
+   person, and store it in the database
+   ```python
+   In [3]: p = Person()
+   In [4]: p.name = 'Albert Einstein'
+   In [5]: p.email = 'albert@aol.de'
+   ```
+
+1. Now you can create a User and set its password
+   ```python
+   In [6]: u = User()
+   In [7]: u.person = p
+   In [8]: u.username = 'aeinstein'
+   In [9]: u.set_password('supersecurepassword')
+
+   # you can even chack the super secure hash of this password
+   In [10]: u.password_hash
+   ```
+
+1. Finally store everything in the database
+   ```python
+   # this is needed to connect to the correct database
+   In [12]: app.app_context().push()
+
+   In [13]: db.session.add(p, u)
+   In [14]: db.session.commit()
+   ```
+
+1. You can now login at the `/login` endpoint 🎉
