@@ -36,11 +36,9 @@ We strongly recommend to read through the first chapters of the [the flask mega 
 
 1. To initialise the database, run
   ```
-  $ pipenv run flask db init -d dev
-  $ pipenv run flask db migrate -d dev
-  $ pipenv run flask db upgrade -d dev
+  $ pipenv run flask db init
+  $ pipenv run flask db migrate
+  $ pipenv run flask db upgrade
   ```
-
-  the `-d dev` makes sure, you do not overwrite the production migration scripts.
 
 1. Start the server using `FLASK_DEBUG=true pipenv run flask run`
