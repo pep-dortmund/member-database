@@ -163,6 +163,7 @@ def send_edit_token():
     return jsonify(status='success', message='Edit mail sent.')
 
 
+
 @app.route('/edit/<token>')
 def edit(token):
     try:
@@ -220,9 +221,9 @@ def login():
         ).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid user or password')
-            return redirect(url_for('login'))
+            return redirect(url_for('login', next=request.args.get('next')))
         login_user(user)
-        return redirect(url_for('index'))
+        return redirect(request.args.get('next', url_for('index')))
     return render_template('login.html', title='Login', form=form)
 
 
