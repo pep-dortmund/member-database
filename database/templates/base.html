@@ -9,10 +9,23 @@
     {% endif %}
   </head>
   <body>
+
+    {% with messages = get_flashed_messages(with_category=True) %}
+    {% if messages %}
+    <ul class="flashes">
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
     {% block content %}{% endblock %}
 
     {% if current_user.is_authenticated %}
       Logged in as {{ current_user.username }}
+    {% else %}
+      Not logged in
     {% endif %}
   </body>
 </html>
