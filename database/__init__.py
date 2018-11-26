@@ -4,7 +4,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from itsdangerous import URLSafeTimedSerializer
 from functools import partial
 import logging
-from logging.handlers import SMTPHandler
+
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import event
@@ -16,7 +16,7 @@ from .models import db, Person, User, as_dict
 from .utils import get_or_create
 from .authentication import login, LoginForm
 from .mail import mail, send_email
-from .errors import not_found_error, internal_error
+from .errors import not_found_error, internal_error, email_logger
 
 
 @event.listens_for(Engine, 'connect')
@@ -41,6 +41,7 @@ migrate = Migrate(app, db)
 
 app.register_error_handler(404, not_found_error)
 app.register_error_handler(500, internal_error)
+email_logger(app)
 
 ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
@@ -51,22 +52,6 @@ ext_url_for = partial(
     _scheme='https' if app.config['USE_HTTPS'] else 'http',
 )
 
-
-if not app.debug:
-    if app.config['MAIL_SERVER']:
-        auth = None
-        if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
-            auth = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
-        secure = None
-        if app.config['MAIL_USE_TLS']:
-            secure = ()
-        mail_handler = SMTPHandler(
-            mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
-            fromaddr='no-reply@' + app.config['MAIL_SERVER'],
-            toaddrs=app.config['ADMINS'], subject='PeP database Failure',
-            credentials=auth, secure=secure)
-        mail_handler.setLevel(logging.ERROR)
-        app.logger.addHandler(mail_handler)
 
 
 @app.route('/')
