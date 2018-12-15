@@ -5,6 +5,8 @@ from flask_bootstrap import Bootstrap
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired
 from functools import partial
+import logging
+
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import event
@@ -16,6 +18,7 @@ from .models import db, Person, User, as_dict
 from .utils import get_or_create
 from .authentication import login, LoginForm
 from .mail import mail, send_email
+from .errors import not_found_error, internal_error, email_logger
 
 
 @event.listens_for(Engine, 'connect')
@@ -39,6 +42,10 @@ login.init_app(app)
 migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
 
+app.register_error_handler(404, not_found_error)
+app.register_error_handler(500, internal_error)
+email_logger(app)
+
 ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
 
@@ -47,6 +54,7 @@ ext_url_for = partial(
     _external=True,
     _scheme='https' if app.config['USE_HTTPS'] else 'http',
 )
+
 
 
 @app.route('/')
@@ -233,3 +241,8 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+@app.route('/test_error')
+def throw_test_error():
+    app.logger.error('test error')
