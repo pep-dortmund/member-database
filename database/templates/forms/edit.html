@@ -1,0 +1,25 @@
+{% block content %}
+  <form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <p>
+      {{ form.name.label }}<br>
+      {{ form.name(size=32) }}
+    </p>
+    <p>
+      {{ form.email.label }}<br>
+      {{ form.email(size=32) }}
+    </p>
+    <p>
+      {{ form.date_of_birth.label }}<br>
+      {{ form.date_of_birth(size=32) }}
+       {% for error in form.date_of_birth.errors %}
+         <span style="color: red;">[{{ error }}]</span>
+       {% endfor %}
+    </p>
+    <p>
+      {{ form.joining_date.label }}<br>
+      {{ form.joining_date(size=32) }}
+    </p>
+    <p>{{ form.submit() }}</p>
+  </form>
+{% endblock %}

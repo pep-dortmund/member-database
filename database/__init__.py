@@ -17,6 +17,7 @@ from .config import Config
 from .models import db, Person, User, as_dict
 from .utils import get_or_create
 from .authentication import login, LoginForm
+from .forms import PersonEditForm
 from .mail import mail, send_email
 from .errors import not_found_error, internal_error, email_logger
 
@@ -174,7 +175,7 @@ def send_edit_token():
 
 
 
-@app.route('/edit/<token>')
+@app.route('/edit/<token>', methods=['GET', 'POST'])
 def edit(token):
     try:
         email = ts.loads(token, salt='edit-key')
@@ -203,12 +204,36 @@ def edit(token):
         db.session.add(p)
         db.session.commit()
 
-    pass
+    form = PersonEditForm(name=p.name, email=p.email,
+                          date_of_birth=p.date_of_birth, joining_date=p.joining_date)
+
+    if form.validate_on_submit():
+        p.name = form.name.data
+        if p.email != form.email.data:
+            p.email_valid = False
+            p.email = form.email.data
+        p.date_of_birth = form.date_of_birth.data
+        db.session.commit()
+        flash('Daten erfolgreich aktualisiert.')
+    else:
+        flash('Fehler. Bitte Eingaben überprüfen.')
+
+    return render_template('edit.html', form=form)
 
 
 @app.route('/edit/<token>', methods=['POST'])
 def save_edit(token):
-    pass
+    try:
+        email = ts.loads(token, salt='edit-key')
+    except SignatureExpired:
+        abort(404)
+
+    p = Person.query.filter_by(email=email).first()
+    if p is None:
+        abort(404)
+
+    form = PersonEditForm()
+    return redirect(url_for('edit', token=token))
 
 
 @app.route('/applications')
