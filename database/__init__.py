@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, request, url_for, render_template, redirect, flash
+from flask import (Flask, jsonify, request, url_for, render_template, redirect,
+                   flash, abort)
 from flask_migrate import Migrate
 from flask_login import current_user, login_user, logout_user, login_required
 from flask_bootstrap import Bootstrap
@@ -153,7 +154,7 @@ def send_edit_token():
     '''
     Request a link to edit personal data
     '''
-    email = request.form['email']
+    email = request.get_json()['email']
 
     p = Person.query.filter_by(email=email).first()
     if p is None:
@@ -178,7 +179,8 @@ def send_edit_token():
 @app.route('/edit/<token>', methods=['GET', 'POST'])
 def edit(token):
     try:
-        email = ts.loads(token, salt='edit-key')
+        email = ts.loads(token, salt='edit-key',
+                         max_age=app.config['TOKEN_MAX_AGE'])
     except SignatureExpired:
         abort(404)
 
@@ -219,21 +221,6 @@ def edit(token):
         flash('Fehler. Bitte Eingaben überprüfen.')
 
     return render_template('edit.html', form=form)
-
-
-@app.route('/edit/<token>', methods=['POST'])
-def save_edit(token):
-    try:
-        email = ts.loads(token, salt='edit-key')
-    except SignatureExpired:
-        abort(404)
-
-    p = Person.query.filter_by(email=email).first()
-    if p is None:
-        abort(404)
-
-    form = PersonEditForm()
-    return redirect(url_for('edit', token=token))
 
 
 @app.route('/applications')

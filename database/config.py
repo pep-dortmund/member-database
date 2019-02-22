@@ -28,3 +28,5 @@ class Config:
     # who gets a notification when there is a new membership application
     APPROVE_MAIL = os.environ['APPROVE_MAIL']
     ADMINS = os.environ['ADMINS'].split(',')
+
+    TOKEN_MAX_AGE = os.environ.get('TOKEN_MAX_AGE', 30 * 60)  # 30 minutes default
