@@ -207,7 +207,7 @@ def edit(token):
         db.session.commit()
 
     form = PersonEditForm(name=p.name, email=p.email,
-                          date_of_birth=p.date_of_birth, joining_date=p.joining_date)
+                          date_of_birth=p.date_of_birth, joining_date=p.joining_date, membership_pending=p.membership_pending, member=p.member)
 
     if form.validate_on_submit():
         p.name = form.name.data
@@ -215,10 +215,10 @@ def edit(token):
             p.email_valid = False
             p.email = form.email.data
         p.date_of_birth = form.date_of_birth.data
+        p.membership_pending = form.membership_pending.data
         db.session.commit()
         flash('Daten erfolgreich aktualisiert.')
-    else:
-        flash('Fehler. Bitte Eingaben überprüfen.')
+        return redirect(url_for('edit', token=token))
 
     return render_template('edit.html', form=form)
 
