@@ -98,6 +98,7 @@ def add_person():
 
 
 @app.route('/members', methods=['GET'])
+@login_required
 def get_members():
     '''Return a json list with all current members'''
     members = Person.query.filter_by(member=True).all()
