@@ -3,11 +3,11 @@ from flask import (Flask, jsonify, request, url_for, render_template, redirect,
 from flask_migrate import Migrate
 from flask_login import current_user, login_user, logout_user, login_required
 from flask_bootstrap import Bootstrap
+from flask_babel import Babel, _
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired
 from functools import partial
 import logging
-
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import event
@@ -43,6 +43,7 @@ mail.init_app(app)
 login.init_app(app)
 migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
+babel = Babel(app)
 
 app.register_error_handler(404, not_found_error)
 app.register_error_handler(500, internal_error)
@@ -57,6 +58,10 @@ ext_url_for = partial(
     _scheme='https' if app.config['USE_HTTPS'] else 'http',
 )
 
+
+@babel.localeselector
+def get_locale():
+    return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 
 @app.route('/')
@@ -137,7 +142,7 @@ def add_member():
     token = ts.dumps(p.email, salt='edit-key')
 
     send_email(
-        subject='Willkommen bei PeP et al. e.V.',
+        subject=_('Willkommen bei PeP et al. e.V.'),
         sender=app.config['MAIL_SENDER'],
         recipients=[p.email],
         body=render_template(
@@ -164,7 +169,7 @@ def send_edit_token():
     token = ts.dumps(email, salt='edit-key')
 
     send_email(
-        subject='PeP et al. e.V. Mitgliedsdatenänderung',
+        subject=_('PeP et al. e.V. Mitgliedsdatenänderung'),
         sender=app.config['MAIL_SENDER'],
         recipients=[email],
         body=render_template(
@@ -173,8 +178,7 @@ def send_edit_token():
         )
     )
 
-    return jsonify(status='success', message='Edit mail sent.')
-
+    return jsonify(status='success', message=_('Edit mail sent.'))
 
 
 @app.route('/edit/<token>', methods=['GET', 'POST'])

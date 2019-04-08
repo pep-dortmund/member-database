@@ -30,3 +30,5 @@ class Config:
     ADMINS = os.environ['ADMINS'].split(',')
 
     TOKEN_MAX_AGE = os.environ.get('TOKEN_MAX_AGE', 30 * 60)  # 30 minutes default
+
+    LANGUAGES = ['de', 'en']
