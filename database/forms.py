@@ -1,11 +1,21 @@
 from flask_wtf import FlaskForm
-from flask_babel import _
+from flask_babel import lazy_gettext as _l
 from wtforms import StringField, SubmitField, DateField, BooleanField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email, Optional
 
 
-class PersonEditForm(FlaskForm):
+class WTFormsTranslator():
+    def gettext(self, string):
+        return _l(string)
+
+
+class TranslatedForm(FlaskForm):
+    def _get_translations(self):
+        return WTFormsTranslator()
+
+
+class PersonEditForm(TranslatedForm):
     name = StringField(_('Name'), validators=[DataRequired()])
     email = EmailField(_('E-Mail-Adresse'), validators=[DataRequired(), Email()])
     date_of_birth = DateField(_('Geburtstag'),
