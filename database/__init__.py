@@ -63,11 +63,8 @@ ext_url_for = partial(
 def access_required(name):
     def access_decorator(func):
         @wraps(func)
-        @login_required
+        @login_required  # first of all a use needs to be logged in
         def decorated_function(*args, **kwargs):
-            for role in current_user.roles:
-                print(role, role.access_levels)
-
             if not current_user.has_access(name):
                 abort(401)
 
