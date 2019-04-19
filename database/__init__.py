@@ -61,6 +61,15 @@ ext_url_for = partial(
 
 
 def access_required(name):
+    '''
+    Check if current_user has a role with access_level named `name`.
+    Abort request with 401, if that's not the case.
+
+    Usage:
+        Decorate view function (`app.route(...)`) with this decorator and
+        specify a name of an access_level. The name will be compared to
+        all access_levels of all rules of the current_user.
+    '''
     def access_decorator(func):
         @wraps(func)
         @login_required  # first of all a use needs to be logged in
@@ -247,7 +256,7 @@ def edit(token):
 
 
 @app.route('/applications')
-@access_required('get_applications')
+@access_required('view_applications')
 def applications():
     applications = Person.query.filter_by(membership_pending=True).all()
     return render_template('applications.html', applications=applications)
