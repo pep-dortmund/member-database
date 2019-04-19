@@ -211,8 +211,12 @@ def edit(token):
         db.session.add(p)
         db.session.commit()
 
-    form = PersonEditForm(name=p.name, email=p.email,
-                          date_of_birth=p.date_of_birth, joining_date=p.joining_date, membership_pending=p.membership_pending, member=p.member)
+    form = PersonEditForm(name=p.name,
+                          email=p.email,
+                          date_of_birth=p.date_of_birth,
+                          joining_date=p.joining_date,
+                          membership_pending=p.membership_pending,
+                          member=p.member)
 
     if form.validate_on_submit():
         p.name = form.name.data

@@ -15,9 +15,14 @@
     <p>
       {{ form.date_of_birth.label }}<br>
       {{ form.date_of_birth(size=32) }}
-      {% for error in form.date_of_birth.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-      {% endfor %}
+      {% if form.date_of_birth.errors %}
+        <span style="color: red;">
+        {{ _('Fehler bei der Eingabe. Format beachten: ') + form.date_of_birth.format }}
+        {% for error in form.date_of_birth.errors %}
+          [{{ error }}]
+        {% endfor %}
+        </span>
+      {% endif %}
     </p>
     <p>
       {{ form.membership_pending.label }}<br>
@@ -29,9 +34,9 @@
     <p>
       {{ form.member.label }}<br>
       {% if form.member.data %}
-      Ja
+      {{ _('Ja') }}
       {% else %}
-      Nein
+      {{ _('Nein') }}
       {% endif %}
     </p>
     <p>
