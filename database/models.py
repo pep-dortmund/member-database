@@ -31,6 +31,22 @@ class Person(db.Model):
     user = db.relationship('User', backref='person', lazy='dynamic')
 
 
+roles = db.Table(
+    'roles',
+    db.Column('user_id',
+              db.Integer,
+              db.ForeignKey('user.id'),
+              primary_key=True),
+    db.Column('role_id',
+              db.String(32),
+              db.ForeignKey('role.id'),
+              primary_key=True))
+
+
+class Role(db.Model):
+    id = db.Column(db.String(32), primary_key=True)
+
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
@@ -38,6 +54,11 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
 
     person_id = db.Column(db.Integer, db.ForeignKey('person.id'), nullable=False)
+
+    roles = db.relationship('Role',
+                            secondary=roles,
+                            lazy='subquery',
+                            backref=db.backref('users', lazy=True))
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
