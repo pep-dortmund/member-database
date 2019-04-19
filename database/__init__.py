@@ -20,7 +20,7 @@ from .utils import get_or_create
 from .authentication import login, LoginForm
 from .forms import PersonEditForm
 from .mail import mail, send_email
-from .errors import not_found_error, internal_error, email_logger
+from .errors import not_found_error, internal_error, email_logger, unauthorized_error
 
 
 @event.listens_for(Engine, 'connect')
@@ -45,6 +45,7 @@ migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
 babel = Babel(app)
 
+app.register_error_handler(401, unauthorized_error)
 app.register_error_handler(404, not_found_error)
 app.register_error_handler(500, internal_error)
 email_logger(app)

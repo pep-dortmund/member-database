@@ -3,12 +3,18 @@ from .models import db
 from logging.handlers import SMTPHandler
 import logging
 
+
 def not_found_error(error):
     return render_template('errors/404.html'), 404
+
 
 def internal_error(error):
     db.session.rollback()
     return render_template('errors/500.html'), 500
+
+
+def unauthorized_error(error):
+    return render_template('errors/401.html'), 401
 
 
 def email_logger(app):
@@ -30,4 +36,3 @@ def email_logger(app):
                                                secure=secure)
                     mail_handler.setLevel(logging.ERROR)
                     app.logger.addHandler(mail_handler)
-    
