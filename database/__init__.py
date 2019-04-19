@@ -6,7 +6,7 @@ from flask_bootstrap import Bootstrap
 from flask_babel import Babel, _
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired
-from functools import partial
+from functools import partial, wraps
 import logging
 
 from sqlalchemy.exc import IntegrityError
@@ -60,6 +60,22 @@ ext_url_for = partial(
 )
 
 
+def access_required(name):
+    def access_decorator(func):
+        @wraps(func)
+        @login_required
+        def decorated_function(*args, **kwargs):
+            for role in current_user.roles:
+                print(role, role.access_levels)
+
+            if not current_user.has_access(name):
+                abort(401)
+
+            return func(*args, **kwargs)
+        return decorated_function
+    return access_decorator
+
+
 @babel.localeselector
 def get_locale():
     return request.accept_languages.best_match(app.config['LANGUAGES'])
@@ -71,7 +87,7 @@ def index():
 
 
 @app.route('/persons', methods=['GET'])
-@login_required
+@access_required('get_persons')
 def get_persons():
     persons = [as_dict(person) for person in Person.query.all()]
     return jsonify(status='success', persons=persons)
@@ -104,7 +120,7 @@ def add_person():
 
 
 @app.route('/members', methods=['GET'])
-@login_required
+@access_required('get_members')
 def get_members():
     '''Return a json list with all current members'''
     members = Person.query.filter_by(member=True).all()
@@ -234,7 +250,7 @@ def edit(token):
 
 
 @app.route('/applications')
-@login_required
+@access_required('get_applications')
 def applications():
     applications = Person.query.filter_by(membership_pending=True).all()
     return render_template('applications.html', applications=applications)
