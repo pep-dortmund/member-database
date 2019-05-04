@@ -45,7 +45,7 @@ login.init_app(app)
 migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
 babel = Babel(app)
-cors = CORS(app, resources={r'/conifg/*': {'origins': 'http://127.0.0.1:8000'}})
+cors = CORS(app, resources={r'/config/*': {'origins': 'http://127.0.0.1:8000'}})
 
 app.register_error_handler(401, unauthorized_error)
 app.register_error_handler(404, not_found_error)
@@ -285,10 +285,7 @@ def login():
 
 @app.route('/config/pars/')
 def pars_config():
-    print(request.headers)
-    response = jsonify({'test': 'data', 'headers': dict(request.headers)})
-    response.headers.add('Access-Control-Allow-Origin', 'https://localhost:8000')
-    return response
+    return jsonify({'test': 'data', 'headers': dict(request.headers)})
 
 
 @app.route('/logout')
