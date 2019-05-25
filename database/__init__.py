@@ -56,7 +56,6 @@ ext_url_for = partial(
 )
 
 
-
 @app.route('/')
 def index():
     return render_template('base.html')
@@ -173,6 +172,30 @@ def send_edit_token():
     return jsonify(status='success', message='Edit mail sent.')
 
 
+@app.route('/request_data', methods=['POST'])
+def send_request_data_token():
+    '''
+    Request a link to view personal data
+    '''
+    email = request.form['email']
+
+    p = Person.query.filter_by(email=email).first()
+    if p is None:
+        return jsonify(status='error', message='No such person'), 422
+
+    token = ts.dumps(email, salt='request_data-key')
+    send_email(
+        subject='PeP et al. e.V. - Einsicht in gespeicherte Daten',
+        sender=app.config['MAIL_SENDER'],
+        recipients=[email],
+        body=render_template(
+            'mail/request_data_mail.txt',
+            edit_link=ext_url_for('view_data', token=token),
+        )
+    )
+    return jsonify(status='success', message='Edit mail sent.')
+
+
 
 @app.route('/edit/<token>')
 def edit(token):
@@ -202,6 +225,23 @@ def edit(token):
         p.email_valid = True
         db.session.add(p)
         db.session.commit()
+
+    pass
+
+
+@app.route('/view_data/<token>')
+def view_data(token):
+    try:
+        email = ts.loads(token, salt='request_data-key')
+    except SignatureExpired:
+        abort(404)
+
+    p = Person.query.filter_by(email=email).first()
+    if p is None:
+        abort(404)
+
+    # guessing the member just signed up if the email is not validated yet
+
 
     pass
 
