@@ -97,7 +97,7 @@ def add_person():
 @app.route('/members', methods=['GET'])
 def get_members():
     '''Return a json list with all current members'''
-    members = Person.query.filter_by(member=True).all()
+    members = Person.query.filter_by(member=False).all()
     persons = [as_dict(member) for member in members]
     return jsonify(status='success', persons=persons)
 
@@ -184,6 +184,7 @@ def send_request_data_token():
         return jsonify(status='error', message='No such person'), 422
 
     token = ts.dumps(email, salt='request_data-key')
+
     send_email(
         subject='PeP et al. e.V. - Einsicht in gespeicherte Daten',
         sender=app.config['MAIL_SENDER'],
@@ -233,18 +234,20 @@ def edit(token):
 def view_data(token):
     try:
         email = ts.loads(token, salt='request_data-key')
+
     except SignatureExpired:
         abort(404)
 
-    p = Person.query.filter_by(email=email).first()
+    p = Person.query.filter_by(email=email).all()
+
+    # If the datbase contains a persnon/email (for ever reason) more than once,
+    # we have to make sure that display all the information -> loop
+    personal_data = [as_dict(p_data) for p_data in p]
+
     if p is None:
         abort(404)
 
-    # guessing the member just signed up if the email is not validated yet
-
-
-    pass
-
+    return jsonify(status='success', personal_data=personal_data)
 
 @app.route('/edit/<token>', methods=['POST'])
 def save_edit(token):
