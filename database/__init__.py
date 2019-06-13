@@ -254,7 +254,7 @@ def login():
             flash('Invalid user or password', 'danger')
             return redirect(url_for('login', next=request.args.get('next')))
         login_user(user)
-        return redirect(request.args.get('next', url_for('index')))
+        return redirect(url_for(request.args.get('next', 'index')))
     return render_template('login.html', title='Login', form=form)
 
 
