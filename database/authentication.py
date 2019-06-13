@@ -47,7 +47,7 @@ def handle_needs_login():
         abort(401)
 
     flash("You have to be logged in to access this page.")
-    return redirect(url_for('login', next=request.endpoint)), 401
+    return redirect(url_for('login', next=request.endpoint))
 
 
 class LoginForm(FlaskForm):
