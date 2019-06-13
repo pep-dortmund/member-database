@@ -132,8 +132,8 @@ def add_person():
 def get_members():
     '''Return a json list with all current members'''
     members = Person.query.filter_by(member=True).all()
-    persons = [as_dict(member) for member in members]
-    return jsonify(status='success', persons=persons)
+    members = [as_dict(member) for member in members]
+    return jsonify(status='success', members=members)
 
 
 @app.route('/members', methods=['POST'])
