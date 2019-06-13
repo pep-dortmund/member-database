@@ -13,6 +13,7 @@ python-dotenv = "*"
 flask-login = "*"
 flask-wtf = "*"
 flask-bootstrap = "*"
+flask-babel = "*"
 
 [dev-packages]
 ipython = "*"
