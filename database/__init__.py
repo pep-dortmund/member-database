@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, url_for, render_template, redirect, f
 from flask_migrate import Migrate
 from flask_login import current_user, login_user, logout_user, login_required
 from flask_bootstrap import Bootstrap
+from flask import abort
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired
 from functools import partial
@@ -97,7 +98,7 @@ def add_person():
 @app.route('/members', methods=['GET'])
 def get_members():
     '''Return a json list with all current members'''
-    members = Person.query.filter_by(member=False).all()
+    members = Person.query.filter_by(member=True).all()
     persons = [as_dict(member) for member in members]
     return jsonify(status='success', persons=persons)
 
@@ -172,7 +173,7 @@ def send_edit_token():
     return jsonify(status='success', message='Edit mail sent.')
 
 
-@app.route('/request_data', methods=['POST'])
+@app.route('/request_gdpr_data', methods=['POST'])
 def send_request_data_token():
     '''
     Request a link to view personal data
@@ -183,7 +184,7 @@ def send_request_data_token():
     if p is None:
         return jsonify(status='error', message='No such person'), 422
 
-    token = ts.dumps(email, salt='request_data-key')
+    token = ts.dumps(email, salt='request_gdpr_data-key')
 
     send_email(
         subject='PeP et al. e.V. - Einsicht in gespeicherte Daten',
@@ -233,16 +234,12 @@ def edit(token):
 @app.route('/view_data/<token>')
 def view_data(token):
     try:
-        email = ts.loads(token, salt='request_data-key')
-
+        email = ts.loads(token, salt='request_gdpr_data-key')
     except SignatureExpired:
         abort(404)
 
-    p = Person.query.filter_by(email=email).all()
-
-    # If the datbase contains a persnon/email (for ever reason) more than once,
-    # we have to make sure that display all the information -> loop
-    personal_data = [as_dict(p_data) for p_data in p]
+    p = Person.query.filter_by(email=email)
+    personal_data = as_dict(p)
 
     if p is None:
         abort(404)

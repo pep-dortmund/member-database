@@ -1,10 +1,9 @@
-Lieber Anfragender*in,
+Liebe User,
 
-Ein Link zur Einsicht in deine von PeP et al. gespeicherten Daten wurde angefordert.
-Falls du die Einsicht nicht angefordert hast, kannst du diese Email einfach
-Ignorieren.
+ein Link zur Einsicht in deine von PeP et al. gespeicherten Daten wurde angefordert.
+Falls du die Einsicht nicht angefordert hast, kannst du diese Email ignorieren.
 
-Ansonsten kannst du auf den folgenden Link klicken, um deine Daten einzusehen.
+Ansonsten kannst du auf den folgenden Link klicken, um deine Daten einzusehen:
 
 {{ edit_link }}
 
