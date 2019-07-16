@@ -5,3 +5,5 @@ dev/
 .DS_Store
 __pycache__
 *.egg-info
+messages.pot
+*.mo

@@ -1,13 +1,14 @@
-from flask import Flask, jsonify, request, url_for, render_template, redirect, flash
+from flask import (Flask, jsonify, request, url_for, render_template, redirect,
+                   flash, abort)
 from flask_migrate import Migrate
 from flask_login import current_user, login_user, logout_user, login_required
 from flask_bootstrap import Bootstrap
 from flask import abort
+from flask_babel import Babel, _
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired
 from functools import partial
 import logging
-
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import event
@@ -18,6 +19,7 @@ from .config import Config
 from .models import db, Person, User, as_dict
 from .utils import get_or_create
 from .authentication import login, LoginForm
+from .forms import PersonEditForm
 from .mail import mail, send_email
 from .errors import not_found_error, internal_error, email_logger
 
@@ -42,6 +44,7 @@ mail.init_app(app)
 login.init_app(app)
 migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
+babel = Babel(app)
 
 app.register_error_handler(404, not_found_error)
 app.register_error_handler(500, internal_error)
@@ -57,6 +60,10 @@ ext_url_for = partial(
 )
 
 
+
+@babel.localeselector
+def get_locale():
+    return request.accept_languages.best_match(app.config['LANGUAGES'])
 @app.route('/')
 def index():
     return render_template('base.html')
@@ -96,11 +103,12 @@ def add_person():
 
 
 @app.route('/members', methods=['GET'])
+@login_required
 def get_members():
     '''Return a json list with all current members'''
     members = Person.query.filter_by(member=True).all()
-    persons = [as_dict(member) for member in members]
-    return jsonify(status='success', persons=persons)
+    members = [as_dict(member) for member in members]
+    return jsonify(status='success', members=members)
 
 
 @app.route('/members', methods=['POST'])
@@ -134,7 +142,7 @@ def add_member():
     token = ts.dumps(p.email, salt='edit-key')
 
     send_email(
-        subject='Willkommen bei PeP et al. e.V.',
+        subject=_('Willkommen bei PeP et al. e.V.'),
         sender=app.config['MAIL_SENDER'],
         recipients=[p.email],
         body=render_template(
@@ -152,7 +160,7 @@ def send_edit_token():
     '''
     Request a link to edit personal data
     '''
-    email = request.form['email']
+    email = request.get_json()['email']
 
     p = Person.query.filter_by(email=email).first()
     if p is None:
@@ -161,7 +169,7 @@ def send_edit_token():
     token = ts.dumps(email, salt='edit-key')
 
     send_email(
-        subject='PeP et al. e.V. Mitgliedsdatenänderung',
+        subject=_('PeP et al. e.V. Mitgliedsdatenänderung'),
         sender=app.config['MAIL_SENDER'],
         recipients=[email],
         body=render_template(
@@ -170,7 +178,7 @@ def send_edit_token():
         )
     )
 
-    return jsonify(status='success', message='Edit mail sent.')
+    return jsonify(status='success', message=_('Edit mail sent.'))
 
 
 @app.route('/request_gdpr_data', methods=['POST'])
@@ -199,10 +207,12 @@ def send_request_data_token():
 
 
 
-@app.route('/edit/<token>')
+
+@app.route('/edit/<token>', methods=['GET', 'POST'])
 def edit(token):
     try:
-        email = ts.loads(token, salt='edit-key')
+        email = ts.loads(token, salt='edit-key',
+                         max_age=app.config['TOKEN_MAX_AGE'])
     except SignatureExpired:
         abort(404)
 
@@ -228,8 +238,23 @@ def edit(token):
         db.session.add(p)
         db.session.commit()
 
-    pass
+    form = PersonEditForm(name=p.name,
+                          email=p.email,
+                          date_of_birth=p.date_of_birth,
+                          joining_date=p.joining_date,
+                          membership_pending=p.membership_pending,
+                          member=p.member)
 
+    if form.validate_on_submit():
+        p.name = form.name.data
+        if p.email != form.email.data:
+            p.email_valid = False
+            p.email = form.email.data
+        p.date_of_birth = form.date_of_birth.data
+        p.membership_pending = form.membership_pending.data
+        db.session.commit()
+        flash('Daten erfolgreich aktualisiert.')
+        return redirect(url_for('edit', token=token))
 
 @app.route('/view_data/<token>')
 def view_data(token):
@@ -249,6 +274,7 @@ def view_data(token):
 @app.route('/edit/<token>', methods=['POST'])
 def save_edit(token):
     pass
+    return render_template('edit.html', form=form)
 
 
 @app.route('/applications')

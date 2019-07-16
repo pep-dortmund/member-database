@@ -1,0 +1,79 @@
+# English translations for PROJECT.
+# Copyright (C) 2019 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2019-04-19 18:05+0200\n"
+"PO-Revision-Date: 2019-04-19 17:40+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.6.0\n"
+
+#: database/__init__.py:145
+msgid "Willkommen bei PeP et al. e.V."
+msgstr "Welcome at PeP et al. e.V."
+
+#: database/__init__.py:172
+msgid "PeP et al. e.V. Mitgliedsdatenänderung"
+msgstr "Edit PeP et al. e.V. membership data"
+
+#: database/__init__.py:181
+msgid "Edit mail sent."
+msgstr ""
+
+#: database/forms.py:10
+msgid "Name"
+msgstr ""
+
+#: database/forms.py:11
+msgid "E-Mail-Adresse"
+msgstr "Email address"
+
+#: database/forms.py:12
+msgid "Geburtstag"
+msgstr "Birthday"
+
+#: database/forms.py:15
+msgid "Mitglied seit"
+msgstr "Member since"
+
+#: database/forms.py:16
+msgid "Mitgliedschaft beantragt"
+msgstr "Applied for membership"
+
+#: database/forms.py:17
+msgid "Mitgliedschaft bestätigt"
+msgstr "Membership approved"
+
+#: database/forms.py:19
+msgid "Speichern"
+msgstr "Save"
+
+#: database/templates/edit.html:3
+msgid "Edit User"
+msgstr ""
+
+#: database/templates/forms/edit.html:20
+msgid "Fehler bei der Eingabe. Format beachten: "
+msgstr "Input Error. Please check the date format: "
+
+#: database/templates/forms/edit.html:37
+msgid "Ja"
+msgstr ""
+
+#: database/templates/forms/edit.html:39
+msgid "Nein"
+msgstr ""
+
+#~ msgid "%d.%m.%Y"
+#~ msgstr "%d/%m/%Y"
+
