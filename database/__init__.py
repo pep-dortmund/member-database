@@ -3,12 +3,9 @@ from flask import (Flask, jsonify, request, url_for, render_template, redirect,
 from flask_migrate import Migrate
 from flask_login import current_user, login_user, logout_user, login_required
 from flask_bootstrap import Bootstrap
-from flask import abort
 from flask_babel import Babel, _
-from itsdangerous import URLSafeTimedSerializer
-from itsdangerous.exc import SignatureExpired
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadData
 from functools import partial
-import logging
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import event
@@ -60,10 +57,11 @@ ext_url_for = partial(
 )
 
 
-
 @babel.localeselector
 def get_locale():
     return request.accept_languages.best_match(app.config['LANGUAGES'])
+
+
 @app.route('/')
 def index():
     return render_template('base.html')
@@ -206,14 +204,17 @@ def send_request_data_token():
     return jsonify(status='success', message='Edit mail sent.')
 
 
-
-
 @app.route('/edit/<token>', methods=['GET', 'POST'])
 def edit(token):
     try:
-        email = ts.loads(token, salt='edit-key',
-                         max_age=app.config['TOKEN_MAX_AGE'])
+        email = ts.loads(
+            token,
+            salt='edit-key',
+            max_age=app.config['TOKEN_MAX_AGE'],
+        )
     except SignatureExpired:
+        flash('Ihre Sitzung ist abgelaufen')
+    except BadData:
         abort(404)
 
     p = Person.query.filter_by(email=email).first()
@@ -232,18 +233,20 @@ def edit(token):
                 url=ext_url_for('applications'),
             )
         )
-        flash('Willkommen bei PeP et al. e.V.!')
+        flash('Willkommen bei PeP et al. e.V.')
 
         p.email_valid = True
         db.session.add(p)
         db.session.commit()
 
-    form = PersonEditForm(name=p.name,
-                          email=p.email,
-                          date_of_birth=p.date_of_birth,
-                          joining_date=p.joining_date,
-                          membership_pending=p.membership_pending,
-                          member=p.member)
+    form = PersonEditForm(
+        name=p.name,
+        email=p.email,
+        date_of_birth=p.date_of_birth,
+        joining_date=p.joining_date,
+        membership_pending=p.membership_pending,
+        member=p.member,
+    )
 
     if form.validate_on_submit():
         p.name = form.name.data
@@ -256,11 +259,14 @@ def edit(token):
         flash('Daten erfolgreich aktualisiert.')
         return redirect(url_for('edit', token=token))
 
+
 @app.route('/view_data/<token>')
 def view_data(token):
     try:
         email = ts.loads(token, salt='request_gdpr_data-key')
     except SignatureExpired:
+        flash('Ihre Sitzung ist abgelaufen')
+    except BadData:
         abort(404)
 
     p = Person.query.filter_by(email=email)
