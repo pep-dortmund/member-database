@@ -198,7 +198,7 @@ def send_request_data_token():
         recipients=[email],
         body=render_template(
             'mail/request_data_mail.txt',
-            edit_link=ext_url_for('view_data', token=token),
+            data_link=ext_url_for('view_data', token=token),
         )
     )
     return jsonify(status='success', message='GDPR data request mail sent')

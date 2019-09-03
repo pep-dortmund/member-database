@@ -5,7 +5,7 @@ Falls du die Einsicht nicht angefordert hast, kannst du diese Email ignorieren.
 
 Ansonsten kannst du auf den folgenden Link klicken, um deine Daten einzusehen:
 
-{{ edit_link }}
+{{ data_link }}
 
 Viele Grüße
 Die PeP Migliederverwaltung
