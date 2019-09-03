@@ -176,7 +176,7 @@ def send_edit_token():
         )
     )
 
-    return jsonify(status='success', message=_('Edit mail sent.'))
+    return jsonify(status='success', message='Edit mail sent')
 
 
 @app.route('/request_gdpr_data', methods=['POST'])
@@ -201,7 +201,7 @@ def send_request_data_token():
             edit_link=ext_url_for('view_data', token=token),
         )
     )
-    return jsonify(status='success', message='Edit mail sent.')
+    return jsonify(status='success', message='GDPR data request mail sent')
 
 
 @app.route('/edit/<token>', methods=['GET', 'POST'])
@@ -213,7 +213,7 @@ def edit(token):
             max_age=app.config['TOKEN_MAX_AGE'],
         )
     except SignatureExpired:
-        flash('Ihre Sitzung ist abgelaufen')
+        flash(_('Ihre Sitzung ist abgelaufen'))
     except BadData:
         abort(404)
 
@@ -233,7 +233,7 @@ def edit(token):
                 url=ext_url_for('applications'),
             )
         )
-        flash('Willkommen bei PeP et al. e.V.')
+        flash(_('Willkommen bei PeP et al. e.V.!'))
 
         p.email_valid = True
         db.session.add(p)
@@ -256,7 +256,7 @@ def edit(token):
         p.date_of_birth = form.date_of_birth.data
         p.membership_pending = form.membership_pending.data
         db.session.commit()
-        flash('Daten erfolgreich aktualisiert.')
+        flash(_('Ihre Daten wurden erfolgreich aktualisiert.'))
         return redirect(url_for('edit', token=token))
 
 
@@ -265,22 +265,18 @@ def view_data(token):
     try:
         email = ts.loads(token, salt='request_gdpr_data-key')
     except SignatureExpired:
-        flash('Ihre Sitzung ist abgelaufen')
+        flash(_('Ihre Sitzung ist abgelaufen'))
     except BadData:
         abort(404)
 
     p = Person.query.filter_by(email=email)
-    personal_data = as_dict(p)
 
     if p is None:
         abort(404)
 
-    return jsonify(status='success', personal_data=personal_data)
+    personal_data = as_dict(p)
 
-@app.route('/edit/<token>', methods=['POST'])
-def save_edit(token):
-    pass
-    return render_template('edit.html', form=form)
+    return jsonify(status='success', personal_data=personal_data)
 
 
 @app.route('/applications')
