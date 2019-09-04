@@ -1,0 +1,11 @@
+Liebe User,
+
+ein Link zur Einsicht in deine von PeP et al. gespeicherten Daten wurde angefordert.
+Falls du die Einsicht nicht angefordert hast, kannst du diese Email ignorieren.
+
+Ansonsten kannst du auf den folgenden Link klicken, um deine Daten einzusehen:
+
+{{ data_link }}
+
+Viele Grüße
+Die PeP Migliederverwaltung
