@@ -26,6 +26,8 @@ class EventRegistration(db.Model):
         'Person', backref=db.backref('event_registrations', lazy=True)
     )
 
+    validated = db.Column(db.Boolean, default=False)
+
     data = db.Column(db.JSON)
 
     __table_args__ = (
