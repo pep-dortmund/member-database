@@ -1,17 +1,8 @@
-from flask_sqlalchemy import SQLAlchemy
 from datetime import date
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
-
-db = SQLAlchemy()
-
-
-def as_dict(instance):
-    return {
-        c.name: getattr(instance, c.name)
-        for c in instance.__table__.columns
-    }
+from .base import db
 
 
 class Person(db.Model):

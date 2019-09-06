@@ -14,10 +14,12 @@ flask-login = "*"
 flask-wtf = "*"
 flask-bootstrap = "*"
 flask-babel = "*"
+jsonschema = "*"
 
 [dev-packages]
 ipython = "*"
 httpie = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.7"
