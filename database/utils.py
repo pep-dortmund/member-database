@@ -1,4 +1,4 @@
-from sqlalchemy.sql.expression import ClauseElement 
+from sqlalchemy.sql.expression import ClauseElement
 from .models import db
 
 

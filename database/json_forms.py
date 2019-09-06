@@ -1,6 +1,7 @@
 from jsonschema import validate
 from flask_wtf import FlaskForm
 import wtforms
+from wtforms.fields import html5
 from wtforms import validators
 
 # json schema definitions for input fields
@@ -103,18 +104,22 @@ def create_wtf_field(schema):
         )
 
     if schema['type'] == 'integer':
-        return wtforms.IntegerField(**kwargs)
+        return html5.IntegerField(**kwargs)
     if schema['type'] == 'number':
-        return wtforms.FloatField(**kwargs)
+        return html5.DecimalField(**kwargs)
 
     raise ValueError(f'Unknown type {schema["type"]}')
 
 
-def create_wtf_form(schema, baseclasses=(FlaskForm, )):
+def create_wtf_form(schema, baseclasses=(FlaskForm, ), additional_fields=None):
     validate_form(schema)
 
     attrs = {}
+    if additional_fields is not None:
+        for name, field in additional_fields.items():
+            attrs[name] = field
+
     for field in schema:
         attrs[field['id']] = create_wtf_field(field)
 
-    return type('JSONForm', baseclasses, attrs)
+    return type('JSONForm', baseclasses, attrs)()

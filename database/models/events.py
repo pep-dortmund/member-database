@@ -1,17 +1,18 @@
-from jsonschema import validate
 from .base import db
-from ..json_forms import FORM
+from ..json_forms import validate_form
 
 
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     description = db.Column(db.Text)
+
+    registration_open = db.Column(db.Boolean)
     registration_schema = db.Column(db.JSON)
 
     @db.validates('registration_schema')
     def validate_registration_schema(self, key, schema):
-        validate(schema, FORM)
+        validate_form(schema)
         return schema
 
 
@@ -26,7 +27,7 @@ class EventRegistration(db.Model):
         'Person', backref=db.backref('event_registrations', lazy=True)
     )
 
-    validated = db.Column(db.Boolean, default=False)
+    status = db.Column(db.Integer, db.ForeignKey('registration_status.name'))
 
     data = db.Column(db.JSON)
 
@@ -34,3 +35,7 @@ class EventRegistration(db.Model):
         # a person can only register once for an event
         db.UniqueConstraint('event_id', 'person_id', name='unique_person_event'),
     )
+
+
+class RegistrationStatus(db.Model):
+    name = db.Column(db.String, primary_key=True)
