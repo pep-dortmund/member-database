@@ -1,5 +1,6 @@
 from jsonschema import validate, ValidationError
 from pytest import raises
+import wtforms
 
 
 def test_textfield():
@@ -35,3 +36,42 @@ def test_form():
             ]
         },
     ])
+
+
+def test_create_wtform():
+    from database.json_forms import create_wtf_form
+    schema = [
+        {
+            'type': 'number',
+            'label': 'Semester',
+            'id': 'semester',
+            'required': True,
+        },
+        {
+            'type': 'text',
+            'label': 'title',
+            'id': 'title',
+            'required': True,
+        },
+        {
+            'type': 'select',
+            'label': 'Abschluss',
+            'id': 'degree',
+            'options': [
+                {'value': 'bachelor', 'label': 'Bachelor'},
+                {'value': 'master', 'label': 'Master'},
+                {'value': 'phd', 'label': 'Promotion'},
+            ]
+        }
+    ]
+
+    Form = create_wtf_form(schema, baseclasses=(wtforms.Form, ))
+    form = Form()
+
+    assert isinstance(form.semester, wtforms.FloatField)
+    assert isinstance(form.title, wtforms.StringField)
+    assert isinstance(form.degree, wtforms.SelectField)
+    assert form.degree.choices == [
+        ('bachelor', 'Bachelor'), ('master', 'Master'), ('phd', 'Promotion')
+    ]
+
