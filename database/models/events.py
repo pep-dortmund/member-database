@@ -1,6 +1,6 @@
 from .base import db
 from ..json_forms import validate_form
-from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.ext.mutable import MutableDict, MutableList
 
 
 class Event(db.Model):
@@ -9,7 +9,7 @@ class Event(db.Model):
     description = db.Column(db.Text)
 
     registration_open = db.Column(db.Boolean)
-    registration_schema = db.Column(MutableDict.as_mutable(db.JSON))
+    registration_schema = db.Column(MutableList.as_mutable(db.JSON))
 
     @db.validates('registration_schema')
     def validate_registration_schema(self, key, schema):
