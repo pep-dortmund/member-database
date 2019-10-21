@@ -5,10 +5,11 @@ from flask_login import current_user, login_user, logout_user, login_required
 from flask_bootstrap import Bootstrap
 from flask_babel import Babel, _
 from flask_cors import CORS
-from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadData
 from itsdangerous.exc import SignatureExpired
 from functools import partial, wraps
 import logging
+
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import event
@@ -203,15 +204,45 @@ def send_edit_token():
         )
     )
 
-    return jsonify(status='success', message=_('Edit mail sent.'))
+    return jsonify(status='success', message='Edit mail sent')
+
+
+@app.route('/request_gdpr_data', methods=['POST'])
+def send_request_data_token():
+    '''
+    Request a link to view personal data
+    '''
+    email = request.form['email']
+
+    p = Person.query.filter_by(email=email).first()
+    if p is None:
+        return jsonify(status='error', message='No such person'), 422
+
+    token = ts.dumps(email, salt='request_gdpr_data-key')
+
+    send_email(
+        subject='PeP et al. e.V. - Einsicht in gespeicherte Daten',
+        sender=app.config['MAIL_SENDER'],
+        recipients=[email],
+        body=render_template(
+            'mail/request_data_mail.txt',
+            data_link=ext_url_for('view_data', token=token),
+        )
+    )
+    return jsonify(status='success', message='GDPR data request mail sent')
 
 
 @app.route('/edit/<token>', methods=['GET', 'POST'])
 def edit(token):
     try:
-        email = ts.loads(token, salt='edit-key',
-                         max_age=app.config['TOKEN_MAX_AGE'])
+        email = ts.loads(
+            token,
+            salt='edit-key',
+            max_age=app.config['TOKEN_MAX_AGE'],
+        )
     except SignatureExpired:
+        flash(_('Ihre Sitzung ist abgelaufen'))
+    except BadData:
         abort(404)
 
     p = Person.query.filter_by(email=email).first()
@@ -230,18 +261,20 @@ def edit(token):
                 url=ext_url_for('applications'),
             )
         )
-        flash('Willkommen bei PeP et al. e.V.!')
+        flash(_('Willkommen bei PeP et al. e.V.!'))
 
         p.email_valid = True
         db.session.add(p)
         db.session.commit()
 
-    form = PersonEditForm(name=p.name,
-                          email=p.email,
-                          date_of_birth=p.date_of_birth,
-                          joining_date=p.joining_date,
-                          membership_pending=p.membership_pending,
-                          member=p.member)
+    form = PersonEditForm(
+        name=p.name,
+        email=p.email,
+        date_of_birth=p.date_of_birth,
+        joining_date=p.joining_date,
+        membership_pending=p.membership_pending,
+        member=p.member,
+    )
 
     if form.validate_on_submit():
         p.name = form.name.data
@@ -251,10 +284,27 @@ def edit(token):
         p.date_of_birth = form.date_of_birth.data
         p.membership_pending = form.membership_pending.data
         db.session.commit()
-        flash('Daten erfolgreich aktualisiert.')
+        flash(_('Ihre Daten wurden erfolgreich aktualisiert.'))
         return redirect(url_for('edit', token=token))
 
-    return render_template('edit.html', form=form)
+
+@app.route('/view_data/<token>')
+def view_data(token):
+    try:
+        email = ts.loads(token, salt='request_gdpr_data-key')
+    except SignatureExpired:
+        flash(_('Ihre Sitzung ist abgelaufen'))
+    except BadData:
+        abort(404)
+
+    p = Person.query.filter_by(email=email)
+
+    if p is None:
+        abort(404)
+
+    personal_data = as_dict(p)
+
+    return jsonify(status='success', personal_data=personal_data)
 
 
 @app.route('/applications')
