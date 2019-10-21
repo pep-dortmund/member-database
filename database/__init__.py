@@ -6,7 +6,6 @@ from flask_bootstrap import Bootstrap
 from flask_babel import Babel, _
 from flask_cors import CORS
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadData
-from itsdangerous.exc import SignatureExpired
 from functools import partial, wraps
 import logging
 
