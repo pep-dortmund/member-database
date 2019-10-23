@@ -4,7 +4,6 @@ from flask_migrate import Migrate
 from flask_login import current_user, login_user, logout_user, login_required
 from flask_bootstrap import Bootstrap
 from flask_babel import Babel, _
-from flask_cors import CORS
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadData
 from functools import partial, wraps
 import logging
@@ -45,7 +44,6 @@ login.init_app(app)
 migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
 babel = Babel(app)
-cors = CORS(app, resources={r'/config/*': {'origins': 'http://127.0.0.1:8000'}})
 
 app.register_error_handler(401, unauthorized_error)
 app.register_error_handler(404, not_found_error)
@@ -330,11 +328,6 @@ def login():
         login_user(user)
         return redirect(url_for(request.args.get('next', 'index')))
     return render_template('login.html', title='Login', form=form)
-
-
-@app.route('/config/pars/')
-def pars_config():
-    return jsonify({'test': 'data', 'headers': dict(request.headers)})
 
 
 @app.route('/logout')

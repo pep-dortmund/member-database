@@ -18,7 +18,6 @@ flask-babel = "*"
 [dev-packages]
 ipython = "*"
 httpie = "*"
-flask-cors = "*"
 
 [requires]
 python_version = "3.7"
