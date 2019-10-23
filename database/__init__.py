@@ -1,11 +1,11 @@
 from flask import (Flask, jsonify, request, url_for, render_template, redirect,
                    flash, abort)
 from flask_migrate import Migrate
-from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import current_user, login_user, logout_user
 from flask_bootstrap import Bootstrap
 from flask_babel import Babel, _
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadData
-from functools import partial, wraps
+from functools import partial
 import logging
 
 
@@ -17,7 +17,7 @@ from sqlite3 import Connection as SQLite3Connection
 from .config import Config
 from .models import db, Person, User, as_dict
 from .utils import get_or_create
-from .authentication import login, LoginForm
+from .authentication import login, LoginForm, access_required
 from .forms import PersonEditForm
 from .mail import mail, send_email
 from .errors import not_found_error, internal_error, email_logger, unauthorized_error
@@ -58,28 +58,6 @@ ext_url_for = partial(
     _external=True,
     _scheme='https' if app.config['USE_HTTPS'] else 'http',
 )
-
-
-def access_required(name):
-    '''
-    Check if current_user has a role with access_level named `name`.
-    Abort request with 401, if that's not the case.
-
-    Usage:
-        Decorate view function (`app.route(...)`) with this decorator and
-        specify a name of an access_level. The name will be compared to
-        all access_levels of all rules of the current_user.
-    '''
-    def access_decorator(func):
-        @wraps(func)
-        @login_required  # first of all a use needs to be logged in
-        def decorated_function(*args, **kwargs):
-            if not current_user.has_access(name):
-                abort(401)
-
-            return func(*args, **kwargs)
-        return decorated_function
-    return access_decorator
 
 
 @babel.localeselector
