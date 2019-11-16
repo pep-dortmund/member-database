@@ -49,7 +49,7 @@ def create_wtf_field(schema, required=True):
     raise ValueError(f'Unknown type {schema["type"]}')
 
 
-def create_wtf_form(schema, baseclasses=(FlaskForm, ), additional_fields=None):
+def create_wtf_form(schema, baseclasses=(FlaskForm, ), additional_fields=None, data=None):
     attrs = {}
     required = schema.get('required', [])
 
@@ -63,4 +63,4 @@ def create_wtf_form(schema, baseclasses=(FlaskForm, ), additional_fields=None):
             required=name in required,
         )
 
-    return type('JSONForm', baseclasses, attrs)()
+    return type('JSONForm', baseclasses, attrs)(data=data)

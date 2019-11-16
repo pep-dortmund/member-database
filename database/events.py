@@ -1,11 +1,16 @@
-from flask import Blueprint, render_template, abort, flash, redirect, url_for, jsonify
+from flask import (
+    Blueprint, render_template, abort, flash, redirect, url_for, jsonify, current_app,
+)
 from wtforms.fields import StringField
 from wtforms.validators import DataRequired
 from wtforms.fields.html5 import EmailField
+from itsdangerous import URLSafeSerializer, BadData
+from flask_babel import _
 
-from .models import db, Person, as_dict, Event, EventRegistration
-from .utils import get_or_create
+from .models import db, Person, as_dict, Event, EventRegistration, RegistrationStatus
+from .utils import get_or_create, ext_url_for
 from .json_forms import create_wtf_form
+from .mail import send_email
 
 
 events = Blueprint('events', __name__)
@@ -30,13 +35,13 @@ def registration(event_id):
     )
 
     if form.validate_on_submit():
-        person, _ = get_or_create(
+        person, new = get_or_create(
             Person,
             email=form.email.data,
             defaults={'name': form.name.data}
         )
         data = form.data
-        for key in ('name', 'email', 'csrf_token'):
+        for key in ('email', 'csrf_token'):
             data.pop(key)
 
         registration, new = get_or_create(
@@ -58,7 +63,28 @@ def registration(event_id):
         else:
             flash('Um deine Registrierung abzuschließen, klicke auf den Bestätigungslink in der Email, die wir dir geschickt haben! Erst dann bist du angemeldet.', category='success')
 
-        db.session.commit()
+            db.session.commit()
+
+            ts = URLSafeSerializer(
+                current_app.config["SECRET_KEY"],
+                salt='registration-key',
+            )
+            token = ts.dumps(
+                (person.id, registration.id),
+            )
+            send_email(
+                subject=_('Bestätige deine Anmeldung zu "{}"'.format(event.name)),
+                sender=current_app.config['MAIL_SENDER'],
+                recipients=[person.email],
+                body=render_template(
+                    'events/confirmation.txt',
+                    name=person.name,
+                    event=event.name,
+                    confirmation_link=ext_url_for('events.confirmation', token=token),
+                    submit_url=url_for('events.registration', event_id=event_id)
+                )
+            )
+
         return redirect(url_for('index'))
 
     return render_template(
@@ -76,4 +102,61 @@ def get_event(event_id):
     return jsonify(
         status='success',
         event=as_dict(event),
+    )
+
+
+@events.route('/registration/<token>', methods=['GET', 'POST'])
+def confirmation(token):
+    ts = URLSafeSerializer(
+        current_app.config["SECRET_KEY"],
+        salt='registration-key',
+    )
+    try:
+        person_id, registration_id = ts.loads(token)
+    except BadData as e:
+        print(e)
+        abort(404)
+
+    person = Person.query.get(person_id)
+    registration = EventRegistration.query.get(registration_id)
+
+    if registration.status == 'pending':
+        registration.status = 'confirmed'
+        db.session.add(registration)
+        flash('Deine Anmeldung ist jetzt bestätigt', 'success')
+        send_email(
+            subject=_('Anmeldung bestätigt: "{}"'.format(registration.event.name)),
+            sender=current_app.config['MAIL_SENDER'],
+            recipients=[person.email],
+            body=render_template(
+                'events/confirmed.txt',
+                name=person.name,
+                event=registration.event.name,
+                edit_link=ext_url_for('events.confirmation', token=token),
+            )
+        )
+
+    form = create_wtf_form(
+        registration.event.registration_schema,
+        additional_fields={
+            'name': StringField('Name', [DataRequired()]),
+            'email': EmailField('Email', [DataRequired()], render_kw={'disabled': ''})
+        },
+        data={**registration.data, 'email': person.email},
+    )
+    if form.validate_on_submit():
+        data = form.data
+        for key in ('email', 'csrf_token'):
+            data.pop(key)
+
+        registration.data = data
+        flash('Anmeldung aktualisiert', 'success')
+
+    db.session.commit()
+
+    return render_template(
+        'events/registration.html',
+        form=form,
+        event=registration.event,
+        submit_url=url_for('events.confirmation', token=token)
     )

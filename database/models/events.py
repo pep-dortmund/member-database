@@ -22,7 +22,7 @@ class EventRegistration(db.Model):
         'Person', backref=db.backref('event_registrations', lazy=True)
     )
 
-    status = db.Column(db.Integer, db.ForeignKey('registration_status.name'))
+    status = db.Column(db.String, db.ForeignKey('registration_status.name'))
 
     data = db.Column(MutableDict.as_mutable(db.JSON))
 

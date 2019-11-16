@@ -1,5 +1,6 @@
 from database import app, db
 from database.models import Person, User, Event, RegistrationStatus
+from database.utils import get_or_create
 
 app.app_context().push()
 
@@ -42,9 +43,7 @@ else:
     print('Event already exists')
 
 
-if not RegistrationStatus.query.first():
-    print('Add registration stati')
-    for status in ['pending', 'registered', 'canceled', 'waitinglist']:
-        db.session.add(RegistrationStatus(name=status))
-    db.session.commit()
-
+print('Add registration stati')
+for status in ['pending', 'confirmed', 'canceled', 'waitinglist']:
+    get_or_create(RegistrationStatus, name=status)
+db.session.commit()
