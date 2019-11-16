@@ -4,13 +4,53 @@ from jsonschema import validate
 ABSOLVENTENFEIER = {
     'type': 'object',
     'properties': {
-        'chair': {'type': 'string', 'enum': ['E5']},
-        'guests': {'type': 'integer', 'minimum': 1, 'maximum': 8, 'default': 1},
-        'title': {'type': 'string'},
-        'valid_exam_date': {'type': 'boolean', 'default': False},
-        'allow_contact': {'type': 'boolean', 'default': False},
+        'degree': {
+            'type': 'string',
+            'enum': ['Bachelor', 'Master', 'Promotion'],
+            'label': 'Abschluss',
+            'error_hint': 'Triff bitte eine Auswahl.',
+        },
+        'chair': {
+            'type': 'string',
+            'enum': ['E5'],
+            'label': 'Lehrstuhl',
+            'error_hint': 'Triff bitte eine Auswahl.',
+        },
+        'guests': {
+            'type': 'integer',
+            'minimum': 1,
+            'maximum': 8,
+            'default': 1,
+            'label': 'Anzahl der Gäste (inklusive dir)',
+            'error_hint': ('Mit wie vielen Personen wirst du erscheinen '
+                '(inklusive dir)?  Momentan darfst du bis zu 7 andere Gäste '
+                'mitbringen.'),
+        },
+        'title': {
+            'type': 'string',
+            'label': 'Titel der Arbeit',
+            'form_type': 'latex',
+            'error_hint': 'Bitte gib hier den Titel deiner Abschlussarbeit ein.',
+        },
+        'valid_exam_date': {
+            'type': 'boolean',
+            'label': 'Meine letzte Prüfung war im Jahr 2018.',
+            'error_hint': ('Falls du deine letzte Prüfung im Jahr 2019 hattest '
+                'oder noch haben wirst, bist du herzlich zur Absolventenfeier '
+                '2019 eingeladen, die Anfang 2020 stattfinden wird.'),
+            'const': True,
+        },
+        'allow_contact': {
+            'type': 'boolean',
+            'label': ('Ich bin über die Absolventenfeier hinaus damit '
+                'einverstanden, per E-Mail von PeP et al. e.V.  auf dem Laufenden '
+                'gehalten zu werden.<br /><span className="help-block"><small>'
+                'Zu diesem Zweck wird deine E-Mail-Adresse von einigen Mitgliedern '
+                'des PeP-Vorstandes einsehbar sein. Die Adresse wird an keine '
+                'Dritten weitergegeben.  </small></span>'),
+        },
     },
-    'required': ['name', 'email', 'chair'],
+    'required': ['degree', 'chair', 'guests', 'title'],
 }
 
 
@@ -61,3 +101,4 @@ META_SCHEMA = {
 
 if __name__ == '__main__':
     validate(ABSOLVENTENFEIER, META_SCHEMA)
+    print('All schemata validated successfully')
