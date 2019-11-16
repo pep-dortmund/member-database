@@ -2,7 +2,7 @@ from jsonschema import validate
 from flask_wtf import FlaskForm
 import wtforms
 from wtforms.fields import html5
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, NumberRange
 
 
 def sanitize(option):
@@ -34,7 +34,7 @@ def create_wtf_field(schema, required=True):
 
     if schema.get('minimum') or schema.get('maximum'):
         validators.append(
-            validators.NumberRange(schema.get('minimum'), schema.get('maximum'))
+            NumberRange(schema.get('minimum'), schema.get('maximum'))
         )
 
     if schema['type'] == 'integer':
