@@ -1,14 +1,39 @@
-from flask_login import LoginManager
+from flask_login import LoginManager, login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
 from flask import redirect, url_for, request, flash, abort
 import base64
+from functools import wraps
 
 from .models import User
 
 
 login = LoginManager()
+
+
+def access_required(name):
+    '''
+    Check if current_user has a role with access_level named `name`.
+    Abort request with 401, if that's not the case.
+
+    Usage:
+        Decorate view function (`app.route(...)`) with this decorator and
+        specify a name of an access_level. The name will be compared to
+        all access_levels of all rules of the current_user.
+    '''
+    def access_decorator(func):
+        @wraps(func)
+        @login_required  # first of all a use needs to be logged in
+        def decorated_function(*args, **kwargs):
+            if not current_user.has_access(name):
+                abort(401)
+
+            return func(*args, **kwargs)
+        return decorated_function
+    return access_decorator
+
+
 
 
 @login.user_loader

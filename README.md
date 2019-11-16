@@ -87,3 +87,39 @@ for now is to do this interactively in an iPython shell.
    ```
 
 1. You can now login at the `/login` endpoint 🎉
+
+### Adding Roles
+
+To enable fine-grained access management for users to specific endpoints,
+each protected endpoint is associated with a uniquely named access level.  
+A role combines multiple access levels and multiple roles can be assigned to
+different users.  
+All access levels that are currently available will be added to the database
+automatically at app startup.  
+Just like in the above example, you can fire up an ipython session and...
+
+1. To create a new role with some access levels run
+   ```python
+   from database import app, db
+   from database.models import Role, AccessLevel
+   admin_role = Role(id='admin')
+   admin_role.access_levels = [
+       AccessLevel.query.get('get_persons'),
+       AccessLevel.query.get('get_members'),
+   ]
+   db.session.add(admin_role)
+   db.session.commit()
+   ```
+
+1. You can simply assign a role to a user via
+   ```python
+   from database import app, db
+   from database.models import Role, User
+   user = User.query.filter_by(username='aeinstein').first()
+   user.roles.append(Role.query.get('admin'))
+   db.session.add(user)
+   db.session.commit()
+   ```
+
+Now, the user `aeinstein` will have access to the `get_members` and
+`get_persons` access levels via the `admin` role.

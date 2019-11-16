@@ -1,11 +1,13 @@
 from flask import (Flask, jsonify, request, url_for, render_template, redirect,
                    flash, abort)
 from flask_migrate import Migrate
-from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import current_user, login_user, logout_user
 from flask_bootstrap import Bootstrap
 from flask_babel import Babel, _
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadData
 from functools import partial
+import logging
+
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import event
@@ -15,10 +17,10 @@ from sqlite3 import Connection as SQLite3Connection
 from .config import Config
 from .models import db, Person, User, as_dict
 from .utils import get_or_create
-from .authentication import login, LoginForm
+from .authentication import login, LoginForm, access_required
 from .forms import PersonEditForm
 from .mail import mail, send_email
-from .errors import not_found_error, internal_error, email_logger
+from .errors import not_found_error, internal_error, email_logger, unauthorized_error
 
 
 @event.listens_for(Engine, 'connect')
@@ -43,6 +45,7 @@ migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
 babel = Babel(app)
 
+app.register_error_handler(401, unauthorized_error)
 app.register_error_handler(404, not_found_error)
 app.register_error_handler(500, internal_error)
 email_logger(app)
@@ -68,7 +71,7 @@ def index():
 
 
 @app.route('/persons', methods=['GET'])
-@login_required
+@access_required('get_persons')
 def get_persons():
     persons = [as_dict(person) for person in Person.query.all()]
     return jsonify(status='success', persons=persons)
@@ -101,7 +104,7 @@ def add_person():
 
 
 @app.route('/members', methods=['GET'])
-@login_required
+@access_required('get_members')
 def get_members():
     '''Return a json list with all current members'''
     members = Person.query.filter_by(member=True).all()
@@ -280,7 +283,7 @@ def view_data(token):
 
 
 @app.route('/applications')
-@login_required
+@access_required('view_applications')
 def applications():
     applications = Person.query.filter_by(membership_pending=True).all()
     return render_template('applications.html', applications=applications)
@@ -301,7 +304,7 @@ def login():
             flash('Invalid user or password', 'danger')
             return redirect(url_for('login', next=request.args.get('next')))
         login_user(user)
-        return redirect(request.args.get('next', url_for('index')))
+        return redirect(url_for(request.args.get('next', 'index')))
     return render_template('login.html', title='Login', form=form)
 
 
