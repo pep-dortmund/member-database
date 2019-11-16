@@ -25,12 +25,12 @@ if Event.query.first() is None:
             'type': 'object',
             'properties': {
                 'semester': { 'type': 'integer', 'label': 'Semester'},
-                'vegan': {'type': 'string', 'label': 'Vegan'},
+                'vegan': {'type': 'boolean', 'label': 'Vegan'},
                 'allergies': {'type': 'string', 'label': 'Unverträglichkeiten oder Allergien'},
                 'degree': {
                     'type': 'string',
                     'label': 'Abschluss',
-                    'enum': ['bachelor', 'master', 'phd']
+                    'enum': ['Bachelor', 'Master', 'Promotion'],
                 },
             },
             'required': ['semester', 'degree']
