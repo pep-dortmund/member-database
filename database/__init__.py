@@ -368,7 +368,6 @@ def registration(event_id):
     return render_template(
         'event_registration.html',
         form=form, event=event,
-        url=f'/event/{event_id}/registration',
     )
 
 
