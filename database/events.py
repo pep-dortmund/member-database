@@ -8,7 +8,7 @@ from .utils import get_or_create
 from .json_forms import create_wtf_form
 
 
-events = Blueprint('events', __name__, template_folder='events')
+events = Blueprint('events', __name__)
 
 
 @events.route('/<int:event_id>/registration', methods=['GET', 'POST'])
@@ -62,7 +62,7 @@ def registration(event_id):
         return redirect(url_for('index'))
 
     return render_template(
-        'event_registration.html',
+        'events/registration.html',
         form=form, event=event,
         url=f'/event/{event_id}/registration',
     )
