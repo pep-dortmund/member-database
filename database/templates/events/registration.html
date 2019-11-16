@@ -6,7 +6,7 @@
   <p>{{ event.description }}</p>
 
 
-  <form action="{{ url }}" method="POST">
+  <form action="{{ url_for('registration', event_id=event.id) }}" method="POST">
     {{ form.hidden_tag() }}
     {% for field in form %}
     <fieldset>
