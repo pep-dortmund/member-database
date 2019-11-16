@@ -322,7 +322,7 @@ def throw_test_error():
     app.logger.error('test error')
 
 
-@app.route('/event/<int:event_id>/registration', methods=['GET', 'POST'])
+@app.route('/events/<int:event_id>/registration', methods=['GET', 'POST'])
 def registration(event_id):
     event = Event.query.filter_by(id=event_id).first()
     if event is None:
@@ -339,10 +339,10 @@ def registration(event_id):
 
     if form.validate_on_submit():
         person, _ = get_or_create(Person, email=form.email.data, defaults={'name': form.name.data})
-        data = {
-            field['id']: getattr(form, field['id']).data
-            for field in event.registration_schema
-        }
+        data = form.data
+        for key in ('name', 'email', 'csrf_token'):
+            data.pop(key)
+
         registration, new = get_or_create(
             EventRegistration,
             person_id=person.id,
@@ -369,4 +369,16 @@ def registration(event_id):
         'event_registration.html',
         form=form, event=event,
         url=f'/event/{event_id}/registration',
+    )
+
+
+@app.route('/events/<int:event_id>')
+def get_event(event_id):
+    event = Event.query.filter_by(id=event_id).first()
+    if event is None:
+        return jsonify(status='No such event'), 404
+
+    return jsonify(
+        status='success',
+        event=as_dict(event),
     )
