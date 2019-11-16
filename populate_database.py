@@ -21,30 +21,20 @@ if Event.query.first() is None:
         name='Absolventenfeier 2019',
         description='Tolle Absolventenfeier',
         registration_open=True,
-        registration_schema=[
-            {
-                'type': 'integer',
-                'label': 'Semester',
-                'id': 'semester',
-                'required': True,
+        registration_schema={
+            'type': 'object',
+            'properties': {
+                'semester': { 'type': 'integer', 'label': 'Semester'},
+                'vegan': {'type': 'string', 'label': 'Vegan'},
+                'allergies': {'type': 'string', 'label': 'Unverträglichkeiten oder Allergien'},
+                'degree': {
+                    'type': 'string',
+                    'label': 'Abschluss',
+                    'enum': ['bachelor', 'master', 'phd']
+                },
             },
-            {
-                'type': 'text',
-                'label': 'title',
-                'id': 'title',
-                'required': True,
-            },
-            {
-                'type': 'select',
-                'label': 'Abschluss',
-                'id': 'degree',
-                'options': [
-                    {'value': 'bachelor', 'label': 'Bachelor'},
-                    {'value': 'master', 'label': 'Master'},
-                    {'value': 'phd', 'label': 'Promotion'},
-                ]
-            }
-        ]
+            'required': ['semester', 'degree']
+        },
     )
     db.session.add(event)
     db.session.commit()

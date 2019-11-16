@@ -2,124 +2,65 @@ from jsonschema import validate
 from flask_wtf import FlaskForm
 import wtforms
 from wtforms.fields import html5
-from wtforms import validators
-
-# json schema definitions for input fields
-TEXT_FIELD = {
-    'type': 'object',
-    'properties': {
-        'type': {'type': 'string', 'pattern': 'text'},
-        'id': {'type': 'string'},
-        'label': {'type': 'string'},
-        'required': {'type': 'boolean'},
-    },
-    'required': ['type', 'id', 'label'],
-}
-
-NUMBER_FIELD = {
-    'type': 'object',
-    'properties': {
-        'type': {'type': 'string', 'pattern': 'number'},
-        'id': {'type': 'string'},
-        'label': {'type': 'string'},
-        'min': {'type': 'number'},
-        'max': {'type': 'number'},
-        'required': {'type': 'boolean'},
-    },
-    'required': ['type', 'id', 'label'],
-}
-
-INTEGER_FIELD = {
-    'type': 'object',
-    'properties': {
-        'type': {'type': 'string', 'pattern': 'integer'},
-        'id': {'type': 'string'},
-        'label': {'type': 'string'},
-        'min': {'type': 'integer'},
-        'max': {'type': 'integer'},
-        'required': {'type': 'boolean'},
-    },
-    'required': ['type', 'id', 'label'],
-}
+from wtforms.validators import DataRequired
 
 
-CHECKBOX = {
-    'type': 'object',
-    'properties': {
-        'type': {'type': 'string', 'pattern': 'checkbox'},
-        'id': {'type': 'string'},
-        'label': {'type': 'string'},
-        'default': {'type': 'boolean'},
-    },
-    'required': ['type', 'id', 'label'],
-}
-
-SELECT_OPTION = {
-    'type': 'object',
-    'properties': {
-        'value': {'type': 'string'},
-        'label': {'type': 'string'},
-    },
-    'required': ['value', 'label'],
-}
-
-SELECT = {
-    'type': 'object',
-    'properties': {
-        'type': {'type': 'string', 'pattern': 'select'},
-        'id': {'type': 'string'},
-        'label': {'type': 'string'},
-        'options': {'type': 'array', 'items': SELECT_OPTION},
-    },
-    'required': ['type', 'id', 'label'],
-}
+def sanitize(option):
+    return (
+        option
+        .lower()
+        .replace(' ', '_')
+    )
 
 
-FORM = {
-    'type': 'array',
-    'items': {'anyOf': [TEXT_FIELD, INTEGER_FIELD, NUMBER_FIELD, CHECKBOX, SELECT]},
-}
+def create_wtf_field(schema, required=True):
+    validators = []
 
+    kwargs = {
+        'validators': validators,
+        'label': schema.get('label', ''),
+    }
 
-def validate_form(form):
-    validate(form, FORM)
+    if required:
+        validators.append(DataRequired())
 
-
-def create_wtf_field(schema):
-    kwargs = {'validators': []}
-    if schema.get('required', False):
-        kwargs['validators'].append(validators.DataRequired())
-
-    if schema['type'] == 'text':
+    if schema['type'] == 'string':
+        if 'enum' in schema:
+            return wtforms.SelectField(
+                **kwargs,
+                choices=[(sanitize(o), o) for o in schema['enum']]
+            )
         return wtforms.StringField(**kwargs)
 
-    if schema['type'] == 'select':
-        kwargs['choices'] = [(o['value'], o['label']) for o in schema['options']]
-        return wtforms.SelectField(**kwargs)
-
-    # number stuff:
-    if schema.get('min') or schema.get('max'):
-        kwargs['validators'].append(
-            validators.NumberRange(schema.get('min'), schema.get('max'))
+    if schema.get('minimum') or schema.get('maximum'):
+        validators.append(
+            validators.NumberRange(schema.get('minimum'), schema.get('maximum'))
         )
 
     if schema['type'] == 'integer':
         return html5.IntegerField(**kwargs)
+
     if schema['type'] == 'number':
         return html5.DecimalField(**kwargs)
+
+    if schema['type'] == 'boolean':
+        return wtforms.BooleanField(**kwargs)
 
     raise ValueError(f'Unknown type {schema["type"]}')
 
 
 def create_wtf_form(schema, baseclasses=(FlaskForm, ), additional_fields=None):
-    validate_form(schema)
-
     attrs = {}
+    required = schema.get('required', [])
+
     if additional_fields is not None:
         for name, field in additional_fields.items():
             attrs[name] = field
 
-    for field in schema:
-        attrs[field['id']] = create_wtf_field(field)
+    for name, field_schema in schema['properties'].items():
+        attrs[name] = create_wtf_field(
+            field_schema,
+            required=name in required,
+        )
 
     return type('JSONForm', baseclasses, attrs)()

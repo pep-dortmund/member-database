@@ -4,74 +4,31 @@ import wtforms
 from wtforms.fields import html5
 
 
-def test_textfield():
-    from database.json_forms import TEXT_FIELD
-
-    validate({'type': 'text', 'label': 'Name', 'id': 'name'}, TEXT_FIELD)
-
-    with raises(ValidationError):
-        validate({'type': 'foo', 'label': 'name', 'id': 'name'}, TEXT_FIELD)
+def has_validator(field, validator_cls):
+    return any(isinstance(v, validator_cls) for v in field.validators)
 
 
-def test_form():
-    from database.json_forms import validate_form
-
-    validate_form([
-        {'type': 'text', 'label': 'Name', 'id': 'name'},
-        {'type': 'number', 'label': 'Alter', 'id': 'age'},
-    ])
-
-    validate_form([
-        {'type': 'number', 'label': 'Alter', 'id': 'age'},
-    ])
-
-    validate_form([
-        {
-            'type': 'select',
-            'label': 'Abschluss',
-            'id': 'degree',
-            'options': [
-                {'value': 'bachelor', 'label': 'Bachelor'},
-                {'value': 'master', 'label': 'Master'},
-                {'value': 'phd', 'label': 'Promotion'},
-            ]
-        },
-    ])
-
-
-def test_create_wtform():
+def test_basic_elements():
     from database.json_forms import create_wtf_form
-    schema = [
-        {
-            'type': 'integer',
-            'label': 'Semester',
-            'id': 'semester',
-            'required': True,
+    schema = dict(
+        type='object',
+        properties={
+            'name': {'type': 'string', 'label': 'Name'},
+            'semester': {'type': 'integer', 'label': 'Semester'} ,
+            'degree': {'type': 'string', 'label': 'Abschluss', 'enum': ['Bachelor', 'Master', 'Promotion']},
+            'vegan': {'type': 'boolean'}
         },
-        {
-            'type': 'text',
-            'label': 'title',
-            'id': 'title',
-            'required': True,
-        },
-        {
-            'type': 'select',
-            'label': 'Abschluss',
-            'id': 'degree',
-            'options': [
-                {'value': 'bachelor', 'label': 'Bachelor'},
-                {'value': 'master', 'label': 'Master'},
-                {'value': 'phd', 'label': 'Promotion'},
-            ]
-        }
-    ]
+        required=['name', 'semester', 'degree'],
+    )
 
-    Form = create_wtf_form(schema, baseclasses=(wtforms.Form, ))
-    form = Form()
+    form = create_wtf_form(schema, baseclasses=(wtforms.Form, ))
 
+    assert isinstance(form.name, wtforms.StringField)
+    assert has_validator(form.name, wtforms.validators.DataRequired)
     assert isinstance(form.semester, html5.IntegerField)
-    assert isinstance(form.title, wtforms.StringField)
     assert isinstance(form.degree, wtforms.SelectField)
     assert form.degree.choices == [
-        ('bachelor', 'Bachelor'), ('master', 'Master'), ('phd', 'Promotion')
+        ('bachelor', 'Bachelor'), ('master', 'Master'), ('promotion', 'Promotion')
     ]
+
+    assert isinstance(form.vegan , wtforms.BooleanField)
