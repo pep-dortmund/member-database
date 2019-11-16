@@ -14,6 +14,7 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlite3 import Connection as SQLite3Connection
 from wtforms.fields import StringField
+from wtforms.validators import DataRequired
 from wtforms.fields.html5 import EmailField
 
 from .config import Config
@@ -334,7 +335,10 @@ def registration(event_id):
 
     form = create_wtf_form(
         event.registration_schema,
-        additional_fields={'name': StringField(), 'email': EmailField()}
+        additional_fields={
+            'name': StringField('Name', [DataRequired()]),
+            'email': EmailField('Email', [DataRequired()])
+        }
     )
 
     if form.validate_on_submit():
