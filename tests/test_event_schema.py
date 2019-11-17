@@ -9,7 +9,7 @@ def has_validator(field, validator_cls):
 
 
 def test_basic_elements():
-    from database.json_forms import create_wtf_form
+    from database.events.json_forms import create_wtf_form
     schema = dict(
         type='object',
         properties={
@@ -28,7 +28,7 @@ def test_basic_elements():
     assert isinstance(form.semester, html5.IntegerField)
     assert isinstance(form.degree, wtforms.SelectField)
     assert form.degree.choices == [
-        ('bachelor', 'Bachelor'), ('master', 'Master'), ('promotion', 'Promotion')
+        ('Bachelor', 'Bachelor'), ('Master', 'Master'), ('Promotion', 'Promotion')
     ]
 
     assert isinstance(form.vegan , wtforms.BooleanField)

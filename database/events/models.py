@@ -1,4 +1,4 @@
-from .base import db
+from ..models import db
 from sqlalchemy.ext.mutable import MutableDict
 
 

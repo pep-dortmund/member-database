@@ -5,14 +5,6 @@ from wtforms.fields import html5
 from wtforms.validators import DataRequired, NumberRange
 
 
-def sanitize(option):
-    return (
-        option
-        .lower()
-        .replace(' ', '_')
-    )
-
-
 def create_wtf_field(schema, required=True):
     validators = []
 
@@ -28,7 +20,7 @@ def create_wtf_field(schema, required=True):
         if 'enum' in schema:
             return wtforms.SelectField(
                 **kwargs,
-                choices=[(sanitize(o), o) for o in schema['enum']]
+                choices=[(o, o) for o in schema['enum']]
             )
         return wtforms.StringField(**kwargs)
 
@@ -62,5 +54,6 @@ def create_wtf_form(schema, baseclasses=(FlaskForm, ), additional_fields=None, d
             field_schema,
             required=name in required,
         )
+    attrs['submit'] = wtforms.SubmitField('Anmelden')
 
     return type('JSONForm', baseclasses, attrs)(data=data)

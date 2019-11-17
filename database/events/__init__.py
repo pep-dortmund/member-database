@@ -6,17 +6,20 @@ from wtforms.validators import DataRequired
 from wtforms.fields.html5 import EmailField
 from itsdangerous import URLSafeSerializer, BadData
 from flask_babel import _
+from jsonschema import validate, ValidationError
 
-from .models import db, Person, as_dict, Event, EventRegistration, RegistrationStatus
-from .utils import get_or_create, ext_url_for
+from ..models import db, Person, as_dict
+from ..utils import get_or_create, ext_url_for
+from ..mail import send_email
+
+from .models import Event, EventRegistration
 from .json_forms import create_wtf_form
-from .mail import send_email
 
 
-events = Blueprint('events', __name__)
+events = Blueprint('events', __name__, template_folder='templates')
 
 
-@events.route('/<int:event_id>/registration', methods=['GET', 'POST'])
+@events.route('/<int:event_id>/registration/', methods=['GET', 'POST'])
 def registration(event_id):
     event = Event.query.filter_by(id=event_id).first()
     if event is None:
@@ -35,14 +38,21 @@ def registration(event_id):
     )
 
     if form.validate_on_submit():
-        person, new = get_or_create(
-            Person,
-            email=form.email.data,
-            defaults={'name': form.name.data}
-        )
         data = form.data
-        for key in ('email', 'csrf_token'):
-            data.pop(key)
+        email = data.pop('email')
+        data.pop('csrf_token')
+
+        try:
+            validate(data, event.registration_schema)
+        except ValidationError as e:
+            flash(e.message, 'danger')
+            return render_template('registration.html', form=form, event=event)
+
+        person, new_person = get_or_create(
+            Person,
+            email=email,
+            defaults={'name': data['name']}
+        )
 
         registration, new = get_or_create(
             EventRegistration,
@@ -77,7 +87,7 @@ def registration(event_id):
                 sender=current_app.config['MAIL_SENDER'],
                 recipients=[person.email],
                 body=render_template(
-                    'events/confirmation.txt',
+                    'confirmation.txt',
                     name=person.name,
                     event=event.name,
                     confirmation_link=ext_url_for('events.confirmation', token=token),
@@ -88,12 +98,12 @@ def registration(event_id):
         return redirect(url_for('index'))
 
     return render_template(
-        'events/registration.html',
+        'registration.html',
         form=form, event=event,
     )
 
 
-@events.route('/<int:event_id>')
+@events.route('/<int:event_id>/')
 def get_event(event_id):
     event = Event.query.filter_by(id=event_id).first()
     if event is None:
@@ -105,7 +115,7 @@ def get_event(event_id):
     )
 
 
-@events.route('/registration/<token>', methods=['GET', 'POST'])
+@events.route('/registration/<token>/', methods=['GET', 'POST'])
 def confirmation(token):
     ts = URLSafeSerializer(
         current_app.config["SECRET_KEY"],
@@ -155,7 +165,7 @@ def confirmation(token):
     db.session.commit()
 
     return render_template(
-        'events/registration.html',
+        'registration.html',
         form=form,
         event=registration.event,
         submit_url=url_for('events.confirmation', token=token)
