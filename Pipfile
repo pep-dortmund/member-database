@@ -18,6 +18,8 @@ flask-babel = "*"
 [dev-packages]
 ipython = "*"
 httpie = "*"
+pytest = "*"
+pytest-flask = "*"
 
 [requires]
 python_version = "3.7"

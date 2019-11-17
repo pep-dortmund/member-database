@@ -29,7 +29,7 @@ We strongly recommend to read through the first chapters of the [the flask mega 
 1. Install the dependencies using `pipenv install`
 
 1. copy `env-template` to `.env` and fill the variables with the appropriate information
-  
+
   The `DATABASE_URL` is set to an sqlite database in the current directory, which is nice for developing
 
 1. run `export FLASK_APP=database`
@@ -123,3 +123,9 @@ Just like in the above example, you can fire up an ipython session and...
 
 Now, the user `aeinstein` will have access to the `get_members` and
 `get_persons` access levels via the `admin` role.
+
+### Testing
+
+run `pipenv install --dev pytest` to install `pytest` to `pipenv`.
+run `pipenv install --dev pytest-flask`.
+run `pipenv run pytest` to test the flask app.
