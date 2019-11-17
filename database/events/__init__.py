@@ -179,6 +179,8 @@ def confirmation(token):
         else:
             registration.status = 'confirmed'
 
+        registration.timestamp = datetime.now(timezone.utc)
+
         db.session.add(registration)
         flash('Deine Anmeldung ist jetzt bestätigt', 'success')
         send_email(
