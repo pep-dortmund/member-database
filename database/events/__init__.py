@@ -59,7 +59,12 @@ def registration(event_id):
     event = Event.query.filter_by(id=event_id).first_or_404()
 
     n_participants = EventRegistration.query.filter_by(event_id=event.id, status='confirmed').count()
-    booked_out = event.max_participants and n_participants >= event.max_participants
+    if event.max_participants:
+        free_places = event.max_participants - n_participants
+        booked_out = free_places < 1
+    else:
+        free_places = None
+        booked_out = False
 
     if not event.registration_open:
         flash(f'Eine Anmeldung für "{event.name}" is derzeit nicht möglich', 'danger')
@@ -144,6 +149,7 @@ def registration(event_id):
         form=form, event=event,
         registration=registration,
         booked_out=booked_out,
+        free_places=free_places,
     )
 
 

@@ -4,6 +4,12 @@
 
   <h1>Anmeldung {{ event.name }}</h1>
 
+  {% if free_places %}
+  <div class="alert alert-success">
+    Es sind noch {{ free_places }} Plätze verfügbar.
+  </div>
+  {% endif %}
+
   {% if booked_out and registration is none %}
   <div class="alert alert-warning" role="alert">
     Diese Veranstaltung ist bereits ausgebucht.
@@ -21,7 +27,7 @@
   <p>{{ event.description }}</p>
 
 
-  {{ wtf.quick_form(form, method='POST', action=submit_url) }}
+  {{ wtf.quick_form(form, method='POST', action=submit_url, button_map={'submit': 'primary'}) }}
 
 
 {% endblock %}
