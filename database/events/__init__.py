@@ -215,6 +215,7 @@ def confirmation(token):
         registration.data = data
         flash('Anmeldung aktualisiert', 'success')
 
+    form.submit.label.text = 'Speichern'
     db.session.commit()
     return render_template(
         'registration.html',
