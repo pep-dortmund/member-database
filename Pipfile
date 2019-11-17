@@ -15,6 +15,7 @@ flask-wtf = "*"
 flask-bootstrap = "*"
 flask-babel = "*"
 jsonschema = "*"
+flask-admin = "*"
 
 [dev-packages]
 ipython = "*"

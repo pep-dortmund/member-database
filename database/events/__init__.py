@@ -13,12 +13,14 @@ from datetime import datetime, timezone
 from ..models import db, Person, as_dict
 from ..utils import get_or_create, ext_url_for
 from ..mail import send_email
+from ..admin import Blueprint, ModelView
 
 from .models import Event, EventRegistration
 from .json_forms import create_wtf_form
 
 
 events = Blueprint('events', __name__, template_folder='templates')
+events.add_view(ModelView(EventRegistration, db.session))
 
 
 @events.route('/')
@@ -58,7 +60,7 @@ def index():
 def registration(event_id):
     event = Event.query.filter_by(id=event_id).first_or_404()
 
-    n_participants = EventRegistration.query.filter_by(event_id=event.id, status='confirmed').count()
+    n_participants = EventRegistration.query.filter_by(event_id=event.id, status_name='confirmed').count()
     booked_out = event.max_participants and n_participants >= event.max_participants
 
     if not event.registration_open:
@@ -96,19 +98,19 @@ def registration(event_id):
             EventRegistration,
             person_id=person.id,
             event_id=event.id,
-            defaults={'data': data, 'status': 'pending'},
+            defaults={'data': data, 'status_name': 'pending'},
         )
 
         if not new:
-            if registration.status == 'pending':
+            if registration.status_name == 'pending':
                 flash(
                     'Du hast bereits eine Anmeldung für diese Veranstaltung abgeschickt aber die Anmeldung nocht nicht bestätigt.'
                     ' Bitte klicke auf den Link in der Bestätigungsmail',
                     category='danger'
                 )
-            elif registration.status == 'confirmed':
+            elif registration.status_name == 'confirmed':
                 flash('Du bist bereits angemeldet. Falls du deine Daten ändern möchtest, klicke auf den Link in der Bestätigungsmail', category='danger')
-            elif registration.status == 'waitinglist':
+            elif registration.status_name == 'waitinglist':
                 flash('Du bist bereits auf der Warteliste. Falls du deine Daten ändern möchtest, klicke auf den Link in der Bestätigungsmail', category='danger')
         else:
             flash('Um deine Registrierung abzuschließen, klicke auf den Bestätigungslink in der Email, die wir dir geschickt haben! Erst dann bist du angemeldet.', category='success')
@@ -171,17 +173,20 @@ def confirmation(token):
         print(e)
         abort(404)
 
-    person = Person.query.get(person_id)
-    registration = EventRegistration.query.get(registration_id)
+    person = Person.query.get_or_404(person_id)
+    registration = EventRegistration.query.get_or_404(registration_id)
     event = registration.event
-    n_participants = EventRegistration.query.filter_by(event_id=event.id, status='confirmed').count()
+    n_participants = EventRegistration.query.filter_by(
+        event_id=event.id, status_name='confirmed',
+    ).count()
     booked_out = event.max_participants and n_participants >= event.max_participants
 
-    if registration.status == 'pending':
+    # first time someone clicked on the link, confirm reservation or put on waitinglist
+    if registration.status_name == 'pending':
         if booked_out:
-            registration.status = 'waitinglist'
+            registration.status_name = 'waitinglist'
         else:
-            registration.status = 'confirmed'
+            registration.status_name = 'confirmed'
 
         registration.timestamp = datetime.now(timezone.utc)
 
