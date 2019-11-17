@@ -204,6 +204,16 @@ def confirmation(token):
                 edit_link=ext_url_for('events.confirmation', token=token),
             )
         )
+        if event.notify_email:
+            send_email(
+                subject=f'Neue Anmeldung für "{event.name}"',
+                sender=current_app.config['MAIL_SENDER'],
+                recipients=[event.notify_email],
+                body=render_template(
+                    'notification.txt', person=person, event=event,
+                    registration=registration,
+                )
+            )
 
     form = create_wtf_form(
         registration.event.registration_schema,

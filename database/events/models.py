@@ -10,6 +10,7 @@ class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     description = db.Column(db.Text)
+    notify_email = db.Column(db.Text)
 
     max_participants = db.Column(db.Integer)
 
