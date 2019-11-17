@@ -139,7 +139,7 @@ def confirmation(token):
             sender=current_app.config['MAIL_SENDER'],
             recipients=[person.email],
             body=render_template(
-                'events/confirmed.txt',
+                'confirmed.txt',
                 name=person.name,
                 event=registration.event.name,
                 edit_link=ext_url_for('events.confirmation', token=token),
