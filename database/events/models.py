@@ -1,5 +1,9 @@
-from ..models import db
 from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.orm import validates
+from jsonschema import validate
+
+from ..models import db
+from .common_schemata import META_SCHEMA
 
 
 class Event(db.Model):
@@ -9,6 +13,11 @@ class Event(db.Model):
 
     registration_open = db.Column(db.Boolean)
     registration_schema = db.Column(MutableDict.as_mutable(db.JSON))
+
+    @validates('registration_schema')
+    def validate_schema(self, key, schema):
+        validate(schema, META_SCHEMA)
+        return schema
 
 
 class EventRegistration(db.Model):

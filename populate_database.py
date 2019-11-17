@@ -1,5 +1,6 @@
 from database import app, db
-from database.models import Person, User, Event, RegistrationStatus
+from database.models import Person, User
+from database.events.models import Event, RegistrationStatus
 from database.utils import get_or_create
 
 app.app_context().push()

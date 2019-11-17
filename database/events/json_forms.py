@@ -5,12 +5,12 @@ from wtforms.fields import html5
 from wtforms.validators import DataRequired, NumberRange
 
 
-def create_wtf_field(schema, required=True):
+def create_wtf_field(name, schema, required=True):
     validators = []
 
     kwargs = {
         'validators': validators,
-        'label': schema.get('label', ''),
+        'label': schema.get('label', name.title()),
     }
 
     if required:
@@ -51,6 +51,7 @@ def create_wtf_form(schema, baseclasses=(FlaskForm, ), additional_fields=None, d
 
     for name, field_schema in schema['properties'].items():
         attrs[name] = create_wtf_field(
+            name,
             field_schema,
             required=name in required,
         )
