@@ -12,6 +12,12 @@
        href="{{ url_for('events.registration', event_id=event.id)}}"
       >
       {{ event.name }}
+
+      {% if event.max_participants is not none %}
+      <span class="badge badge-info">
+        {{ event.max_participants - event.participants }} freie Plätze
+      </span>
+      {% endif %}
     </a>
     {% endfor %}
   </ul>
