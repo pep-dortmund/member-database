@@ -22,9 +22,12 @@ events = Blueprint('events', __name__, template_folder='templates')
 
 @events.route('/')
 def index():
+    ''' Index page for the event registration, provides a list with links to
+    the registrations for currently open events'''
     subquery = (
         db.session
         .query(EventRegistration.event_id, func.count('*').label('participants'))
+        .filter_by(status='confirmed')
         .group_by(EventRegistration.event_id)
         .subquery()
     )
