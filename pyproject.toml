@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "member-database"
+version = "0.1.0"
+description = "Our PeP database solution for members and events"
+authors = ["Kevin Heinicke <kevin.heinicke@tu-dortmund.de>", "Maximilian Nöthe"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+flask = "^1.1"
+flask-sqlalchemy = "^2.4"
+flask-migrate = "^2.5"
+flask-mail = "^0.9.1"
+python-dotenv = "^0.10.3"
+flask-login = "^0.4.1"
+flask-wtf = "^0.14.2"
+flask-babel = "^0.12.2"
+jsonschema = "^3.1"
+flask-bootstrap = "^3.3"
+
+[tool.poetry.dev-dependencies]
+ipython = "^7.9"
+httpie = "^1.0"
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
