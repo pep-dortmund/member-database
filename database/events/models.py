@@ -11,8 +11,10 @@ class Event(db.Model):
     name = db.Column(db.String)
     description = db.Column(db.Text)
 
-    registration_open = db.Column(db.Boolean)
-    registration_schema = db.Column(MutableDict.as_mutable(db.JSON))
+    max_participants = db.Column(db.Integer)
+
+    registration_open = db.Column(db.Boolean, default=False)
+    registration_schema = db.Column(MutableDict.as_mutable(db.JSON), nullable=False)
 
     @validates('registration_schema')
     def validate_schema(self, key, schema):
@@ -34,6 +36,7 @@ class EventRegistration(db.Model):
     status = db.Column(db.String, db.ForeignKey('registration_status.name'))
 
     data = db.Column(MutableDict.as_mutable(db.JSON))
+    timestamp = db.Column(db.DateTime(timezone=True))
 
     __table_args__ = (
         # a person can only register once for an event

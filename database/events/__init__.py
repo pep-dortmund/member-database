@@ -7,6 +7,7 @@ from wtforms.fields.html5 import EmailField
 from itsdangerous import URLSafeSerializer, BadData
 from flask_babel import _
 from jsonschema import validate, ValidationError
+from sqlalchemy import func, or_
 
 from ..models import db, Person, as_dict
 from ..utils import get_or_create, ext_url_for
@@ -19,15 +20,46 @@ from .json_forms import create_wtf_form
 events = Blueprint('events', __name__, template_folder='templates')
 
 
+@events.route('/')
+def index():
+    subquery = (
+        db.session
+        .query(EventRegistration.event_id, func.count('*').label('participants'))
+        .group_by(EventRegistration.event_id)
+        .subquery()
+    )
+    query = (
+        db.session.query(
+            Event.id, Event.name, Event.description,
+            Event.max_participants,
+            func.ifnull(subquery.c.participants, 0).label('participants'),
+        )
+        .join(subquery, Event.id == subquery.c.event_id, isouter=True)
+        .filter(Event.registration_open == True)
+        .all()
+    )
+
+    events = []
+    full_events = []
+    for event in query:
+        if event.max_participants and event.participants >= event.max_participants:
+            full_events.append(event)
+        else:
+            events.append(event)
+
+    return render_template('index.html', events=events, full_events=full_events)
+
+
 @events.route('/<int:event_id>/registration/', methods=['GET', 'POST'])
 def registration(event_id):
-    event = Event.query.filter_by(id=event_id).first()
-    if event is None:
-        abort(404)
+    event = Event.query.filter_by(id=event_id).first_or_404()
+
+    n_participants = EventRegistration.query.filter_by(event_id=event.id, status='confirmed').count()
+    booked_out = event.max_participants and n_participants >= event.max_participants
 
     if not event.registration_open:
         flash(f'Eine Anmeldung für "{event.name}" is derzeit nicht möglich', 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('events.index'))
 
     form = create_wtf_form(
         event.registration_schema,
@@ -53,6 +85,8 @@ def registration(event_id):
             email=email,
             defaults={'name': data['name']}
         )
+        if new_person:
+            db.session.commit()
 
         registration, new = get_or_create(
             EventRegistration,
@@ -68,8 +102,10 @@ def registration(event_id):
                     ' Bitte klicke auf den Link in der Bestätigungsmail',
                     category='danger'
                 )
-            elif registration.status == 'registered':
+            elif registration.status == 'confirmed':
                 flash('Du bist bereits angemeldet. Falls du deine Daten ändern möchtest, klicke auf den Link in der Bestätigungsmail', category='danger')
+            elif registration.status == 'waitinglist':
+                flash('Du bist bereits auf der Warteliste. Falls du deine Daten ändern möchtest, klicke auf den Link in der Bestätigungsmail', category='danger')
         else:
             flash('Um deine Registrierung abzuschließen, klicke auf den Bestätigungslink in der Email, die wir dir geschickt haben! Erst dann bist du angemeldet.', category='success')
 
@@ -95,11 +131,15 @@ def registration(event_id):
                 )
             )
 
-        return redirect(url_for('index'))
+        return redirect(url_for('events.index'))
+    else:
+        registration = None
 
     return render_template(
         'registration.html',
         form=form, event=event,
+        registration=registration,
+        booked_out=booked_out,
     )
 
 
@@ -129,9 +169,16 @@ def confirmation(token):
 
     person = Person.query.get(person_id)
     registration = EventRegistration.query.get(registration_id)
+    event = registration.event
+    n_participants = EventRegistration.query.filter_by(event_id=event.id, status='confirmed').count()
+    booked_out = event.max_participants and n_participants >= event.max_participants
 
     if registration.status == 'pending':
-        registration.status = 'confirmed'
+        if booked_out:
+            registration.status = 'waitinglist'
+        else:
+            registration.status = 'confirmed'
+
         db.session.add(registration)
         flash('Deine Anmeldung ist jetzt bestätigt', 'success')
         send_email(
@@ -163,10 +210,10 @@ def confirmation(token):
         flash('Anmeldung aktualisiert', 'success')
 
     db.session.commit()
-
     return render_template(
         'registration.html',
         form=form,
         event=registration.event,
-        submit_url=url_for('events.confirmation', token=token)
+        submit_url=url_for('events.confirmation', token=token),
+        registration=registration,
     )
