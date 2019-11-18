@@ -2,7 +2,7 @@
 name = "member-database"
 version = "0.1.0"
 description = "Our PeP database solution for members and events"
-authors = ["Kevin Heinicke <kevin.heinicke@tu-dortmund.de>", "Maximilian Nöthe"]
+authors = ["Kevin Heinicke <kevin.heinicke@tu-dortmund.de>", "Maximilian Nöthe <maximilian.noethe@tu-dortmund.de>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
