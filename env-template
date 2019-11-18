@@ -1,4 +1,5 @@
 # e.g. "sqlite:////home/maxnoe/pepdb.sqlite"
+export FLASK_APP=database
 export DATABASE_URL="sqlite:///<add an absolute path here>"
 export SERVER_NAME=""
 export USE_HTTPS=true

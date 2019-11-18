@@ -8,8 +8,8 @@ Our member database application
 - use things that we know
 
 therefore we want to use
-- pipenv (dependency management)
-- sqlite or mysql (database)
+- poetry (dependency management, packaging, virtualenv)
+- sqlite or postgresql (database)
 - flask (API)
 - itsdangerous (token-based authentication)
 - sqlalchemy (ORM)
@@ -23,34 +23,41 @@ We strongly recommend to read through the first chapters of the [the flask mega 
 
 1. Install python (>=3.6) and make sure you have pip
 
-1. install pipenv using `pip install pipenv`, if you use your system's python, use
-`pip install --user pipenv`
+1. install poetry using `pip install poetry`, if you use your system's python, use
+`pip install --user poetry`
 
-1. Install the dependencies using `pipenv install`
+1. Install the dependencies using `poetry install`
 
 1. copy `env-template` to `.env` and fill the variables with the appropriate information
-
-  The `DATABASE_URL` is set to an sqlite database in the current directory, which is nice for developing
-
-1. run `export FLASK_APP=database`
+  
+  For the mail settings, you can either use your own mail account or just use DEBUG mode,
+  which will log email text but not actually send it.
 
 1. To initialise the database, run
   ```
-  $ pipenv run flask db init
-  $ pipenv run flask db migrate
-  $ pipenv run flask db upgrade
+  $ poetry run flask db init
+  $ poetry run flask db migrate
+  $ poetry run flask db upgrade
   ```
 
-1. Start the server using `FLASK_DEBUG=true pipenv run flask run`
+### Runnig the tests
+
+We are using `pytest` to test our app, see <https://flask.palletsprojects.com/en/1.1.x/testing/>.
+
+To run the test, use
+```
+$ poetry run python -m pytest
+```
+
+
+1. Start the server using `FLASK_DEBUG=true poetry run flask run`
 
 ### Adding Users
 
 To authenticate to certain endpoints you need to add a user. The simplest way
 for now is to do this interactively in an iPython shell.
 
-1. Make sure you installed the development dependencies `pipenv install --dev`
-
-1. Fire up iPython via `pipenv run iphython`
+1. Fire up iPython via `poetry run ipython`
 
 1. Setup the global namespace with everything you need
    ```python
@@ -73,7 +80,7 @@ for now is to do this interactively in an iPython shell.
    In [8]: u.username = 'aeinstein'
    In [9]: u.set_password('supersecurepassword')
 
-   # you can even chack the super secure hash of this password
+   # you can even check the super secure hash of this password
    In [10]: u.password_hash
    ```
 
@@ -123,9 +130,3 @@ Just like in the above example, you can fire up an ipython session and...
 
 Now, the user `aeinstein` will have access to the `get_members` and
 `get_persons` access levels via the `admin` role.
-
-### Testing
-
-run `pipenv install --dev pytest` to install `pytest` to `pipenv`.
-run `pipenv install --dev pytest-flask`.
-run `pipenv run pytest` to test the flask app.
