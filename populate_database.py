@@ -1,5 +1,5 @@
 from database import app, db
-from database.models import Person, User
+from database.models import Person, User, Role, AccessLevel
 from database.events.models import Event, RegistrationStatus
 from database.utils import get_or_create
 
@@ -11,6 +11,10 @@ if Person.query.filter_by(name='Maximilian Nöthe').first() is None:
     u = User(person=p, username='mnoethe')
     u.set_password('testdb')
 
+    r = Role(id='workshop')
+    r.access_levels.append(AccessLevel(id='get_participants'))
+    u.roles.append(r)
+
     db.session.add(p, u)
     db.session.commit()
 else:
@@ -20,8 +24,9 @@ else:
 if Event.query.first() is None:
     print('creating event')
     event = Event(
-        name='Absolventenfeier 2019',
-        description='Tolle Absolventenfeier',
+        name='Workshop 2019',
+        description='Toller Workshop',
+        max_participants=1,
         registration_open=True,
         registration_schema={
             'type': 'object',
