@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 from ..models import db, Person, as_dict
 from ..utils import get_or_create, ext_url_for
 from ..mail import send_email
+from ..authentication import access_required
 
 from .models import Event, EventRegistration
 from .json_forms import create_wtf_form
@@ -162,6 +163,21 @@ def get_event(event_id):
     return jsonify(
         status='success',
         event=as_dict(event),
+    )
+
+
+@events.route('/<int:event_id>/participants/')
+@access_required('get_participants')
+def participants(event_id):
+    event = Event.query.get(event_id)
+    participants = (
+        EventRegistration.query
+        .filter_by(event_id=event_id)
+        .order_by(EventRegistration.timestamp.nullslast())
+    )
+
+    return render_template(
+        'participants.html', participants=participants, event=event
     )
 
 
