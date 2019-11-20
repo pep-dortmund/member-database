@@ -46,6 +46,7 @@ def test_event(client):
                 'name': 'Test User',
                 'submit': True,
             }, follow_redirects=True)
+            assert ret.status_code == 200
 
         assert EventRegistration.query.get(i).status == 'pending'
 

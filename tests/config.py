@@ -1,4 +1,7 @@
-class TestingConfig(object):
+from database import Config
+
+
+class TestingConfig(Config):
     # Bcrypt algorithm hashing rounds (reduced for testing purposes only!)
     BCRYPT_LOG_ROUNDS = 4
 
@@ -8,3 +11,6 @@ class TestingConfig(object):
 
     # Disable CSRF tokens in the Forms (only valid for testing purposes!)
     WTF_CSRF_ENABLED = False
+
+    # don't really send out mails
+    MAIL_SUPPRESS_SEND = True
