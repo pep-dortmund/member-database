@@ -1,0 +1,10 @@
+Hallo,
+
+{{ person.name }} <{{ person.email }}>
+hat sich soeben für Veranstaltung
+"{{ event.name }}"
+{% if registration.status == "confirmed" -%}
+angemeldet.
+{%- else -%}
+auf der Warteliste eingetragen.
+{%- endif %}

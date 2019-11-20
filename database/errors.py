@@ -1,7 +1,9 @@
-from flask import render_template, current_app
-from .models import db
+from flask import render_template
+from flask_login import current_user
 from logging.handlers import SMTPHandler
 import logging
+
+from .models import db
 
 
 def not_found_error(error):

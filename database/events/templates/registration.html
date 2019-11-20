@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block app_content %}
+
+  <h1>Anmeldung {{ event.name }}</h1>
+
+  {% if free_places %}
+  <div class="alert alert-success">
+    Es sind noch {{ free_places }} Plätze verfügbar.
+  </div>
+  {% endif %}
+
+  {% if booked_out and registration is none %}
+  <div class="alert alert-warning" role="alert">
+    Diese Veranstaltung ist bereits ausgebucht.
+    Wenn du dich anmeldest, wirst du auf die Warteliste eingetragen.
+  </div>
+  {% endif %}
+
+  {% if registration.status == "waitinglist" %}
+  <div class="alert alert-warning" role="alert">
+    Diese Veranstaltung ist bereits ausgebucht.
+    Du befindest dich auf der Warteliste.
+  </div>
+  {% endif %}
+
+  <p>{{ event.description }}</p>
+
+
+  {{ wtf.quick_form(form, method='POST', action=submit_url, button_map={'submit': 'primary'}) }}
+
+
+{% endblock %}
+

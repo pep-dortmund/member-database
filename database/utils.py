@@ -1,4 +1,6 @@
-from sqlalchemy.sql.expression import ClauseElement 
+from sqlalchemy.sql.expression import ClauseElement
+from flask import url_for, current_app
+from functools import partial
 from .models import db
 
 
@@ -33,3 +35,11 @@ def get_or_create(model, defaults=None, **kwargs):
         instance = model(**params)
         db.session.add(instance)
         return instance, True
+
+
+def ext_url_for(*args, **kwargs):
+    return url_for(
+        *args, **kwargs,
+        _external=True,
+        _scheme='https' if current_app.config['USE_HTTPS'] else 'http',
+    )

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block app_content %}
+
+  <h1>PeP et al. Veranstaltungsanmeldungen</h1>
+
+  {% if events %}
+  <p>Aktuell kannst du dich für folgende Veranstaltungen anmelden
+
+  <ul class="list-group">
+    {% for event in events %}
+    <a class="list-group-item"
+       href="{{ url_for('events.registration', event_id=event.id)}}"
+      >
+      {{ event.name }}
+
+      {% if event.max_participants is not none %}
+      <span class="badge badge-info">
+        {{ event.max_participants - event.participants }} freie Plätze
+      </span>
+      {% endif %}
+    </a>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <p>
+
+  {% if full_events %}
+  <p>Folgende Veranstaltungen sind bereits ausgebucht, aber
+  du kannst dich auf unserer Warteliste eintragen:
+    {% for event in full_events %}
+    <a class="list-group-item"
+       href="{{ url_for('events.registration', event_id=event.id)}}"
+      >
+      {{ event.name }}
+    </a>
+    {% endfor %}
+  {% endif %}
+
+
+{% endblock %}
+

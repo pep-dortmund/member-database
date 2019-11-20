@@ -1,5 +1,7 @@
-from flask import (Flask, jsonify, request, url_for, render_template, redirect,
-                   flash, abort)
+from flask import (
+    Flask, jsonify, request, url_for, render_template, redirect,
+    flash, abort,
+)
 from flask_migrate import Migrate
 from flask_login import current_user, login_user, logout_user
 from flask_bootstrap import Bootstrap
@@ -16,11 +18,12 @@ from sqlite3 import Connection as SQLite3Connection
 
 from .config import Config
 from .models import db, Person, User, as_dict
-from .utils import get_or_create
+from .utils import get_or_create, ext_url_for
 from .authentication import login, LoginForm, access_required
 from .forms import PersonEditForm
 from .mail import mail, send_email
 from .errors import not_found_error, internal_error, email_logger, unauthorized_error
+from .events import events
 
 
 @event.listens_for(Engine, 'connect')
@@ -45,19 +48,15 @@ migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
 babel = Babel(app)
 
+
+app.register_blueprint(events, url_prefix='/events')
+
 app.register_error_handler(401, unauthorized_error)
 app.register_error_handler(404, not_found_error)
 app.register_error_handler(500, internal_error)
 email_logger(app)
 
 ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
-
-
-ext_url_for = partial(
-    url_for,
-    _external=True,
-    _scheme='https' if app.config['USE_HTTPS'] else 'http',
-)
 
 
 @babel.localeselector
@@ -304,7 +303,7 @@ def login():
             flash('Invalid user or password', 'danger')
             return redirect(url_for('login', next=request.args.get('next')))
         login_user(user)
-        return redirect(url_for(request.args.get('next', 'index')))
+        return redirect(request.args.get('next') or url_for('index'))
     return render_template('login.html', title='Login', form=form)
 
 

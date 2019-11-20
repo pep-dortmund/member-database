@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-    <h1>Unauthorized</h1>
-    <p><a href="{{ url_for('index') }}">Home</a></p>
+  <h1>Unauthorized</h1>
+  {% if current_user.is_authenticated %}
+  You don't have the necessary permissions to access this page.
+  {% endif %}
+  <p><a href="{{ url_for('index') }}">Home</a></p>
 {% endblock %}

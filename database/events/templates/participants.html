@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block app_content %}
+
+  <h1>Teilnehmer {{ event.name }}</h1>
+
+  <table class="table">
+    <thead>
+      <th scope="col">#</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      {% for k, p in event.registration_schema['properties'].items() %}
+      <th scope="col">{{ p.get('label', k) }}</th>
+      {% endfor %}
+      <th scope="col">S</th>
+    </thead>
+    <tbody>
+      {% for participant in participants %}
+      <tr>
+        <th scope="row">{{ loop.index }}</th>
+        <td> {{ participant.person.name }} </td>
+        <td> {{ participant.person.email }} </td>
+        {% for k in event.registration_schema['properties'] %}
+        <td>{{ participant.data[k] }}</td>
+        {% endfor %}
+        <td>
+          {% if participant.status == "confirmed" %}
+          ✓
+          {% elif participant.status == "waitinglist" %}
+          🕑
+          {% elif participant.status == "pending" %}
+          ⌛
+          {% elif participant.status == "canceled" %}
+          ✗
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+{% endblock %}
+
