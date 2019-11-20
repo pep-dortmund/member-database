@@ -22,6 +22,8 @@ flask-bootstrap = "^3.3"
 ipython = "^7.9"
 httpie = "^1.0"
 pytest = "^5.2"
+pytest-cov = "^2.8"
+coverage-badge = "^1.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

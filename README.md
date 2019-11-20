@@ -1,4 +1,7 @@
 # member-database
+
+![build status](https://www.travis-ci.org/pep-dortmund/member-database.svg?branch=master) ![coverage](https://contabo.pep-dortmund.org/travis-ci/coverage.svg)
+
 Our member database application
 
 ## Design Choices
@@ -46,7 +49,7 @@ We are using `pytest` to test our app, see <https://flask.palletsprojects.com/en
 
 To run the test, use
 ```
-$ poetry run python -m pytest
+$ poetry run python -m pytest --cov database
 ```
 
 

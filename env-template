@@ -1,9 +1,10 @@
 # e.g. "sqlite:////home/maxnoe/pepdb.sqlite"
 export FLASK_APP=database
-export DATABASE_URL="sqlite:///<add an absolute path here>"
-export SERVER_NAME=""
+export FLASK_DEBUG=true
+export DATABASE_URL='sqlite:///dbpath'
+export SERVER_NAME=''
 export USE_HTTPS=true
-export SECRET_KEY=''
+export SECRET_KEY='changeme'
 
 export MAIL_SENDER=''
 export MAIL_SERVER=''
