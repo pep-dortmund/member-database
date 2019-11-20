@@ -1,8 +1,6 @@
 def test_new_user(client):
     """
-    GIVEN a User model
-    WHEN a new User is created
-    THEN check if the username and password fields are defined correctly
+    Check if we can create a new user and set its password.
     """
     from database.models import Person, User, db
 
