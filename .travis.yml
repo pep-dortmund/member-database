@@ -6,7 +6,7 @@ install:
     - pip install poetry
     - poetry install
 script:
-    - poetry run python -m pytest --cov database
+    - FLASK_APP=database DATABASE_URL="sqlite://db.sqlite" SECRET_KEY="secret" poetry run python -m pytest --cov database
     - poetry run coverage-badge -o coverage.svg
 after_success:
     - echo "upload to some server..."
