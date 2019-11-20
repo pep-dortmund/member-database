@@ -30,11 +30,8 @@ We strongly recommend to read through the first chapters of the [the flask mega 
 
 1. copy `env-template` to `.env` and fill the variables with the appropriate information
   
-  The `DATABASE_URL` is set to an sqlite database in the current directory, which is nice for developing.
   For the mail settings, you can either use your own mail account or just use DEBUG mode,
   which will log email text but not actually send it.
-
-1. run `export FLASK_APP=database`
 
 1. To initialise the database, run
   ```
@@ -42,6 +39,16 @@ We strongly recommend to read through the first chapters of the [the flask mega 
   $ poetry run flask db migrate
   $ poetry run flask db upgrade
   ```
+
+### Runnig the tests
+
+We are using `pytest` to test our app, see <https://flask.palletsprojects.com/en/1.1.x/testing/>.
+
+To run the test, use
+```
+$ poetry run python -m pytest
+```
+
 
 1. Start the server using `FLASK_DEBUG=true poetry run flask run`
 
