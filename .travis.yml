@@ -5,10 +5,7 @@ python:
 install:
     - pip install poetry
     - poetry install
-    - echo "export FLASK_DEBUG=True" > .env
-    - echo "export FLASK_APP=database" >> .env
-    - echo "export DATABASE_URL=\"sqlite://db.sqlite\"" >> .env
-    - echo "export SECRET_KEY=secret" >> .env
+    - cp env-template .env
 script:
     - poetry run flask db init
     - poetry run flask db migrate
