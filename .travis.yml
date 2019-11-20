@@ -3,6 +3,8 @@ language: python
 install:
     - pip install poetry
     - poetry install
-test:
+script:
     - poetry run python -m pytest --cov database
     - poetry run coverage-badge -o coverage.svg
+after_success:
+    - echo "upload to some server..."
