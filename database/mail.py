@@ -22,12 +22,12 @@ def send_email(subject, sender, recipients, body, **kwargs):
     msg = Message(subject, sender=sender, recipients=recipients, **kwargs)
     msg.body = body
 
-    if current_app.config['DEBUG'] is True:
-        print(body)
     # capturing mails does not work in another thread
     # so just send it here for the unit tests
-    elif current_app.config['TESTING']:
+    if current_app.config['TESTING']:
         mail.send(msg)
+    elif current_app.config['DEBUG'] is True:
+        print(body)
     else:
         # See https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-a-better-application-structure
         # For an explanation of the current_app magic
