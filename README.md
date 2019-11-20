@@ -1,4 +1,7 @@
 # member-database
+
+![build status](https://www.travis-ci.org/pep-dortmund/member-database.svg?branch=master) ![coverage](https://contabo.pep-dortmund.org/travis-ci/coverage.svg)
+
 Our member database application
 
 ## Design Choices
