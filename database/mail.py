@@ -15,15 +15,19 @@ def send_async_email(app, msg):
         mail.send(msg)
 
 
-def send_email(subject, sender, recipients, body):
+def send_email(subject, sender, recipients, body, **kwargs):
     '''
     Send an email async using a background thread
     '''
-    msg = Message(subject, sender=sender, recipients=recipients)
+    msg = Message(subject, sender=sender, recipients=recipients, **kwargs)
     msg.body = body
 
     if current_app.config['DEBUG'] is True:
         print(body)
+    # capturing mails does not work in another thread
+    # so just send it here for the unit tests
+    elif current_app.config['TESTING']:
+        mail.send(msg)
     else:
         # See https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-a-better-application-structure
         # For an explanation of the current_app magic

@@ -7,7 +7,7 @@ from wtforms.fields.html5 import EmailField
 from itsdangerous import URLSafeSerializer, BadData
 from flask_babel import _
 from jsonschema import validate, ValidationError
-from sqlalchemy import func, or_
+from sqlalchemy import func
 from datetime import datetime, timezone
 
 from ..models import db, Person, as_dict
@@ -15,11 +15,24 @@ from ..utils import get_or_create, ext_url_for
 from ..mail import send_email
 from ..authentication import access_required
 
-from .models import Event, EventRegistration
+from .models import Event, EventRegistration, RegistrationStatus
 from .json_forms import create_wtf_form
 
 
+__all__ = [
+    'events',
+    'Event', 'EventRegistration', 'RegistrationStatus',
+]
+
+
 events = Blueprint('events', __name__, template_folder='templates')
+
+
+@events.before_app_first_request
+def init_database():
+    for name in ('confirmed', 'pending', 'waitinglist', 'canceled'):
+        get_or_create(RegistrationStatus, name=name)
+    db.session.commit()
 
 
 @events.route('/')
@@ -82,7 +95,7 @@ def registration(event_id):
     if form.validate_on_submit():
         data = form.data
         email = data.pop('email')
-        data.pop('csrf_token')
+        data.pop('csrf_token', None)
 
         try:
             validate(data, event.registration_schema)
