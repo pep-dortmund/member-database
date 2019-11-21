@@ -1,4 +1,3 @@
-from jsonschema import validate
 from flask_wtf import FlaskForm
 import wtforms
 from wtforms.fields import html5
@@ -22,6 +21,14 @@ def create_wtf_field(name, schema, required=True):
                 **kwargs,
                 choices=[(o, o) for o in schema['enum']]
             )
+
+        fmt = schema.get('format')
+        if fmt == 'email':
+            return html5.EmailField(**kwargs)
+
+        if fmt is not None:
+            raise ValueError(f'Unknown format {fmt}')
+
         return wtforms.StringField(**kwargs)
 
     if schema.get('minimum') or schema.get('maximum'):
