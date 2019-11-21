@@ -58,7 +58,14 @@ def test_event(client):
         link = m.group(0)
 
         # test confirmation
-        client.get(link)
+        ret = client.get(link)
+        assert ret.status_code == 200
+        soup = BeautifulSoup(ret.data.decode('utf-8'))
+        if state == 'waitinglist':
+            assert soup.find('div', {'class': 'alert alert-warning'})
+        else:
+            assert soup.find('div', {'class': 'alert alert-success'})
+
         assert EventRegistration.query.get(i).status == state
 
     # test event is now full
