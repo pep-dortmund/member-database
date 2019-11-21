@@ -60,7 +60,7 @@ def test_event(client):
         # test confirmation
         ret = client.get(link)
         assert ret.status_code == 200
-        soup = BeautifulSoup(ret.data.decode('utf-8'))
+        soup = BeautifulSoup(ret.data.decode('utf-8'), 'html.parser')
         if state == 'waitinglist':
             assert soup.find('div', {'class': 'alert alert-warning'})
         else:
@@ -70,7 +70,7 @@ def test_event(client):
 
     # test event is now full
     r = client.get('/events/1/registration/')
-    s = BeautifulSoup(r.data.decode('utf-8'))
+    s = BeautifulSoup(r.data.decode('utf-8'), 'html.parser')
     alert = s.find('div', {'class': 'alert alert-warning'})
     assert alert
     assert 'Warteliste' in alert.text
