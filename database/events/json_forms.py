@@ -4,6 +4,8 @@ import wtforms
 from wtforms.fields import html5
 from wtforms.validators import DataRequired, NumberRange
 
+from ..widgets import LatexInput
+
 
 def create_wtf_field(name, schema, required=True):
     validators = []
@@ -37,6 +39,10 @@ def create_wtf_field(name, schema, required=True):
 
     if schema['type'] == 'boolean':
         return wtforms.BooleanField(**kwargs)
+
+    if schema['type'] == 'latex':
+        kwargs['widget'] = LatexInput()
+        return wtforms.StringField(**kwargs)
 
     raise ValueError(f'Unknown type {schema["type"]}')
 
