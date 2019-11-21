@@ -216,13 +216,13 @@ def edit(token):
         p.membership_pending = form.membership_pending.data
         db.session.commit()
         flash(_('Ihre Daten wurden erfolgreich aktualisiert.'))
-        return redirect(url_for('edit', token=token))
+        return redirect(url_for('main.edit', token=token))
 
 
 @main.route('/view_data/<token>')
 def view_data(token):
     try:
-        ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
+        ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
         email = ts.loads(token, salt='request_gdpr_data-key')
     except SignatureExpired:
         flash(_('Ihre Sitzung ist abgelaufen'))
@@ -249,7 +249,7 @@ def applications():
 @main.route('/login', methods=['GET', 'POST'])
 def login_page():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
 
     form = LoginForm()
     if form.validate_on_submit():
@@ -259,13 +259,13 @@ def login_page():
         ).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid user or password', 'danger')
-            return redirect(url_for('login_page', next=request.args.get('next')))
+            return redirect(url_for('main.login_page', next=request.args.get('next')))
         login_user(user)
-        return redirect(request.args.get('next') or url_for('index'))
+        return redirect(request.args.get('next') or url_for('main.index'))
     return render_template('login.html', title='Login', form=form)
 
 
 @main.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('main.index'))
