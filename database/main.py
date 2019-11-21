@@ -98,7 +98,7 @@ def add_member():
 
     send_email(
         subject=_('Willkommen bei PeP et al. e.V.'),
-        sender=app.config['MAIL_SENDER'],
+        sender=current_app.config['MAIL_SENDER'],
         recipients=[p.email],
         body=render_template(
             'mail/welcome.txt',
@@ -126,7 +126,7 @@ def send_edit_token():
 
     send_email(
         subject=_('PeP et al. e.V. Mitgliedsdatenänderung'),
-        sender=app.config['MAIL_SENDER'],
+        sender=current_app.config['MAIL_SENDER'],
         recipients=[email],
         body=render_template(
             'mail/edit_mail.txt',
@@ -148,11 +148,12 @@ def send_request_data_token():
     if p is None:
         return jsonify(status='error', message='No such person'), 422
 
+    ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
     token = ts.dumps(email, salt='request_gdpr_data-key')
 
     send_email(
         subject='PeP et al. e.V. - Einsicht in gespeicherte Daten',
-        sender=app.config['MAIL_SENDER'],
+        sender=current_app.config['MAIL_SENDER'],
         recipients=[email],
         body=render_template(
             'mail/request_data_mail.txt',
@@ -169,7 +170,7 @@ def edit(token):
         email = ts.loads(
             token,
             salt='edit-key',
-            max_age=app.config['TOKEN_MAX_AGE'],
+            max_age=current_app.config['TOKEN_MAX_AGE'],
         )
     except SignatureExpired:
         flash(_('Ihre Sitzung ist abgelaufen'))
@@ -184,8 +185,8 @@ def edit(token):
     if not p.email_valid:
         send_email(
             subject='Neuer Mitgliedsantrag',
-            sender=app.config['MAIL_SENDER'],
-            recipients=[app.config['APPROVE_MAIL']],
+            sender=current_app.config['MAIL_SENDER'],
+            recipients=[current_app.config['APPROVE_MAIL']],
             body=render_template(
                 'mail/approve_member.txt',
                 new_member=p,
