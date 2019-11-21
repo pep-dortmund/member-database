@@ -57,6 +57,7 @@ def test_event(client):
         assert m
         link = m.group(0)
 
+        print(link)
         # test confirmation
         ret = client.get(link)
         assert ret.status_code == 200
