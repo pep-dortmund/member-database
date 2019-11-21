@@ -53,11 +53,10 @@ def test_event(client):
         # test mail was send
         assert len(outbox) == 1
         assert e.name in outbox[0].subject
-        m = re.search(r'http:\/\/.*', outbox[0].body)
+        m = re.search(r'http:\/\/.*events\/registration\/.*', outbox[0].body)
         assert m
         link = m.group(0)
 
-        print(link)
         # test confirmation
         ret = client.get(link)
         assert ret.status_code == 200
