@@ -1,4 +1,3 @@
-from jsonschema import validate
 from flask_wtf import FlaskForm
 import wtforms
 from wtforms.fields import html5

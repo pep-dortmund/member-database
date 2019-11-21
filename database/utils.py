@@ -1,6 +1,5 @@
 from sqlalchemy.sql.expression import ClauseElement
 from flask import url_for, current_app
-from functools import partial
 from .models import db
 
 
