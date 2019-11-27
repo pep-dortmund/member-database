@@ -39,6 +39,7 @@ if Event.query.first() is None:
                     'label': 'Abschluss',
                     'enum': ['Bachelor', 'Master', 'Promotion'],
                 },
+                'title': {'type': 'string', 'format': 'latex'},
             },
             'required': ['semester', 'degree']
         },

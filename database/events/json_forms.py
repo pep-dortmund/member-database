@@ -1,4 +1,3 @@
-from jsonschema import validate
 from flask_wtf import FlaskForm
 import wtforms
 from wtforms.fields import html5
@@ -19,11 +18,17 @@ def create_wtf_field(name, schema, required=True):
         validators.append(DataRequired())
 
     if schema['type'] == 'string':
+        fmt = schema.get('format')
+
+        if fmt == 'latex':
+            kwargs['widget'] = LatexInput()
+
         if 'enum' in schema:
             return wtforms.SelectField(
                 **kwargs,
                 choices=[(o, o) for o in schema['enum']]
             )
+
         return wtforms.StringField(**kwargs)
 
     if schema.get('minimum') or schema.get('maximum'):
@@ -39,10 +44,6 @@ def create_wtf_field(name, schema, required=True):
 
     if schema['type'] == 'boolean':
         return wtforms.BooleanField(**kwargs)
-
-    if schema['type'] == 'latex':
-        kwargs['widget'] = LatexInput()
-        return wtforms.StringField(**kwargs)
 
     raise ValueError(f'Unknown type {schema["type"]}')
 
