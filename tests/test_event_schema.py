@@ -1,5 +1,3 @@
-from jsonschema import validate, ValidationError
-from pytest import raises
 import wtforms
 from wtforms.fields import html5
 
@@ -14,9 +12,13 @@ def test_basic_elements():
         type='object',
         properties={
             'name': {'type': 'string', 'label': 'Name'},
-            'semester': {'type': 'integer', 'label': 'Semester'} ,
-            'degree': {'type': 'string', 'label': 'Abschluss', 'enum': ['Bachelor', 'Master', 'Promotion']},
-            'vegan': {'type': 'boolean'}
+            'email': {'type': 'string', 'format': 'email'},
+            'semester': {'type': 'integer', 'label': 'Semester'},
+            'degree': {
+                'type': 'string', 'label': 'Abschluss',
+                'enum': ['Bachelor', 'Master', 'Promotion'],
+            },
+            'vegan': {'type': 'boolean'},
         },
         required=['name', 'semester', 'degree'],
     )
@@ -27,8 +29,10 @@ def test_basic_elements():
     assert has_validator(form.name, wtforms.validators.DataRequired)
     assert isinstance(form.semester, html5.IntegerField)
     assert isinstance(form.degree, wtforms.SelectField)
+    assert isinstance(form.email, html5.EmailField)
+
     assert form.degree.choices == [
         ('Bachelor', 'Bachelor'), ('Master', 'Master'), ('Promotion', 'Promotion')
     ]
 
-    assert isinstance(form.vegan , wtforms.BooleanField)
+    assert isinstance(form.vegan, wtforms.BooleanField)
