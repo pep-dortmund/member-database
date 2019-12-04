@@ -3,6 +3,8 @@ import wtforms
 from wtforms.fields import html5
 from wtforms.validators import DataRequired, NumberRange
 
+from ..widgets import LatexInput
+
 
 def create_wtf_field(name, schema, required=True):
     validators = []
@@ -16,18 +18,22 @@ def create_wtf_field(name, schema, required=True):
         validators.append(DataRequired())
 
     if schema['type'] == 'string':
+        fmt = schema.get('format')
+
+        if fmt == 'latex':
+            kwargs['widget'] = LatexInput()
+       
+        elif fmt == 'email':
+            return html5.EmailField(**kwargs)
+
+        elif fmt is not None:
+            raise ValueError(f'Unknown format {fmt}')
+
         if 'enum' in schema:
             return wtforms.SelectField(
                 **kwargs,
                 choices=[(o, o) for o in schema['enum']]
             )
-
-        fmt = schema.get('format')
-        if fmt == 'email':
-            return html5.EmailField(**kwargs)
-
-        if fmt is not None:
-            raise ValueError(f'Unknown format {fmt}')
 
         return wtforms.StringField(**kwargs)
 
