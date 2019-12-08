@@ -5,5 +5,5 @@
   {% if current_user.is_authenticated %}
   You don't have the necessary permissions to access this page.
   {% endif %}
-  <p><a href="{{ url_for('index') }}">Home</a></p>
+  <p><a href="{{ url_for('main.index') }}">Home</a></p>
 {% endblock %}

@@ -1,5 +1,4 @@
 from flask import render_template
-from flask_login import current_user
 from logging.handlers import SMTPHandler
 import logging
 

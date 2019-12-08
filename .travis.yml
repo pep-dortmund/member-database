@@ -7,6 +7,7 @@ install:
     - poetry install
     - cp env-template .env
 script:
+    - pyflakes database
     - poetry run flask db init
     - poetry run flask db migrate
     - poetry run flask db upgrade
