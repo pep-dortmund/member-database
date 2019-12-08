@@ -9,3 +9,4 @@ messages.pot
 *.mo
 .coverage
 coverage.svg
+htmlcov
