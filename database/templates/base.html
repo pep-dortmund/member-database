@@ -6,8 +6,29 @@
 
 
 {% block navbar %}
-  <nav class="navbar navbar-default">
-    ... navigation bar here (see complete code on GitHub) ...
+  <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3">
+    <a class="navbar-brand" href="{{ url_for("main.index") }}">PeP et al. Datenbank</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for("events.index" )}}">Veranstaltungen</a>
+        </li>
+      </ul>
+      <span class="navbar-text ml-auto">
+      {% if current_user.is_authenticated %}
+        Logged in as {{ current_user.username }}
+        <!-- Add a logout button here-->
+      {% else %}
+        <!-- Add a login button here-->
+        Not logged in
+      {% endif %}
+      </span>
+    </div>
   </nav>
 {% endblock %}
 
@@ -23,11 +44,6 @@
 
     {# application content needs to be provided in the app_content block #}
     {% block app_content %}
-      {% if current_user.is_authenticated %}
-        Logged in as {{ current_user.username }}
-      {% else %}
-        Not logged in
-      {% endif %}
     {% endblock %}
   </div>
 {% endblock %}
