@@ -2,7 +2,7 @@ from flask_login import LoginManager, login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
-from flask import redirect, url_for, request, flash, abort
+from flask import redirect, url_for, request, flash, abort, jsonify
 import base64
 from functools import wraps
 
