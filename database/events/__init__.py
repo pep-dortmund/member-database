@@ -187,7 +187,7 @@ def participants(event_id):
     participants = (
         EventRegistration.query
         .filter_by(event_id=event_id)
-        .order_by(EventRegistration.timestamp.nullslast())
+        .order_by(EventRegistration.timestamp.is_(None), EventRegistration.timestamp)
     )
 
     if 'application/json' in request.headers.get('Accept'):
