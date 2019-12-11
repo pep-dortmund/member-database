@@ -1,5 +1,6 @@
 from flask import (
     Blueprint, render_template, abort, flash, redirect, url_for, jsonify, current_app,
+    request,
 )
 from wtforms.fields import StringField
 from wtforms.validators import DataRequired
@@ -188,6 +189,11 @@ def participants(event_id):
         .filter_by(event_id=event_id)
         .order_by(EventRegistration.timestamp.nullslast())
     )
+
+    if 'application/json' in request.headers.get('Accept'):
+        return jsonify(
+            status='success', participants=[as_dict(p) for p in participants],
+        )
 
     return render_template(
         'participants.html', participants=participants, event=event
