@@ -230,12 +230,19 @@ def view_data(token):
     except BadData:
         abort(404)
 
-    p = Person.query.filter_by(email=email)
+    p = Person.query.filter_by(email=email).first()
 
     if p is None:
         abort(404)
 
     personal_data = as_dict(p)
+    personal_data['event_registrations'] = []
+
+    for reg in p.event_registrations:
+        personal_data['event_registrations'].append({
+            'event': as_dict(reg.event),
+            'registration': as_dict(reg)
+        })
 
     return jsonify(status='success', personal_data=personal_data)
 
