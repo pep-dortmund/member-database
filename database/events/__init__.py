@@ -73,7 +73,9 @@ def index():
 def registration(event_id):
     event = Event.query.filter_by(id=event_id).first_or_404()
 
-    n_participants = EventRegistration.query.filter_by(event_id=event.id, status='confirmed').count()
+    n_participants = EventRegistration.query.filter_by(
+        event_id=event.id, status='confirmed'
+    ).count()
     if event.max_participants:
         free_places = event.max_participants - n_participants
         booked_out = free_places < 1

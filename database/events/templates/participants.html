@@ -17,7 +17,7 @@
       {% for participant in participants %}
       <tr>
         <th scope="row">{{ loop.index }}</th>
-        <td> {{ participant.person.name }} </td>
+        <td> {{ participant.data.get('name', participant.person.name) }} </td>
         <td> {{ participant.person.email }} </td>
         {% for k in event.registration_schema['properties'] %}
         <td>{{ participant.data[k] }}</td>
