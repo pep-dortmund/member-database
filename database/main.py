@@ -266,7 +266,7 @@ def login_page():
     return render_template('login.html', title='Login', form=form)
 
 
-@main.route('/logout')
+@main.route('/logout', methods=['GET', 'POST'])
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
