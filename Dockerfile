@@ -22,8 +22,10 @@ RUN mv database member_database
 RUN poetry build
 
 
+# start building the production container
 FROM python:3.8-slim
 
+# everything should run as the memberdb user (not root, best practice)
 RUN useradd --system --user-group memberdb
 
 WORKDIR /home/memberdb
@@ -36,10 +38,15 @@ COPY migrations migrations
 # deployed container
 COPY --from=build /home/memberdb/dist/*.whl ./wheel/
 
+# we need the pg_dump executable for auto backups
+RUN apt-get update && apt-get install -y postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache ./wheel/*
 
 # we always want to serve the member_database app
 ENV FLASK_APP=member_database
 ENV PORT=5000
 
+# switch to our production user
+USER memberdb
 CMD ./run.sh
