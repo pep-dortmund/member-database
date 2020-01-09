@@ -3,6 +3,7 @@ from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from flask_babel import Babel
 
+import logging
 
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
@@ -50,6 +51,8 @@ def create_app(config=Config):
     app.register_error_handler(401, unauthorized_error)
     app.register_error_handler(404, not_found_error)
     app.register_error_handler(500, internal_error)
+    app.logger.setLevel(logging.INFO)
+    app.logger.info('App created')
     email_logger(app)
 
     return app

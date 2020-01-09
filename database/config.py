@@ -22,12 +22,13 @@ class Config:
     MAIL_SERVER = os.environ['MAIL_SERVER']
     MAIL_PORT = int(os.environ['MAIL_PORT'])
     MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', '').lower() == 'true'
+    MAIL_USE_SSL = os.getenv('MAIL_USE_SSL', '').lower() == 'true'
     MAIL_USERNAME = os.environ['MAIL_USERNAME']
     MAIL_PASSWORD = os.environ['MAIL_PASSWORD']
 
     # who gets a notification when there is a new membership application
     APPROVE_MAIL = os.environ['APPROVE_MAIL']
-    ADMINS = os.environ['ADMINS'].split(',')
+    ADMIN_MAIL = os.environ['ADMIN_MAIL'].split(',')
 
     TOKEN_MAX_AGE = os.environ.get('TOKEN_MAX_AGE', 30 * 60)  # 30 minutes default
 
