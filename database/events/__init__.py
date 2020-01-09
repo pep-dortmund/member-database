@@ -124,39 +124,24 @@ def registration(event_id):
         if not new:
             if registration.status == 'pending':
                 flash(
-                    'Du hast bereits eine Anmeldung für diese Veranstaltung abgeschickt aber die Anmeldung nocht nicht bestätigt.'
-                    ' Bitte klicke auf den Link in der Bestätigungsmail',
+                    render_template('pending.html', registration=registration),
                     category='danger'
                 )
             elif registration.status == 'confirmed':
-                flash('Du bist bereits angemeldet. Falls du deine Daten ändern möchtest, klicke auf den Link in der Bestätigungsmail', category='danger')
+                flash(
+                    render_template('registered.html', registration=registration),
+                    category='danger'
+                )
             elif registration.status == 'waitinglist':
-                flash('Du bist bereits auf der Warteliste. Falls du deine Daten ändern möchtest, klicke auf den Link in der Bestätigungsmail', category='danger')
+                flash(
+                    render_template('waiting.html', registration=registration),
+                    category='danger'
+                )
         else:
             flash('Um deine Registrierung abzuschließen, klicke auf den Bestätigungslink in der Email, die wir dir geschickt haben! Erst dann bist du angemeldet.', category='success')
 
             db.session.commit()
-
-            ts = URLSafeSerializer(
-                current_app.config["SECRET_KEY"],
-                salt='registration-key',
-            )
-            token = ts.dumps(
-                (person.id, registration.id),
-            )
-            send_email(
-                subject=_('Bestätige deine Anmeldung zu "{}"'.format(event.name)),
-                sender=current_app.config['MAIL_SENDER'],
-                recipients=[person.email],
-                body=render_template(
-                    'confirmation.txt',
-                    name=person.name,
-                    event=event.name,
-                    confirmation_link=ext_url_for('events.confirmation', token=token),
-                    submit_url=url_for('events.registration', event_id=event_id)
-                )
-            )
-
+            send_registration_mail(registration)
         return redirect(url_for('events.index'))
     else:
         registration = None
@@ -168,6 +153,46 @@ def registration(event_id):
         booked_out=booked_out,
         free_places=free_places,
     )
+
+
+def send_registration_mail(registration):
+    event = registration.event
+    person = registration.person
+    ts = URLSafeSerializer(
+        current_app.config["SECRET_KEY"],
+        salt='registration-key',
+    )
+    token = ts.dumps(
+        (person.id, registration.id),
+    )
+    if registration.status == 'pending':
+        subject = 'Bestätige deine Anmeldung zu '
+    else:
+        subject = 'Bearbeite deine Anmeldung zu '
+
+    send_email(
+        subject=_(subject) + event.name,
+        sender=current_app.config['MAIL_SENDER'],
+        recipients=[person.email],
+        body=render_template(
+            'confirmation.txt',
+            name=person.name,
+            event=event.name,
+            confirmation_link=ext_url_for('events.confirmation', token=token),
+            submit_url=url_for('events.registration', event_id=event.id)
+        )
+    )
+
+
+@events.route('/resend_email/', methods=['POST'])
+def resend_email():
+    registration_id = request.form['registration_id']
+
+    registration = EventRegistration.query.get_or_404(registration_id)
+    send_registration_mail(registration)
+    flash('Email versendet', category='success')
+
+    return redirect(url_for('events.index'))
 
 
 @events.route('/<int:event_id>/')
@@ -223,15 +248,21 @@ def confirmation(token):
     if registration.status == 'pending':
         if booked_out:
             registration.status = 'waitinglist'
+            subject = 'Auf der Warteliste: '
+            msg = 'Du befindest dich jetzt auf der Warteliste'
+            category = 'warning'
         else:
             registration.status = 'confirmed'
+            subject = 'Anmeldung bestätigt: '
+            msg = 'Deine Anmeldung ist jetzt bestätigt'
+            category = 'success'
 
         registration.timestamp = datetime.now(timezone.utc)
 
         db.session.add(registration)
-        flash('Deine Anmeldung ist jetzt bestätigt', 'success')
+        flash(msg, category)
         send_email(
-            subject=_('Anmeldung bestätigt: "{}"'.format(registration.event.name)),
+            subject=_(subject) + registration.event.name,
             sender=current_app.config['MAIL_SENDER'],
             recipients=[person.email],
             body=render_template(
