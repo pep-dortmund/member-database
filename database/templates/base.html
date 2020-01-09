@@ -6,8 +6,36 @@
 
 
 {% block navbar %}
-  <nav class="navbar navbar-default">
-    ... navigation bar here (see complete code on GitHub) ...
+  <nav class="navbar navbar-expand-md navbar-light bg-light mb-3">
+    <a class="navbar-brand" href="{{ url_for("main.index") }}">PeP et al. Datenbank</a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+      >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item {% if request.path == url_for("events.index") %}active{% endif %}">
+          <a class="nav-link" href="{{ url_for("events.index" )}}">Veranstaltungen</a>
+        </li>
+      </ul>
+      {% if current_user.is_authenticated %}
+      <span class="navbar-text ml-auto mr-3">
+        Logged in as {{ current_user.username }}
+      </span>
+        <form class="form form-inline" action="{{ url_for('main.logout') }}" method="POST">
+          <input class="btn btn-primary" type="submit" value="Logout"/>
+        </form>
+      {% else %}
+        <a class="btn btn-primary" href="{{ url_for('main.login_page', next=request.full_path) }}">Login</a>
+      {% endif %}
+    </div>
   </nav>
 {% endblock %}
 
@@ -23,11 +51,6 @@
 
     {# application content needs to be provided in the app_content block #}
     {% block app_content %}
-      {% if current_user.is_authenticated %}
-        Logged in as {{ current_user.username }}
-      {% else %}
-        Not logged in
-      {% endif %}
     {% endblock %}
   </div>
 {% endblock %}
