@@ -103,7 +103,7 @@ def add_member():
         body=render_template(
             'mail/welcome.txt',
             new_member=p,
-            url=ext_url_for('edit', token=token),
+            url=ext_url_for('main.edit', token=token),
         )
     )
 
@@ -130,7 +130,7 @@ def send_edit_token():
         recipients=[email],
         body=render_template(
             'mail/edit_mail.txt',
-            edit_link=ext_url_for('edit', token=token),
+            edit_link=ext_url_for('main.edit', token=token),
         )
     )
 
@@ -157,7 +157,7 @@ def send_request_data_token():
         recipients=[email],
         body=render_template(
             'mail/request_data_mail.txt',
-            data_link=ext_url_for('view_data', token=token),
+            data_link=ext_url_for('main.view_data', token=token),
         )
     )
     return jsonify(status='success', message='GDPR data request mail sent')
@@ -190,7 +190,7 @@ def edit(token):
             body=render_template(
                 'mail/approve_member.txt',
                 new_member=p,
-                url=ext_url_for('applications'),
+                url=ext_url_for('main.applications'),
             )
         )
         flash(_('Willkommen bei PeP et al. e.V.!'))
