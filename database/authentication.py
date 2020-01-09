@@ -2,7 +2,7 @@ from flask_login import LoginManager, login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
-from flask import redirect, url_for, request, flash, abort
+from flask import redirect, url_for, request, flash, abort, jsonify
 import base64
 from functools import wraps
 
@@ -66,6 +66,9 @@ def load_user_from_request(request):
 
 @login.unauthorized_handler
 def handle_needs_login():
+    if 'application/json' in request.headers.get('Accept'):
+        return jsonify(status='access_denied'), 401
+
     if request.headers.get('Authorization') is not None:
         abort(401)
 
