@@ -8,8 +8,6 @@ install:
     - cp env-template .env
 script:
     - pyflakes database
-    - poetry run flask db init
-    - poetry run flask db migrate
     - poetry run flask db upgrade
     - poetry run python -m pytest --cov database
     - poetry run coverage-badge -o coverage.svg
