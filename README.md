@@ -43,6 +43,8 @@ We strongly recommend to read through the first chapters of the [the flask mega 
   $ poetry run flask db upgrade
   ```
 
+1. Start the server using `FLASK_DEBUG=true poetry run flask run`
+
 ### Runnig the tests
 
 We are using `pytest` to test our app, see <https://flask.palletsprojects.com/en/1.1.x/testing/>.
@@ -51,9 +53,14 @@ To run the test, use
 ```
 $ poetry run python -m pytest --cov database
 ```
-
-
-1. Start the server using `FLASK_DEBUG=true poetry run flask run`
+The test results will be printen on the console. To get an idea what tests
+might be missing you can also view per-line information in the browser by
+running
+```
+$ poetry run python -m pytest --cov database --cov-report html
+$ cd htmlcov
+$ python -m http.server
+```
 
 ### Adding Users
 
