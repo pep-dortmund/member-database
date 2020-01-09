@@ -51,7 +51,7 @@ def index():
         db.session.query(
             Event.id, Event.name, Event.description,
             Event.max_participants,
-            func.ifnull(subquery.c.participants, 0).label('participants'),
+            func.coalesce(subquery.c.participants, 0).label('participants'),
         )
         .join(subquery, Event.id == subquery.c.event_id, isouter=True)
         .filter(Event.registration_open == True)
