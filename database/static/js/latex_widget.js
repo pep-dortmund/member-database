@@ -39,16 +39,18 @@ var toTex = function(str){
 
 var vueApps = {};
 
-document.querySelectorAll('[type="latex"]').forEach(function(item){
-  vueApps[item.id] = new Vue({
-    el: '#input_group_' + item.id,
-    data: {
-      title: item.value,
-    },
-    computed: {
-      title_html: function(){
-        return toTex(this.title);
+window.onload = function(event) {
+  document.querySelectorAll('[type="latex"]').forEach(function(item){
+    vueApps[item.id] = new Vue({
+      el: '#input_group_' + item.id,
+      data: {
+        title: item.value,
+      },
+      computed: {
+        title_html: function(){
+          return toTex(this.title);
+        }
       }
-    }
-  })
-});
+    })
+  });
+}
