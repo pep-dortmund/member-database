@@ -1,0 +1,7 @@
+Du bist bereits angemeldet.
+Falls du deine Daten ändern möchtest, klicke auf den Link in der Bestätigungsmail
+
+<form class="form-inline" action="{{ url_for('events.resend_email') }}" method="POST">
+  <input type="hidden" id="registration_id" name="registration_id" value="{{ registration.id }}">
+  <input type="submit" class="btn btn-secondary" value="Email erneut senden">
+</form>
