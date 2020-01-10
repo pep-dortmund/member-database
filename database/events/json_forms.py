@@ -22,7 +22,7 @@ def create_wtf_field(name, schema, required=True):
 
         if fmt == 'latex':
             kwargs['widget'] = LatexInput()
-       
+
         elif fmt == 'email':
             return html5.EmailField(**kwargs)
 
