@@ -8,8 +8,8 @@
       <th scope="col">#</th>
       <th scope="col">Name</th>
       <th scope="col">Email</th>
-      {% for k, p in event.registration_schema['properties'].items() %}
-      <th scope="col">{{ p.get('label', k) }}</th>
+      {% for k in event.registration_schema['properties'].keys() %}
+      <th scope="col">{{ k }}</th>
       {% endfor %}
       <th scope="col">S</th>
     </thead>
