@@ -4,6 +4,12 @@ from jsonschema import validate
 ABSOLVENTENFEIER = {
     'type': 'object',
     'properties': {
+        'course': {
+            'type': 'string',
+            'enum': ['Physik', 'Medizinphysik', 'Lehramt'],
+            'label': 'Studiengang',
+            'error_hint': 'Triff bitte eine Auswahl.',
+        },
         'degree': {
             'type': 'string',
             'enum': ['Bachelor', 'Master', 'Promotion'],
@@ -12,7 +18,7 @@ ABSOLVENTENFEIER = {
         },
         'chair': {
             'type': 'string',
-            'enum': ['E5'],
+            'enum': 'E1 E2 E3 E4 E5 E6 T1 T2 T3 T4 Beschleunigerphysik Extern'.split(' '),
             'label': 'Lehrstuhl',
             'error_hint': 'Triff bitte eine Auswahl.',
         },
@@ -31,7 +37,7 @@ ABSOLVENTENFEIER = {
         'title': {
             'type': 'string',
             'label': 'Titel der Arbeit',
-            'form_type': 'latex',
+            'format': 'latex',
             'error_hint': 'Bitte gib hier den Titel deiner Abschlussarbeit ein.',
         },
         'valid_exam_date': {
