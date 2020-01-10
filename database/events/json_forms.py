@@ -49,6 +49,9 @@ def create_wtf_field(name, schema, required=True):
         return html5.DecimalField(**kwargs)
 
     if schema['type'] == 'boolean':
+        # forces checkbox to be clicked
+        if schema.get('const') is not None:
+            validators.append(DataRequired())
         return wtforms.BooleanField(**kwargs)
 
     raise ValueError(f'Unknown type {schema["type"]}')
