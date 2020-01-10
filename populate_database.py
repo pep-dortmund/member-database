@@ -1,8 +1,10 @@
-from database import app, db
+from database import create_app, db
 from database.models import Person, User, Role, AccessLevel
 from database.events.models import Event, RegistrationStatus
+from database.events.common_schemata import ABSOLVENTENFEIER
 from database.utils import get_or_create
 
+app = create_app()
 app.app_context().push()
 
 if Person.query.filter_by(name='Maximilian Nöthe').first() is None:
@@ -48,6 +50,17 @@ if Event.query.first() is None:
     db.session.commit()
 else:
     print('Event already exists')
+
+if Event.query.filter_by(name='Absolventenfeier 2019').first() is None:
+    print('Adding ABSOLVENTENFEIER')
+    event = Event(
+        name='Absolventenfeier 2019',
+        description='Absolventenfeier des Jahres 2019',
+        registration_open=True,
+        registration_schema=ABSOLVENTENFEIER,
+    )
+    db.session.add(event)
+    db.session.commit()
 
 
 print('Add registration stati')

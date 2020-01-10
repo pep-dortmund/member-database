@@ -1,56 +1,70 @@
-{% extends 'bootstrap/base.html' %}
+<!doctype html>
+<html lang="en">
+  <head>
+    {% block head %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% if title %}{{ title }}{% else %}PeP et. al. Mitgliederverwaltung{% endif %}</title>
 
-{% block title %}
-  {% if title %}{{ title }} - Mitgliederverwaltung{% else %}PeP et. al. Mitgliederverwaltung{% endif %}
-{% endblock %}
+    {% block styles %}
+    <!-- Bootstrap CSS -->
+    {{ bootstrap.load_css() }}
+    {% endblock %}
 
+    <title>Your page title</title>
+    {% endblock %}
+  </head>
 
-{% block navbar %}
-  <nav class="navbar navbar-expand-md navbar-light bg-light mb-3">
-    <a class="navbar-brand" href="{{ url_for("main.index") }}">PeP et al. Datenbank</a>
+  <body>
+    <nav class="navbar navbar-expand-md navbar-light bg-light mb-3">
+      <a class="navbar-brand" href="{{ url_for("main.index") }}">PeP et al. Datenbank</a>
 
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-toggle="collapse"
-      data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
-      >
-      <span class="navbar-toggler-icon"></span>
-    </button>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+        >
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item {% if request.path == url_for("events.index") %}active{% endif %}">
-          <a class="nav-link" href="{{ url_for("events.index" )}}">Veranstaltungen</a>
-        </li>
-      </ul>
-      {% if current_user.is_authenticated %}
-      <span class="navbar-text ml-auto mr-3">
-        Logged in as {{ current_user.username }}
-      </span>
-        <form class="form form-inline" action="{{ url_for('main.logout') }}" method="POST">
-          <input class="btn btn-primary" type="submit" value="Logout"/>
-        </form>
-      {% else %}
-        <a class="btn btn-primary" href="{{ url_for('main.login_page', next=request.full_path) }}">Login</a>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item {% if request.path == url_for("events.index") %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for("events.index" )}}">Veranstaltungen</a>
+          </li>
+        </ul>
+        {% if current_user.is_authenticated %}
+        <span class="navbar-text ml-auto mr-3">
+          Logged in as {{ current_user.username }}
+        </span>
+          <form class="form form-inline" action="{{ url_for('main.logout') }}" method="POST">
+            <input class="btn btn-primary" type="submit" value="Logout"/>
+          </form>
+        {% else %}
+          <a class="btn btn-primary" href="{{ url_for('main.login_page', next=request.full_path) }}">Login</a>
+        {% endif %}
+      </div>
+    </nav>
+    <header class="container">
+      {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+        {% endfor %}
       {% endif %}
-    </div>
-  </nav>
-{% endblock %}
-
-{% block content %}
-  <div class="container">
-    {% with messages = get_flashed_messages(with_categories=True) %}
-    {% if messages %}
-      {% for category, message in messages %}
-      <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
-    {% endwith %}
-
-    {# application content needs to be provided in the app_content block #}
+      {% endwith %}
+    </header>
+    <main class="container">
     {% block app_content %}
     {% endblock %}
-  </div>
-{% endblock %}
+    </main>
+
+
+    {% block scripts %}
+    {{ bootstrap.load_js() }}
+    {% endblock %}
+  </body>
+</html>
