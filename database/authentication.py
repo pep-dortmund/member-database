@@ -72,7 +72,7 @@ def handle_needs_login():
     if request.headers.get('Authorization') is not None:
         abort(401)
 
-    flash("You have to be logged in to access this page.")
+    flash("You have to be logged in to access this page.", category='danger')
     return redirect(url_for('main.login_page', next=request.full_path))
 
 
