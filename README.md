@@ -38,8 +38,6 @@ We strongly recommend to read through the first chapters of the [the flask mega 
 
 1. To initialise the database, run
   ```
-  $ poetry run flask db init
-  $ poetry run flask db migrate
   $ poetry run flask db upgrade
   ```
 
