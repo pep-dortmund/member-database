@@ -15,6 +15,7 @@ from .authentication import login
 from .mail import mail
 from .errors import not_found_error, internal_error, email_logger, unauthorized_error
 from .events import events
+from .json import JSONEncoderISO8601
 from .main import main
 
 
@@ -48,9 +49,12 @@ def create_app(config=Config):
     app.register_blueprint(main)
     app.register_blueprint(events, url_prefix='/events')
 
+    app.json_encoder = JSONEncoderISO8601
+
     app.register_error_handler(401, unauthorized_error)
     app.register_error_handler(404, not_found_error)
     app.register_error_handler(500, internal_error)
+
     app.logger.setLevel(logging.INFO)
     app.logger.info('App created')
     email_logger(app)
