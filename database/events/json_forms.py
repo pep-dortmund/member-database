@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 import wtforms
 from wtforms.fields import html5
-from wtforms.validators import DataRequired, NumberRange
+from wtforms.validators import DataRequired, NumberRange, Regexp
 
 from ..widgets import LatexInput
 
@@ -14,8 +14,13 @@ def create_wtf_field(name, schema, required=True):
         'label': schema.get('label', name.title()),
     }
 
+    message = schema.get('error_hint')
+
     if required:
-        validators.append(DataRequired())
+        validators.append(DataRequired(message=message))
+
+    if schema.get('pattern'):
+        validators.append(Regexp(schema['pattern'], message=message))
 
     if schema['type'] == 'string':
         fmt = schema.get('format')
@@ -26,10 +31,15 @@ def create_wtf_field(name, schema, required=True):
         elif fmt == 'email':
             return html5.EmailField(**kwargs)
 
-        elif fmt is not None:
+        elif fmt not in {'radio', 'select', None}:
             raise ValueError(f'Unknown format {fmt}')
 
         if 'enum' in schema:
+            if fmt == 'radio':
+                return wtforms.RadioField(
+                    **kwargs,
+                    choices=[(o, o) for o in schema['enum']],
+                )
             return wtforms.SelectField(
                 **kwargs,
                 choices=[(o, o) for o in schema['enum']]
@@ -39,7 +49,7 @@ def create_wtf_field(name, schema, required=True):
 
     if schema.get('minimum') or schema.get('maximum'):
         validators.append(
-            NumberRange(schema.get('minimum'), schema.get('maximum'))
+            NumberRange(schema.get('minimum'), schema.get('maximum'), message=message)
         )
 
     if schema['type'] == 'integer':
