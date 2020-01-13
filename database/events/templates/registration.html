@@ -28,7 +28,7 @@
   </div>
   {% endif %}
 
-  <p>{{ event.description }}</p>
+  <p>{{ event.description|safe }}</p>
 
 
   {{ render_form(form, method='POST', action=submit_url, button_map={'submit': 'primary'}) }}
