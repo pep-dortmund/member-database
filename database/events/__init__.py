@@ -3,7 +3,7 @@ from flask import (
     request,
 )
 from wtforms.fields import StringField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Regexp
 from wtforms.fields.html5 import EmailField
 from itsdangerous import URLSafeSerializer, BadData
 from flask_babel import _
@@ -27,6 +27,28 @@ __all__ = [
 
 
 events = Blueprint('events', __name__, template_folder='templates')
+
+
+def create_email_field(force_tu_mail=False):
+    mail_validators = [DataRequired()]
+
+    if force_tu_mail:
+        label = 'Email (@tu-dortmund.de)'
+        regex = r'^.*@tu-dortmund.de$'
+        render_kw = {'pattern': regex}
+        mail_validators.append(Regexp(
+            regex,
+            message=_('Bitte nutze deine @tu-dortmund.de Email-Adresse'),
+        ))
+    else:
+        label = 'Email'
+        render_kw = None
+
+    return EmailField(
+        label,
+        mail_validators,
+        render_kw=render_kw,
+    )
 
 
 @events.before_app_first_request
@@ -91,7 +113,7 @@ def registration(event_id):
         event.registration_schema,
         additional_fields={
             'name': StringField('Name', [DataRequired()]),
-            'email': EmailField('Email', [DataRequired()])
+            'email': create_email_field(event.force_tu_mail),
         }
     )
 

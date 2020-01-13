@@ -31,7 +31,7 @@ ABSOLVENTENFEIER = {
             'error_hint': (
                 'Mit wie vielen Personen wirst du erscheinen '
                 '(inklusive dir)?  Momentan darfst du bis zu 7 andere Gäste '
-                'mitbringen.',
+                'mitbringen.'
             ),
         },
         'title': {
@@ -46,7 +46,7 @@ ABSOLVENTENFEIER = {
             'error_hint': (
                 'Falls du deine letzte Prüfung im Jahr 2019 hattest '
                 'oder noch haben wirst, bist du herzlich zur Absolventenfeier '
-                '2019 eingeladen, die Anfang 2020 stattfinden wird.',
+                '2019 eingeladen, die Anfang 2020 stattfinden wird.'
             ),
             'const': True,
         },

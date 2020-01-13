@@ -11,6 +11,7 @@ class Event(db.Model):
     name = db.Column(db.String)
     description = db.Column(db.Text)
     notify_email = db.Column(db.Text)
+    force_tu_mail = db.Column(db.Boolean, default=False)
 
     max_participants = db.Column(db.Integer)
 
