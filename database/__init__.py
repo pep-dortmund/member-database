@@ -13,7 +13,7 @@ from .config import Config
 from .models import db
 from .authentication import login
 from .mail import mail
-from .errors import not_found_error, internal_error, email_logger, unauthorized_error
+from .errors import not_found_error, internal_error, setup_email_logger, unauthorized_error
 from .events import events
 from .main import main
 
@@ -53,6 +53,6 @@ def create_app(config=Config):
     app.register_error_handler(500, internal_error)
     app.logger.setLevel(logging.INFO)
     app.logger.info('App created')
-    email_logger(app)
+    setup_email_logger(app)
 
     return app
