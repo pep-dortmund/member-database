@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from flask_babel import Babel
+from flask_admin import Admin
 
 import logging
 
@@ -10,13 +11,14 @@ from sqlalchemy.engine import Engine
 from sqlite3 import Connection as SQLite3Connection
 
 from .config import Config
-from .models import db
+from .models import db, Role, AccessLevel
 from .authentication import login
 from .mail import mail
 from .errors import not_found_error, internal_error, setup_email_logger, unauthorized_error
-from .events import events
+from .events import events, Event
 from .json import JSONEncoderISO8601
 from .main import main
+from .admin_views import AccessLevelView, EventView, RoleView
 
 
 @event.listens_for(Engine, 'connect')
@@ -58,5 +60,11 @@ def create_app(config=Config):
     app.logger.setLevel(logging.INFO)
     app.logger.info('App created')
     setup_email_logger(app)
+
+    admin = Admin()
+    admin.add_view(EventView(Event, db.session))
+    admin.add_view(RoleView(Role, db.session))
+    admin.add_view(AccessLevelView(AccessLevel, db.session))
+    admin.init_app(app)
 
     return app
