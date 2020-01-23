@@ -54,14 +54,15 @@ class EventView(AuthorizedView):
 
 class RoleView(AuthorizedView):
     column_display_pk = True
-    column_list = ['id', 'access_levels']
-    form_columns = ['id', 'access_levels']
+    column_list = ['id', 'access_levels', 'users']
+    form_columns = ['id', 'access_levels', 'users']
     access_level = 'role_admin'
 
 
 class AccessLevelView(AuthorizedView):
     column_display_pk = True
-    form_columns = ['id']
+    column_list = ['id', 'roles']
+    form_columns = ['id', 'roles']
     access_level = 'access_level_admin'
 
 
@@ -71,10 +72,12 @@ class EventRegistrationView(AuthorizedView):
 
 class PersonView(AuthorizedView):
     access_level = 'person_admin'
+    column_list = ['name', 'email', 'user', 'event_registrations']
 
 
 class UserView(AuthorizedView):
     access_level = 'user_admin'
+    column_list = ['username', 'person', 'roles']
 
 
 def create_admin_views():
