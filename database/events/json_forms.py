@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 import wtforms
-from wtforms.fields import html5
+from wtforms.fields import html5, TextAreaField
 from wtforms.validators import DataRequired, NumberRange, Regexp
 
 from ..widgets import LatexInput
@@ -30,6 +30,9 @@ def create_wtf_field(name, schema, required=True):
 
         elif fmt == 'email':
             return html5.EmailField(**kwargs)
+
+        elif fmt == 'multiline':
+            return TextAreaField(**kwargs)
 
         elif fmt not in {'radio', 'select', None}:
             raise ValueError(f'Unknown format {fmt}')

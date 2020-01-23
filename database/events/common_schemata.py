@@ -71,8 +71,13 @@ SOMMERAKADEMIE = {
     'properties': {
         'phone': {
             'type': 'string',
-            'enum': ['Physik', 'Medizinphysik', 'Lehramt'],
-            'label': 'Mobiltelefon',
+            'label': '''
+            Mobiltelefon<br/>
+            <span><small>
+              Wir benötigen die Telefonnummer, um dich im Notfall kontaktieren
+              zu können. Die Nummer wird im Anschluss der Akademie gelöscht.
+            </small></span>
+            ''',
         },
         'semester': {
             'type': 'integer',
@@ -101,9 +106,10 @@ SOMMERAKADEMIE = {
         'comments': {
             'type': 'string',
             'label': 'Sonstige Anmerkungen',
+            'format': 'multiline'
         }
     },
-    'required': [],
+    'required': ['phone'],
 }
 
 
