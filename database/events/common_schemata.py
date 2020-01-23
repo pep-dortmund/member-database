@@ -66,6 +66,47 @@ ABSOLVENTENFEIER = {
 }
 
 
+SOMMERAKADEMIE = {
+    'type': 'object',
+    'properties': {
+        'phone': {
+            'type': 'string',
+            'enum': ['Physik', 'Medizinphysik', 'Lehramt'],
+            'label': 'Mobiltelefon',
+        },
+        'semester': {
+            'type': 'integer',
+            'minimum': 0,
+            'label': 'Semester',
+        },
+        'course': {
+            'type': 'string',
+            'enum': ['Physik', 'Medizinphysik', 'Lehramt'],
+            'label': 'Studiengang',
+            'error_hint': 'Triff bitte eine Auswahl.',
+        },
+        'nutrition': {
+            'type': 'string',
+            'enum': ['Fleisch ok', 'Vegetarisch', 'Vegan'],
+            'label': 'Ernährung',
+        },
+        'intolerances': {
+            'type': 'string',
+            'label': 'Unverträglichkeiten',
+        },
+        'arrival_by_myself': {
+            'type': 'boolean',
+            'label': 'Eigenanreise',
+        },
+        'comments': {
+            'type': 'string',
+            'label': 'Sonstige Anmerkungen',
+        }
+    },
+    'required': [],
+}
+
+
 # meta schema to validate other schemata, taken from https://json-schema.org/specification.html#meta-schemas
 META_SCHEMA = {
     '$schema': 'https://json-schema.org/draft/2019-09/schema',
