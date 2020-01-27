@@ -2,6 +2,7 @@ from flask import (
     Blueprint, render_template, abort, flash, redirect, url_for, jsonify, current_app,
     request,
 )
+from flask_login import current_user
 from wtforms.fields import StringField
 from wtforms.validators import DataRequired, Regexp
 from wtforms.fields.html5 import EmailField
@@ -106,8 +107,11 @@ def registration(event_id):
         booked_out = False
 
     if not event.registration_open:
-        flash(f'Eine Anmeldung für "{event.name}" is derzeit nicht möglich', 'danger')
-        return redirect(url_for('events.index'))
+        if current_user.is_authenticated and current_user.has_access('view_registration'):
+            flash(f'Vorschau! Die Anmeldung ist Offline.', 'warning')
+        else:
+            flash(f'Eine Anmeldung für "{event.name}" is derzeit nicht möglich', 'danger')
+            return redirect(url_for('events.index'))
 
     form = create_wtf_form(
         event.registration_schema,
