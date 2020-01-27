@@ -89,7 +89,7 @@ def index():
         else:
             events.append(event)
 
-    return render_template('index.html', events=events, full_events=full_events)
+    return render_template('events/index.html', events=events, full_events=full_events)
 
 
 @events.route('/<int:event_id>/registration/', methods=['GET', 'POST'])
@@ -130,8 +130,8 @@ def registration(event_id):
             validate(data, event.registration_schema)
         except ValidationError as e:
             flash(e.message, 'danger')
-            return render_template('registration.html', form=form, event=event,
-                                   registration=None)
+            return render_template('events/registration.html', form=form,
+                                   event=event, registration=None)
 
         person, new_person = get_or_create(
             Person,
@@ -151,17 +151,17 @@ def registration(event_id):
         if not new:
             if registration.status == 'pending':
                 flash(
-                    render_template('pending.html', registration=registration),
+                    render_template('events/pending.html', registration=registration),
                     category='danger'
                 )
             elif registration.status == 'confirmed':
                 flash(
-                    render_template('registered.html', registration=registration),
+                    render_template('events/registered.html', registration=registration),
                     category='danger'
                 )
             elif registration.status == 'waitinglist':
                 flash(
-                    render_template('waiting.html', registration=registration),
+                    render_template('events/waiting.html', registration=registration),
                     category='danger'
                 )
         else:
@@ -174,7 +174,7 @@ def registration(event_id):
         registration = None
 
     return render_template(
-        'registration.html',
+        'events/registration.html',
         form=form, event=event,
         registration=registration,
         booked_out=booked_out,
@@ -202,7 +202,7 @@ def send_registration_mail(registration):
         sender=current_app.config['MAIL_SENDER'],
         recipients=[person.email],
         body=render_template(
-            'confirmation.txt',
+            'events/confirmation.txt',
             name=person.name,
             event=event.name,
             confirmation_link=ext_url_for('events.confirmation', token=token),
@@ -250,7 +250,7 @@ def participants(event_id):
         )
 
     return render_template(
-        'participants.html', participants=participants, event=event
+        'events/participants.html', participants=participants, event=event
     )
 
 
@@ -293,7 +293,7 @@ def confirmation(token):
             sender=current_app.config['MAIL_SENDER'],
             recipients=[person.email],
             body=render_template(
-                'confirmed.txt',
+                'events/confirmed.txt',
                 name=person.name,
                 event=registration.event.name,
                 edit_link=ext_url_for('events.confirmation', token=token),
@@ -305,7 +305,7 @@ def confirmation(token):
                 sender=current_app.config['MAIL_SENDER'],
                 recipients=[event.notify_email],
                 body=render_template(
-                    'notification.txt', person=person, event=event,
+                    'events/notification.txt', person=person, event=event,
                     registration=registration,
                 )
             )
@@ -329,7 +329,7 @@ def confirmation(token):
     form.submit.label.text = 'Speichern'
     db.session.commit()
     return render_template(
-        'registration.html',
+        'events/registration.html',
         form=form,
         event=registration.event,
         submit_url=url_for('events.confirmation', token=token),
