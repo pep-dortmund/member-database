@@ -23,6 +23,9 @@ class Event(db.Model):
         validate(schema, META_SCHEMA)
         return schema
 
+    def __repr__(self):
+        return f'<Event {self.id}: {self.name}>'
+
 
 class EventRegistration(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,6 +47,9 @@ class EventRegistration(db.Model):
         # a person can only register once for an event
         db.UniqueConstraint('event_id', 'person_id', name='unique_person_event'),
     )
+
+    def __repr__(self):
+        return f'<EReg {self.id}: P.{self.person_id} for E.{self.event_id}>'
 
 
 class RegistrationStatus(db.Model):
