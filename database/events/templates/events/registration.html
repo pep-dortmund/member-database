@@ -21,7 +21,7 @@
   </div>
   {% endif %}
 
-  {% if registration.status == "waitinglist" %}
+  {% if registration is not none and registration.status == "waitinglist" %}
   <div class="alert alert-warning" role="alert">
     Diese Veranstaltung ist bereits ausgebucht.
     Du befindest dich auf der Warteliste.

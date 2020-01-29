@@ -131,7 +131,7 @@ def registration(event_id):
         except ValidationError as e:
             flash(e.message, 'danger')
             return render_template('events/registration.html', form=form,
-                                   event=event, registration=None)
+                                   event=event)
 
         person, new_person = get_or_create(
             Person,
