@@ -1,6 +1,6 @@
 import json
 
-from flask import redirect, request, url_for, abort
+from flask import abort
 from flask_login import current_user
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
