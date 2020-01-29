@@ -1,6 +1,6 @@
 import json
 
-from flask import redirect, request, url_for
+from flask import redirect, request, url_for, abort
 from flask_login import current_user
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
@@ -28,7 +28,7 @@ class AuthorizedView(ModelView):
             return current_user.has_access(self.access_level)
 
     def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('main.login_page', next=request.url))
+        abort(401)
 
 
 class EventView(AuthorizedView):
@@ -78,6 +78,9 @@ class PersonView(AuthorizedView):
 class UserView(AuthorizedView):
     access_level = 'user_admin'
     column_list = ['username', 'person', 'roles']
+
+    def on_model_change(self, form, user, is_created):
+        user.set_password(form.password_hash.data)
 
 
 def create_admin_views():
