@@ -21,6 +21,9 @@ class Person(db.Model):
 
     user = db.relationship('User', backref='person', lazy='subquery')
 
+    def __repr__(self):
+        return f'<Person {self.id}: {self.name}>'
+
 
 roles = db.Table(
     'roles',
@@ -82,3 +85,6 @@ class User(UserMixin, db.Model):
             if any([name == level.id for level in role.access_levels]):
                 return True
         return False
+
+    def __repr__(self):
+        return f'<User {self.id}: {self.username}>'
