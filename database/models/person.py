@@ -19,7 +19,7 @@ class Person(db.Model):
     date_of_birth = db.Column(db.Date, nullable=True)
     joining_date = db.Column(db.Date, default=date.today, nullable=True)
 
-    user = db.relationship('User', backref='person', lazy='dynamic')
+    user = db.relationship('User', backref='person', lazy='subquery')
 
     def __repr__(self):
         return f'<Person {self.id}: {self.name}>'

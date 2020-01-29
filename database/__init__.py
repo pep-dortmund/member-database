@@ -17,6 +17,7 @@ from .errors import not_found_error, internal_error, setup_email_logger, unautho
 from .events import events
 from .json import JSONEncoderISO8601
 from .main import main
+from .admin_views import create_admin_views
 
 
 @event.listens_for(Engine, 'connect')
@@ -58,5 +59,8 @@ def create_app(config=Config):
     app.logger.setLevel(logging.INFO)
     app.logger.info('App created')
     setup_email_logger(app)
+
+    admin = create_admin_views()
+    admin.init_app(app)
 
     return app
