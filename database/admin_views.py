@@ -22,10 +22,15 @@ class PrettyJSONField(fields.JSONField):
 
 class AuthorizedView(ModelView):
     access_level = None
+    can_set_page_size = True
+    can_view_details = True
+    details_modal = True
 
     def is_accessible(self):
-        if current_user is not None:
-            return current_user.has_access(self.access_level)
+        return (
+            current_user.is_authenticated
+            and current_user.has_access(self.access_level)
+        )
 
     def inaccessible_callback(self, name, **kwargs):
         abort(401)
@@ -33,6 +38,11 @@ class AuthorizedView(ModelView):
 
 class EventView(AuthorizedView):
     access_level = 'event_admin'
+    column_list = ['name', 'notify_email', 'max_participants', 'force_tu_mail',
+                   'registration_open']
+    column_filters = ['name', 'max_participants', 'force_tu_mail',
+                      'registration_open', 'notify_email']
+    form_excluded_columns = ['registrations']
     column_editable_list = ['name', 'registration_open']
     column_descriptions = {
         'description': 'HTML is allowed in this field.'
@@ -68,6 +78,7 @@ class AccessLevelView(AuthorizedView):
 
 class EventRegistrationView(AuthorizedView):
     access_level = 'event_registration_admin'
+    column_filters = [Event.id, Event.name, Person.email, Person.member]
 
 
 class PersonView(AuthorizedView):
@@ -78,6 +89,7 @@ class PersonView(AuthorizedView):
 class UserView(AuthorizedView):
     access_level = 'user_admin'
     column_list = ['username', 'person', 'roles']
+    column_filters = ['username', Person.email]
 
     def on_model_change(self, form, user, is_created):
         user.set_password(form.password_hash.data)

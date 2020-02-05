@@ -219,6 +219,8 @@ def edit(token):
         flash(_('Ihre Daten wurden erfolgreich aktualisiert.'))
         return redirect(url_for('main.edit', token=token))
 
+    return render_template('edit.html', form=form)
+
 
 @main.route('/view_data/<token>')
 def view_data(token):
