@@ -7,7 +7,7 @@ install:
     - poetry install
     - cp env-template .env
 script:
-    - pyflakes database
+    - pyflakes member_database
     - poetry run flask db upgrade
     - poetry run python -m pytest --cov database
     - poetry run coverage-badge -o coverage.svg
