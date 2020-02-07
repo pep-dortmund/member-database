@@ -69,8 +69,8 @@ for now is to do this interactively in an iPython shell.
 
 1. Setup the global namespace with everything you need
    ```python
-   In [1]: from database import app, db
-   In [2]: from database.models import Person, User
+   In [1]: from member_database import app, db
+   In [2]: from member_database.models import Person, User
    ```
 
 1. Every User needs to be linked to a Person, so first you need to create a
@@ -115,8 +115,8 @@ Just like in the above example, you can fire up an ipython session and...
 
 1. To create a new role with some access levels run
    ```python
-   from database import app, db
-   from database.models import Role, AccessLevel
+   from member_database import app, db
+   from member_database.models import Role, AccessLevel
    admin_role = Role(id='admin')
    admin_role.access_levels = [
        AccessLevel.query.get('get_persons'),
@@ -128,8 +128,8 @@ Just like in the above example, you can fire up an ipython session and...
 
 1. You can simply assign a role to a user via
    ```python
-   from database import app, db
-   from database.models import Role, User
+   from member_database import app, db
+   from member_database.models import Role, User
    user = User.query.filter_by(username='aeinstein').first()
    user.roles.append(Role.query.get('admin'))
    db.session.add(user)

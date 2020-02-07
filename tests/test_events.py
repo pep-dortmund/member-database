@@ -3,9 +3,9 @@ import re
 
 
 def test_event(client):
-    from database import db
-    from database.events import EventRegistration, Event
-    from database.mail import mail
+    from member_database import db
+    from member_database.events import EventRegistration, Event
+    from member_database.mail import mail
 
     e = Event(
         name='Test Event',
