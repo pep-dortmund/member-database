@@ -9,7 +9,7 @@ install:
 script:
     - pyflakes member_database
     - poetry run flask db upgrade
-    - poetry run python -m pytest --cov database
+    - poetry run python -m pytest --cov member_database
     - poetry run coverage-badge -o coverage.svg
 after_success:
     - curl -u "$badge_upload_user:$badge_upload_password" -T coverage.svg "$badge_upload_url"
