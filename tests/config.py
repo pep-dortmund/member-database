@@ -1,4 +1,4 @@
-from database import Config
+from member_database import Config
 
 
 class TestingConfig(Config):

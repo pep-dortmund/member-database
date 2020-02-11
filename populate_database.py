@@ -1,8 +1,8 @@
-from database import create_app, db
-from database.models import Person, User, Role, AccessLevel
-from database.events.models import Event, RegistrationStatus
-from database.events.common_schemata import ABSOLVENTENFEIER
-from database.utils import get_or_create
+from member_database import create_app, db
+from member_database.models import Person, User, Role, AccessLevel
+from member_database.events.models import Event, RegistrationStatus
+from member_database.events.common_schemata import ABSOLVENTENFEIER
+from member_database.utils import get_or_create
 
 app = create_app()
 app.app_context().push()

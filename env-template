@@ -1,5 +1,5 @@
 # e.g. "sqlite:////home/maxnoe/pepdb.sqlite"
-export FLASK_APP=database
+export FLASK_APP=member_database
 export FLASK_DEBUG=true
 export DATABASE_URL='sqlite:///dbpath'
 export SERVER_NAME=''

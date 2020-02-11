@@ -5,7 +5,7 @@ import tempfile
 @pytest.fixture(scope='session')
 def app():
     from config import TestingConfig
-    from database import create_app
+    from member_database import create_app
 
     app = create_app(TestingConfig)
     return app
@@ -13,7 +13,7 @@ def app():
 
 @pytest.fixture(scope='session')
 def client(app):
-    from database import db
+    from member_database import db
 
     with tempfile.NamedTemporaryFile(suffix='.sqlite', prefix='db_testing') as f:
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + f.name

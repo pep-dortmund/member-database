@@ -7,19 +7,16 @@ WORKDIR /home/memberdb/
 
 # copy relevant files
 COPY pyproject.toml poetry.lock ./
-COPY database database
+COPY member_database ./member_database
 
 # install production dependencies
-RUN poetry install --no-dev
 # this is our production server
 # on top, for production we use postgresql, which needs psycopg2 and
 # pg_config
-RUN poetry add gunicorn psycopg2-binary
-
-# the app directory needs to match the project name
-RUN mv database member_database
 # this will create a wheel file that contains all dependencies
-RUN poetry build
+RUN poetry install --no-dev \
+	&& poetry add gunicorn psycopg2-binary \
+	&& poetry build
 
 
 # start building the production container

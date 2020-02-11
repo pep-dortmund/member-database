@@ -7,7 +7,7 @@ def has_validator(field, validator_cls):
 
 
 def test_basic_elements():
-    from database.events.json_forms import create_wtf_form
+    from member_database.events.json_forms import create_wtf_form
     schema = dict(
         type='object',
         properties={
