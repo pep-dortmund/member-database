@@ -47,7 +47,7 @@ class AuthorizedView(ModelView):
             abort(401)
         else:
             # let user login
-            handle_needs_login()
+            return handle_needs_login()
 
 
 class EventView(AuthorizedView):
