@@ -91,7 +91,7 @@ class UserView(AuthorizedView):
     access_level = 'user_admin'
     column_list = ['username', 'person', 'roles']
     column_filters = ['username', Person.email]
-    form_excluded_columns = ('password_hash')
+    form_excluded_columns = ['password_hash']
     form_extra_fields = {
         'new_password': PasswordField('New Password'),
     }
