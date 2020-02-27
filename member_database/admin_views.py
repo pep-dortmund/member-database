@@ -5,6 +5,7 @@ from flask_login import current_user
 from flask_admin import Admin, expose, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import fields
+from wtforms.fields import PasswordField
 
 from .models import db, User, Person, Role, AccessLevel
 from .events import Event, EventRegistration
@@ -104,9 +105,14 @@ class UserView(AuthorizedView):
     access_level = 'user_admin'
     column_list = ['username', 'person', 'roles']
     column_filters = ['username', Person.email]
+    form_excluded_columns = ['password_hash']
+    form_extra_fields = {
+        'new_password': PasswordField('New Password'),
+    }
 
     def on_model_change(self, form, user, is_created):
-        user.set_password(form.password_hash.data)
+        if form.new_password.data is not None:
+            user.set_password(form.new_password.data)
 
 
 def create_admin_views():
