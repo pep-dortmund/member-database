@@ -35,6 +35,9 @@
           <li class="nav-item {% if request.path == url_for("events.index") %}active{% endif %}">
             <a class="nav-link" href="{{ url_for("events.index" )}}">Veranstaltungen</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for("admin.index" )}}">Admin</a>
+          </li>
         </ul>
         {% if current_user.is_authenticated %}
         <span class="navbar-text ml-auto mr-3">

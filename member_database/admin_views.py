@@ -2,12 +2,13 @@ import json
 
 from flask import abort
 from flask_login import current_user
-from flask_admin import Admin
+from flask_admin import Admin, expose, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import fields
 
 from .models import db, User, Person, Role, AccessLevel
 from .events import Event, EventRegistration
+from .authentication import handle_needs_login
 
 
 class PrettyJSONField(fields.JSONField):
@@ -18,6 +19,14 @@ class PrettyJSONField(fields.JSONField):
             return json.dumps(self.data, ensure_ascii=False, indent=2)
         else:
             return ''
+
+
+class IndexView(AdminIndexView):
+    @expose('/')
+    def index(self):
+        if not current_user.is_authenticated:
+            return handle_needs_login()
+        return super().index()
 
 
 class AuthorizedView(ModelView):
@@ -33,7 +42,12 @@ class AuthorizedView(ModelView):
         )
 
     def inaccessible_callback(self, name, **kwargs):
-        abort(401)
+        if current_user.is_authenticated:
+            # we have a user, bot insufficient access
+            abort(401)
+        else:
+            # let user login
+            return handle_needs_login()
 
 
 class EventView(AuthorizedView):
@@ -96,7 +110,7 @@ class UserView(AuthorizedView):
 
 
 def create_admin_views():
-    admin = Admin()
+    admin = Admin(index_view=IndexView())
     admin.add_view(EventView(Event, db.session))
     admin.add_view(EventRegistrationView(EventRegistration, db.session))
     admin.add_view(PersonView(Person, db.session))
