@@ -11,6 +11,7 @@ from flask_babel import _
 from jsonschema import validate, ValidationError
 from sqlalchemy import func
 from datetime import datetime, timezone
+import logging
 
 from ..models import db, Person, as_dict
 from ..utils import get_or_create, ext_url_for
@@ -26,7 +27,7 @@ __all__ = [
     'Event', 'EventRegistration', 'RegistrationStatus',
 ]
 
-
+log = logging.getLogger(__name__)
 events = Blueprint('events', __name__, template_folder='templates')
 
 
@@ -139,6 +140,7 @@ def registration(event_id):
             defaults={'name': data['name']}
         )
         if new_person:
+            log.info('Created new person {}', person)
             db.session.commit()
 
         registration, new = get_or_create(
@@ -165,6 +167,7 @@ def registration(event_id):
                     category='danger'
                 )
         else:
+            log.info(f'New registration for {event} by {person}')
             flash('Um deine Registrierung abzuschließen, klicke auf den Bestätigungslink in der Email, die wir dir geschickt haben! Erst dann bist du angemeldet.', category='success')
 
             db.session.commit()
