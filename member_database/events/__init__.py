@@ -140,7 +140,7 @@ def registration(event_id):
             defaults={'name': data['name']}
         )
         if new_person:
-            log.info('Created new person {}', person)
+            log.info(f'Created new person {person}')
             db.session.commit()
 
         registration, new = get_or_create(
@@ -274,6 +274,8 @@ def confirmation(token):
     event = registration.event
     n_participants = EventRegistration.query.filter_by(event_id=event.id, status='confirmed').count()
     booked_out = event.max_participants and n_participants >= event.max_participants
+
+    log.info(f'Confirmation for {event} by {person} ({registration})')
 
     if registration.status == 'pending':
         if booked_out:
