@@ -3,7 +3,8 @@ from flask import (
     request,
 )
 from flask_login import current_user
-from wtforms.fields import StringField
+from flask_wtf import FlaskForm
+from wtforms.fields import StringField, SubmitField
 from wtforms.validators import DataRequired, Regexp
 from wtforms.fields.html5 import EmailField
 from itsdangerous import URLSafeSerializer, BadData
@@ -220,6 +221,43 @@ def resend_email():
     flash('Email versendet', category='success')
 
     return redirect(url_for('events.index'))
+
+
+@events.route('/resend_emails/', methods=['GET', 'POST'])
+def resend_emails():
+    '''Resend all emails for open events for a given email address'''
+
+    class ResendForm(FlaskForm):
+        email = EmailField(validators=[DataRequired()])
+        submit = SubmitField('Emails für aktuelle Anmeldungen erneut versenden.')
+
+    form = ResendForm()
+
+    if form.validate_on_submit():
+        email = request.form['email']
+        person = Person.query.filter_by(email=email).first()
+        if person is None:
+            flash(f'Keine Veranstaltungs-Anmeldung für "{email}"', 'danger')
+            return redirect(url_for('events.index'))
+
+        open_registrations = list(
+            EventRegistration.query
+            .filter_by(person=person)
+            .join(Event)
+            .filter_by(registration_open=True)
+        )
+
+        if len(open_registrations) == 0:
+            flash(f'Keine Veranstaltungs-Anmeldung für "{email}"', 'danger')
+
+        for registration in open_registrations:
+            send_registration_mail(registration)
+        flash('Emails versendet', category='success')
+
+        return redirect(url_for('events.index'))
+
+    else:
+        return render_template('events/resend_emails.html', form=form)
 
 
 @events.route('/<int:event_id>/')

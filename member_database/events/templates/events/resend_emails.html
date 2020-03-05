@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block app_content %}
+
+  <h1>Emails erneut versenden</h1>
+
+  <p>Falls du dich für eine oder mehrere Veranstaltungen angemeldet hast,
+  aber keine Email bekommen hast, kannst du sie hier erneut versenden lassen.
+
+  {% from 'bootstrap/form.html' import render_form %}
+  {{ render_form(form, method='POST') }}
+
+{% endblock %}
