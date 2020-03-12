@@ -11,6 +11,7 @@ from itsdangerous import URLSafeSerializer, BadData
 from flask_babel import _
 from jsonschema import validate, ValidationError
 from sqlalchemy import func
+from sqlalchemy.orm import joinedload
 from datetime import datetime, timezone
 import logging
 
@@ -76,7 +77,7 @@ def index():
         db.session.query(
             Event.id, Event.name, Event.description,
             Event.max_participants,
-            func.coalesce(subquery.c.participants, 0).label('participants'),
+            func.coalesce(subquery.c.participants, 0).label('n_participants'),
         )
         .join(subquery, Event.id == subquery.c.event_id, isouter=True)
         .filter(Event.registration_open == True)
@@ -86,7 +87,7 @@ def index():
     events = []
     full_events = []
     for event in query:
-        if event.max_participants and event.participants >= event.max_participants:
+        if event.max_participants and event.n_participants >= event.max_participants:
             full_events.append(event)
         else:
             events.append(event)
@@ -281,13 +282,21 @@ def participants(event_id):
     event = Event.query.get(event_id)
     participants = (
         EventRegistration.query
+        .options(joinedload(EventRegistration.person))  # directly fetch persons
         .filter_by(event_id=event_id)
         .order_by(EventRegistration.timestamp.is_(None), EventRegistration.timestamp)
     )
 
     if 'application/json' in request.headers.get('Accept'):
+        data = []
+        for p in participants:
+            d = as_dict(p)
+            # fill email from person if not present in data
+            d['data']['email'] = d['data'].get('email', p.person.email)
+            data.append(d)
+
         return jsonify(
-            status='success', participants=[as_dict(p) for p in participants],
+            status='success', participants=data,
         )
 
     return render_template(
