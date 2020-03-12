@@ -3,17 +3,19 @@ from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from flask_babel import Babel
 
-import logging
 
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlite3 import Connection as SQLite3Connection
 
+import logging
+
 from .config import Config
 from .models import db
 from .authentication import login
 from .mail import mail
-from .errors import not_found_error, internal_error, setup_email_logger, unauthorized_error
+from .errors import not_found_error, internal_error, unauthorized_error
+from .log import setup_logging
 from .events import events
 from .json import JSONEncoderISO8601
 from .main import main
@@ -56,11 +58,12 @@ def create_app(config=Config):
     app.register_error_handler(404, not_found_error)
     app.register_error_handler(500, internal_error)
 
-    app.logger.setLevel(logging.INFO)
-    app.logger.info('App created')
-    setup_email_logger(app)
+    setup_logging(app)
 
     admin = create_admin_views()
     admin.init_app(app)
+
+    app.logger.setLevel(logging.INFO)
+    app.logger.info('App created')
 
     return app

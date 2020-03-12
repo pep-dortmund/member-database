@@ -2,19 +2,47 @@ from flask import current_app
 from flask_mail import Mail, Message
 from threading import Thread
 import socket
+import logging
+import backoff
+
+
+log = logging.getLogger(__name__)
 
 socket.setdefaulttimeout(30)
 mail = Mail()
 
 
-def send_async_email(app, msg):
+def send_msg_async(msg):
     '''
-    Function to be called from a Thread to send msg in backoground.
+    Calls a mail.send(msg) in a background thread.
+    Retries on errors using exponential backoff.
     See https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-x-email-support
     '''
-    app.logger.info(f'Sending mail with subject "{msg.subject}" to {msg.recipients}')
-    with app.app_context():
-        mail.send(msg)
+    def on_backoff(details):
+        log.error('Sending email failed in {tries} attempt, waiting {wait:.1f} s.')
+
+    @backoff.on_exception(
+        backoff.expo,
+        Exception,
+        max_tries=18,
+        on_backoff=on_backoff,
+    )
+    def target(app, mail):
+        log.info(f'Sending mail with subject "{msg.subject}" to {msg.recipients}')
+        with app.app_context():
+            try:
+                mail.send(msg)
+            except Exception:
+                logging.exception('Failed sending mail')
+                raise
+        log.info('Mail sent')
+
+    # See https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-a-better-application-structure
+    # For an explanation of the current_app magic
+    Thread(
+        target=target,
+        args=(current_app._get_current_object(), msg)
+    ).start()
 
 
 def send_email(subject, sender, recipients, body, **kwargs):
@@ -31,9 +59,4 @@ def send_email(subject, sender, recipients, body, **kwargs):
     elif current_app.config['DEBUG'] is True:
         print(body)
     else:
-        # See https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xv-a-better-application-structure
-        # For an explanation of the current_app magic
-        Thread(
-            target=send_async_email,
-            args=(current_app._get_current_object(), msg)
-        ).start()
+        send_msg_async(msg)

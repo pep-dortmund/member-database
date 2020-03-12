@@ -26,6 +26,8 @@ class Config:
     MAIL_USERNAME = os.environ['MAIL_USERNAME']
     MAIL_PASSWORD = os.environ['MAIL_PASSWORD']
 
+    LOG_FILE = os.environ.get('LOG_FILE')
+
     # who gets a notification when there is a new membership application
     APPROVE_MAIL = os.environ['APPROVE_MAIL']
     ADMIN_MAIL = os.environ['ADMIN_MAIL'].split(',')

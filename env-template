@@ -16,3 +16,4 @@ export MAIL_PASSWORD=''
 
 export APPROVE_MAIL=''
 export ADMIN_MAIL=''
+export LOG_FILE='memberdb.log'
