@@ -3,8 +3,11 @@
 FROM python:3.8-slim
 
 # we always want to serve the member_database app
-ENV FLASK_APP=member_database
-ENV PORT=5000
+ENV FLASK_APP=member_database \
+	PORT=5000 \
+	PIP_NO_CACHE_DIR=1 \
+	PIP_DISABLE_PIP_VERSION_CHECK=1 \
+	PYTHONUNBUFFERED=1
 
 # everything should run as the memberdb user (not root, best practice)
 RUN useradd --system --user-group memberdb
