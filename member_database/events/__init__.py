@@ -76,7 +76,7 @@ def index():
         db.session.query(
             Event.id, Event.name, Event.description,
             Event.max_participants,
-            func.coalesce(subquery.c.participants, 0).label('participants'),
+            func.coalesce(subquery.c.participants, 0).label('n_participants'),
         )
         .join(subquery, Event.id == subquery.c.event_id, isouter=True)
         .filter(Event.registration_open == True)
@@ -86,7 +86,7 @@ def index():
     events = []
     full_events = []
     for event in query:
-        if event.max_participants and event.participants >= event.max_participants:
+        if event.max_participants and event.n_participants >= event.max_participants:
             full_events.append(event)
         else:
             events.append(event)
