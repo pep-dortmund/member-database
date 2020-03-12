@@ -19,7 +19,8 @@ def send_msg_async(msg):
     See https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-x-email-support
     '''
     def on_backoff(details):
-        log.error('Sending email failed in {tries} attempt, waiting {wait:.1f} s.')
+        msg = 'Sending email failed in {tries} attempt, waiting {wait:.1f} s.'
+        log.error(msg.format(**details))
 
     @backoff.on_exception(
         backoff.expo,
