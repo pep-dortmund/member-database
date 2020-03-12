@@ -1,44 +1,34 @@
 # create a build stage
-FROM python:3.8-slim AS build
+# see https://stackoverflow.com/a/54763270/3838691
+FROM python:3.8-slim
 
-RUN pip install poetry
+# we need the pg_dump executable for auto backups
+RUN apt-get update && apt-get install -y postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
+RUN pip install poetry==1.0.5
 WORKDIR /home/memberdb/
 
 # copy relevant files
 COPY pyproject.toml poetry.lock ./
-COPY member_database ./member_database
 
 # install production dependencies
 # this is our production server
 # on top, for production we use postgresql, which needs psycopg2 and
 # pg_config
 # this will create a wheel file that contains all dependencies
-RUN poetry install --no-dev \
-	&& poetry add gunicorn psycopg2-binary \
-	&& poetry build
+RUN poetry config virtualenvs.create false \
+	&& poetry install -E deploy --no-dev
 
-
-# start building the production container
-FROM python:3.8-slim
+COPY member_database ./member_database
 
 # everything should run as the memberdb user (not root, best practice)
 RUN useradd --system --user-group memberdb
-
-WORKDIR /home/memberdb
 
 # this will be our startup script
 COPY run.sh .
 # migrations are needed at startup
 COPY migrations migrations
-# only the wheel distribution from the build stage is needed for the
-# deployed container
-COPY --from=build /home/memberdb/dist/*.whl ./wheel/
-
-# we need the pg_dump executable for auto backups
-RUN apt-get update && apt-get install -y postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
-RUN pip install --no-cache ./wheel/*
 
 # we always want to serve the member_database app
 ENV FLASK_APP=member_database
