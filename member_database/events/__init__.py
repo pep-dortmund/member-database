@@ -11,6 +11,7 @@ from itsdangerous import URLSafeSerializer, BadData
 from flask_babel import _
 from jsonschema import validate, ValidationError
 from sqlalchemy import func
+from sqlalchemy.orm import joinedload
 from datetime import datetime, timezone
 
 from ..models import db, Person, as_dict
@@ -278,13 +279,21 @@ def participants(event_id):
     event = Event.query.get(event_id)
     participants = (
         EventRegistration.query
+        .options(joinedload(EventRegistration.person))  # directly fetch persons
         .filter_by(event_id=event_id)
         .order_by(EventRegistration.timestamp.is_(None), EventRegistration.timestamp)
     )
 
     if 'application/json' in request.headers.get('Accept'):
+        data = []
+        for p in participants:
+            d = as_dict(p)
+            # fill email from person if not present in data
+            d['data']['email'] = d['data'].get('email', p.person.email)
+            data.append(d)
+
         return jsonify(
-            status='success', participants=[as_dict(p) for p in participants],
+            status='success', participants=data,
         )
 
     return render_template(
