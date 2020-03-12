@@ -13,7 +13,7 @@ ENV FLASK_APP=member_database \
 RUN useradd --system --user-group memberdb
 
 # we need the pg_dump executable for auto backups
-RUN apt-get update && apt-get install -y postgresql-client \
+RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install poetry==1.0.5
