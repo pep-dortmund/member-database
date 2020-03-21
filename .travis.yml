@@ -9,6 +9,8 @@ install:
 script:
     - pyflakes member_database
     - poetry run flask db upgrade
+    # test that schema changes are migrated
+    - poetry run flask db migrate 2>&1 > /dev/null | grep 'No changes in schema detected.'
     - poetry run python -m pytest --cov member_database
     - poetry run coverage-badge -o coverage.svg
 after_success:
