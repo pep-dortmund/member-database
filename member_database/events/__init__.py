@@ -244,13 +244,19 @@ def participants(event_id):
         .order_by(EventRegistration.timestamp.is_(None), EventRegistration.timestamp)
     )
 
+    if 'guests' in event.registration_schema['properties']:
+        total_guests = sum(p.data['guests'] for p in participants)
+    else:
+        total_guests = None
+
     if 'application/json' in request.headers.get('Accept'):
         return jsonify(
             status='success', participants=[as_dict(p) for p in participants],
         )
 
     return render_template(
-        'events/participants.html', participants=participants, event=event
+        'events/participants.html', participants=participants, event=event,
+        total_guests=total_guests
     )
 
 

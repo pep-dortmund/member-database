@@ -3,6 +3,10 @@
 
   <h1>Teilnehmer {{ event.name }}</h1>
 
+  {% if total_guests %}
+  Gesamtzahl Gäste: {{ total_guests }}
+  {% endif %}
+
   <table class="table">
     <thead>
       <th scope="col">#</th>
