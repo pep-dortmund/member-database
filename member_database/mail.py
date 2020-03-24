@@ -28,7 +28,7 @@ def send_msg_async(msg):
         max_tries=18,
         on_backoff=on_backoff,
     )
-    def target(app, mail):
+    def target(app, msg):
         log.info(f'Sending mail with subject "{msg.subject}" to {msg.recipients}')
         with app.app_context():
             try:
