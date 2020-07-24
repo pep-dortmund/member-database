@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block app_content %}
+
+  <h1>{{ event.name }}</h1>
+
+  <p>Falls du dich bereits für diese Veranstaltung angemeldet hast,
+  aber keine Email bekommen hast, kannst du sie <a href="{{ url_for('events.resend_emails') }}">
+  hier erneut anfordern</a>.
+
+  {% if free_places %}
+  <div class="alert alert-success">
+    Es sind noch {{ free_places }} Plätze verfügbar.
+  </div>
+  {% endif %}
+
+  {% if booked_out and registration is none %}
+  <div class="alert alert-warning" role="alert">
+    Diese Veranstaltung ist bereits ausgebucht.
+    Wenn du dich anmeldest, wirst du auf die Warteliste eingetragen.
+  </div>
+  {% endif %}
+
+  {% if registration is not none and registration.status == "waitinglist" %}
+  <div class="alert alert-warning" role="alert">
+    Diese Veranstaltung ist bereits ausgebucht.
+    Du befindest dich auf der Warteliste.
+  </div>
+  {% endif %}
+
+  <p>{{ event.description|safe }}</p>
+
+{% endblock %}
