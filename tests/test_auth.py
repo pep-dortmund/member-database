@@ -5,13 +5,12 @@ OLD_PW = 'test'
 NEW_PW = 'foo'
 
 
-
 @pytest.fixture(scope='module')
 def test_user():
     from member_database.models import Person, User, db
 
-    p = Person(name='Alfred Nobel', email='alfred.nobel@tu-dortmund.de')
-    u = User(person=p, username='anobel')
+    p = Person(name='Albert Einstein', email='albert.einstein@tu-dortmund.de')
+    u = User(person=p, username='aeinstein')
     u.set_password(OLD_PW)
 
     db.session.add(p, u)
