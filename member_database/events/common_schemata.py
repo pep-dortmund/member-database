@@ -85,6 +85,16 @@ TOOLBOX = {
             ],
             'label': 'Betriebssystem',
         },
+        'skill': {
+            'type': 'string',
+            'format': 'radio',
+            'label': 'Programmier-Erfahrung',
+            'enum': [
+                'Noch nie programmiert',
+                'Schon mal programmiert, aber noch nicht in Python',
+                'Schon mal programmiert, auch in Python',
+            ],
+        },
         'languages': {
             'type': 'object',
             'label': 'Programmiersprachen',

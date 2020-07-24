@@ -1,7 +1,7 @@
 from member_database import create_app, db
 from member_database.models import Person, User, Role, AccessLevel
 from member_database.events.models import Event, RegistrationStatus
-from member_database.events.common_schemata import ABSOLVENTENFEIER
+from member_database.events.common_schemata import ABSOLVENTENFEIER, TOOLBOX
 from member_database.utils import get_or_create
 
 app = create_app()
@@ -15,6 +15,12 @@ if Person.query.filter_by(name='Maximilian Nöthe').first() is None:
 
     r = Role(id='workshop')
     r.access_levels.append(AccessLevel(id='get_participants'))
+    r.access_levels.append(AccessLevel(id='event_admin'))
+    r.access_levels.append(AccessLevel(id='role_admin'))
+    r.access_levels.append(AccessLevel(id='access_level_admin'))
+    r.access_levels.append(AccessLevel(id='event_registration_admin'))
+    r.access_levels.append(AccessLevel(id='person_admin'))
+    r.access_levels.append(AccessLevel(id='user_admin'))
     u.roles.append(r)
 
     db.session.add(p, u)
@@ -26,25 +32,11 @@ else:
 if Event.query.first() is None:
     print('creating event')
     event = Event(
-        name='Workshop 2019',
+        name='Toolbox Workshop 2019',
         description='Toller Workshop',
         max_participants=1,
         registration_open=True,
-        registration_schema={
-            'type': 'object',
-            'properties': {
-                'semester': { 'type': 'integer', 'label': 'Semester'},
-                'vegan': {'type': 'boolean', 'label': 'Vegan'},
-                'allergies': {'type': 'string', 'label': 'Unverträglichkeiten oder Allergien'},
-                'degree': {
-                    'type': 'string',
-                    'label': 'Abschluss',
-                    'enum': ['Bachelor', 'Master', 'Promotion'],
-                },
-                'title': {'type': 'string', 'format': 'latex'},
-            },
-            'required': ['semester', 'degree']
-        },
+        registration_schema=TOOLBOX,
     )
     db.session.add(event)
     db.session.commit()
