@@ -66,6 +66,76 @@ ABSOLVENTENFEIER = {
 }
 
 
+TOOLBOX = {
+    'type': 'object',
+    'properties': {
+        'toolbox': {
+            'type': 'boolean',
+            'label': 'Ich möchte an der ersten Woche teilnehmen (Python/Make/Git)'
+        },
+        'latex': {
+            'type': 'boolean',
+            'label': 'Ich möchte an der zweiten Woche teilnehmen (LaTeX)',
+        },
+        'os': {
+            'type': 'string',
+            'enum': [
+                'Windows', 'macOS', 'Debian/Ubuntu/Mint',
+                'Fedora/RedHat', 'ArchLinux', 'Was exotisches',
+            ],
+            'label': 'Betriebssystem',
+        },
+        'languages': {
+            'type': 'object',
+            'label': 'Programmiersprachen',
+            'properties': {
+                'c': {'type': 'boolean'},
+                'cpp': {'type': 'boolean', 'label': 'C++'},
+                'python': {'type': 'boolean'},
+                'javascript': {'type': 'boolean', 'label': 'JavaScript'},
+                'java': {'type': 'boolean'},
+                'haskell': {'type': 'boolean'},
+                'pascal': {'type': 'boolean'},
+                'fortran': {'type': 'boolean'},
+                'other': {'type': 'string', 'label': 'Weitere'},
+            }
+        },
+        'toolbox_interests': {
+            'type': 'object',
+            'label': 'Mich interessiert besonders (1. Woche)',
+            'properties': {
+                'git': {'type': 'boolean', 'label': 'Zusammenarbeiten / Versionskontrolle mit Git'},
+                'python': {'type': 'boolean', 'label': 'Versuchsauswertung mit Python / Numpy / Scipy'},
+                'make': {'type': 'boolean', 'label': 'Automatisierung/Reproduzierbarkeit mit Make'},
+                'cli': {'type': 'boolean', 'label': 'Umgang mit der Kommandozeile'},
+                'plotting': {'type': 'boolean', 'label': 'Qualitativ hochwertige Grafiken mit Matplotlib'},
+                'uncertainties': {'type': 'boolean', 'label': 'Automatisierung von Fehlerrechnug und symbolisches Rechnen'},
+            },
+        },
+        'latex_level': {
+            'type': 'string',
+            'label': 'Erfahrung mit LaTeX',
+            'format': 'radio',
+            'enum': ['Noch nie gehört', 'Schon mal ausprobiert', 'TeXpert'],
+        },
+        'latex_interests': {
+            'type': 'object',
+            'label': 'Mich interessiert besonders (2. Woche)',
+            'properties': {
+                'text': {'type': 'boolean', 'label': 'Textsatz'},
+                'math': {'type': 'boolean', 'label': 'Formelsatz'},
+                'toc': {'type': 'boolean', 'label': 'Automatisierung von Inhalts- und anderen Verzeichnissen'},
+                'bib': {'type': 'boolean', 'label': 'Korrektes Zitieren und Literaturverzeichniss'},
+                'tikz': {'type': 'boolean', 'label': 'Zeichnungen mit TikZ'},
+                'beamer': {'type': 'boolean', 'label': 'Präsentationen mit Beamer'},
+            },
+        },
+        'other_interesets': {'type': 'string', 'label': 'Mich interessiert außerdem'},
+        'remarks': {'type': 'string', 'label': 'Weitere Anmerkungen (z.B. Terminkollisionen)'},
+    }
+}
+
+
 SOMMERAKADEMIE = {
     'type': 'object',
     'properties': {
