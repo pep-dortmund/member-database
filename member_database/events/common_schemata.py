@@ -109,7 +109,7 @@ TOOLBOX = {
                 'make': {'type': 'boolean', 'label': 'Automatisierung/Reproduzierbarkeit mit Make'},
                 'cli': {'type': 'boolean', 'label': 'Umgang mit der Kommandozeile'},
                 'plotting': {'type': 'boolean', 'label': 'Qualitativ hochwertige Grafiken mit Matplotlib'},
-                'uncertainties': {'type': 'boolean', 'label': 'Automatisierung von Fehlerrechnug und symbolisches Rechnen'},
+                'uncertainties': {'type': 'boolean', 'label': 'Automatisierung von Fehlerrechnung und symbolisches Rechnen'},
             },
         },
         'latex_level': {
