@@ -298,6 +298,8 @@ def send_password_reset():
 
         flash('Password reset email sent', 'success')
         return redirect('/')
+    else:
+        print(form.errors)
 
     return render_template(
         'simple_form.html', title='Reset Password', form=form
