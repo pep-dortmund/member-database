@@ -69,6 +69,8 @@ def create_wtf_field(name, schema, required=True):
 
     # subform
     if schema['type'] == 'object':
+        # baseclass needs to be wtforms.Form so the subforms do not include
+        # the csrf token
         form = create_wtf_form(schema, baseclasses=(wtforms.Form, ), submit=False)
         return wtforms.FormField(form, **kwargs)
 
