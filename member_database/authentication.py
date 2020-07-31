@@ -1,12 +1,18 @@
 from flask_login import LoginManager, login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired
-from flask import redirect, url_for, request, flash, abort, jsonify
+from wtforms.validators import DataRequired, EqualTo
+from flask import (
+    redirect, url_for, request, flash, abort, jsonify, current_app,
+    render_template
+)
+from itsdangerous import URLSafeTimedSerializer
 import base64
 from functools import wraps
 
 from .models import User
+from .mail import send_email
+from .utils import ext_url_for
 
 
 login = LoginManager()
@@ -80,3 +86,39 @@ class LoginForm(FlaskForm):
     user_or_email = StringField('Username/Email', validators=[DataRequired()])
     password = PasswordField('Passwort', validators=[DataRequired()])
     submit = SubmitField('Login')
+
+
+class SendPasswordResetForm(FlaskForm):
+    user_or_email = StringField('Username/Email', validators=[DataRequired()])
+    submit = SubmitField('Send password reset email')
+
+
+class PasswordResetForm(FlaskForm):
+    new_password = PasswordField(
+        'New password',
+        validators=[
+            DataRequired(),
+            EqualTo('confirm', message='Passwords must match')
+        ]
+    )
+    confirm = PasswordField('Confirm password', validators=[DataRequired()])
+    submit = SubmitField('Reset password')
+
+
+def send_password_reset_mail(person):
+    ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+    token = ts.dumps(person.email, salt='password-reset')
+
+    link = ext_url_for('main.reset_password', token=token)
+
+    send_email(
+        subject='Password reset for registration.pep-dortmund.org',
+        recipients=[f'{person.name} <{person.email}>'],
+        sender=current_app.config['MAIL_SENDER'],
+        body=render_template('mail/reset_password.html', reset_link=link)
+    )
+
+
+def load_reset_token(token):
+    ts = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    return ts.loads(token, salt='password-reset', max_age=10 * 60)

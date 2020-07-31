@@ -8,9 +8,17 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadData
 
 from sqlalchemy.exc import IntegrityError
 
-from .models import db, Person, User, as_dict
+from .models import db, Person, as_dict
+from .queries import get_user_by_name_or_email
 from .utils import get_or_create, ext_url_for
-from .authentication import LoginForm, access_required
+from .authentication import (
+    access_required,
+    LoginForm,
+    PasswordResetForm,
+    SendPasswordResetForm,
+    send_password_reset_mail,
+    load_reset_token
+)
 from .forms import PersonEditForm
 from .mail import send_email
 
@@ -263,16 +271,61 @@ def login_page():
 
     form = LoginForm()
     if form.validate_on_submit():
-        user_or_email = form.user_or_email.data
-        user = User.query.filter(
-            (User.username == user_or_email) | (Person.email == user_or_email)
-        ).first()
+        user = get_user_by_name_or_email(form.user_or_email.data)
+
         if user is None or not user.check_password(form.password.data):
             flash('Invalid user or password', 'danger')
-            return redirect(url_for('main.login_page', next=request.args.get('next')))
+            return redirect(
+                url_for('main.login_page', next=request.args.get('next'))
+            )
+
         login_user(user)
         return redirect(request.args.get('next') or url_for('main.index'))
-    return render_template('login.html', title='Login', form=form)
+    return render_template('simple_form.html', title='Login', form=form)
+
+
+@main.route('/password_reset/', methods=['GET', 'POST'])
+def send_password_reset():
+    form = SendPasswordResetForm()
+
+    if form.validate_on_submit():
+        user = get_user_by_name_or_email(form.user_or_email.data)
+        if user is None:
+            flash('Unknown username or email', 'danger')
+            return redirect(url_for('main.send_password_reset'))
+
+        send_password_reset_mail(user.person)
+
+        flash('Password reset email sent', 'success')
+        return redirect('/')
+
+    return render_template(
+        'simple_form.html', title='Reset Password', form=form
+    )
+
+
+@main.route('/password_reset/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+
+    try:
+        email = load_reset_token(token)
+    except SignatureExpired:
+        flash('Password reset link expired, request a new one', 'danger')
+        return redirect('/')
+    except BadData:
+        abort(404)
+
+    form = PasswordResetForm()
+    if form.validate_on_submit():
+        user = get_user_by_name_or_email(email)
+        user.set_password(form.new_password.data)
+        db.session.add(user)
+        db.session.commit()
+        return redirect('/')
+
+    return render_template(
+        'simple_form.html', title='Reset Password', form=form
+    )
 
 
 @main.route('/logout', methods=['GET', 'POST'])
