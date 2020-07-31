@@ -67,10 +67,25 @@ def create_wtf_field(name, schema, required=True):
             validators.append(DataRequired())
         return wtforms.BooleanField(**kwargs)
 
+    # subform
+    if schema['type'] == 'object':
+        # baseclass needs to be wtforms.Form so the subforms do not include
+        # the csrf token
+        form = create_wtf_form(schema, baseclasses=(wtforms.Form, ), submit=False)
+        return wtforms.FormField(form, **kwargs)
+
     raise ValueError(f'Unknown type {schema["type"]}')
 
 
-def create_wtf_form(schema, baseclasses=(FlaskForm, ), additional_fields=None, data=None):
+def create_wtf_form(
+    schema,
+    baseclasses=(FlaskForm, ),
+    additional_fields=None,
+    submit=True
+):
+    '''
+    Create a WTForms class from a json schema
+    '''
     attrs = {}
     required = schema.get('required', [])
 
@@ -84,6 +99,7 @@ def create_wtf_form(schema, baseclasses=(FlaskForm, ), additional_fields=None, d
             field_schema,
             required=name in required,
         )
-    attrs['submit'] = wtforms.SubmitField('Anmelden')
+    if submit:
+        attrs['submit'] = wtforms.SubmitField('Anmelden')
 
-    return type('JSONForm', baseclasses, attrs)(data=data)
+    return type('JSONForm', baseclasses, attrs)

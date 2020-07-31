@@ -116,13 +116,14 @@ def registration(event_id):
             flash(f'Eine Anmeldung für "{event.name}" is derzeit nicht möglich', 'danger')
             return redirect(url_for('events.index'))
 
-    form = create_wtf_form(
+    Form = create_wtf_form(
         event.registration_schema,
         additional_fields={
             'name': StringField('Name', [DataRequired()]),
             'email': create_email_field(event.force_tu_mail),
         }
     )
+    form = Form()
 
     if form.validate_on_submit():
         data = form.data
@@ -362,14 +363,15 @@ def confirmation(token):
                 )
             )
 
-    form = create_wtf_form(
+    Form = create_wtf_form(
         registration.event.registration_schema,
         additional_fields={
             'name': StringField('Name', [DataRequired()]),
             'email': EmailField('Email', [DataRequired()], render_kw={'disabled': ''})
         },
-        data={**registration.data, 'email': person.email},
     )
+    form = Form(data={**registration.data, 'email': person.email})
+
     if form.validate_on_submit():
         data = form.data
         for key in ('email', 'csrf_token'):

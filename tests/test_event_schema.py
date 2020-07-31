@@ -23,7 +23,8 @@ def test_basic_elements():
         required=['name', 'semester', 'degree'],
     )
 
-    form = create_wtf_form(schema, baseclasses=(wtforms.Form, ))
+    Form = create_wtf_form(schema, baseclasses=(wtforms.Form, ))
+    form = Form()
 
     assert isinstance(form.name, wtforms.StringField)
     assert has_validator(form.name, wtforms.validators.DataRequired)
@@ -36,3 +37,35 @@ def test_basic_elements():
     ]
 
     assert isinstance(form.vegan, wtforms.BooleanField)
+
+
+def test_subform():
+    from member_database.events.json_forms import create_wtf_form
+
+    subform = dict(
+        type='object',
+        properties=dict(
+            cpp=dict(type='boolean'),
+            c=dict(type='boolean'),
+            python=dict(type='boolean'),
+            other=dict(type='string'),
+        )
+    )
+
+    schema = dict(
+        type='object',
+        properties=dict(
+            languages=subform,
+            name=dict(type='string'),
+        )
+    )
+
+    Form = create_wtf_form(schema, baseclasses=(wtforms.Form, ))
+    form = Form()
+
+    assert isinstance(form.languages, wtforms.FormField)
+    assert isinstance(form.languages.cpp, wtforms.BooleanField)
+    assert isinstance(form.languages.c, wtforms.BooleanField)
+    assert isinstance(form.languages.python, wtforms.BooleanField)
+    assert isinstance(form.languages.other, wtforms.StringField)
+    assert isinstance(form.name, wtforms.StringField)
