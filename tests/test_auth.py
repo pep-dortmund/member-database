@@ -19,6 +19,19 @@ def test_user():
     return u
 
 
+@pytest.fixture(scope='module')
+def test_user2():
+    from member_database.models import Person, User, db
+
+    p = Person(name='Marie Curie', email='marie.curie@tu-dortmund.de')
+    u = User(person=p, username='mcurie')
+
+    db.session.add(p, u)
+    db.session.commit()
+
+    return u
+
+
 def test_home(client):
     """
     Check if the index delivers a valid response
@@ -64,3 +77,14 @@ def test_password_reset(client, test_user):
 
     assert test_user.check_password(NEW_PW)
     assert not test_user.check_password(OLD_PW)
+
+
+def test_get_user(test_user, test_user2):
+    from member_database.queries import get_user_by_name_or_email
+
+    assert get_user_by_name_or_email(test_user.username).id == test_user.id
+    assert get_user_by_name_or_email(test_user.person.email).id == test_user.id
+
+
+    assert get_user_by_name_or_email(test_user2.username).id == test_user2.id
+    assert get_user_by_name_or_email(test_user2.person.email).id == test_user2.id
