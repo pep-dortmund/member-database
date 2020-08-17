@@ -327,7 +327,11 @@ def write_mail(event_id):
         )
 
         attachments = [
-            Attachment(filename=f.name, data=f.read(), content_type=f.mimetype)
+            Attachment(
+                filename=f.filename,
+                data=f.read(),
+                content_type=f.mimetype,
+            )
             for f in request.files.getlist(form.attachments.name)
         ]
 
