@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block app_content %}
+
+  <h1>Email an {{ n_participants }} Teilnehmer von {{ event.name }}</h1>
+
+  Bitte den Inhalt sorgfältig überprüfen, die Email wird an alle Teilnehmer
+  verschickt sobald der versenden Knopf gedrückt wird.
+
+
+  {% from 'bootstrap/form.html' import render_form %}
+  {{ render_form(form, method='POST', enctype='multipart/form-data') }}
+
+{% endblock %}
