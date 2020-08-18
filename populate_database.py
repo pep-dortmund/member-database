@@ -21,6 +21,7 @@ if Person.query.filter_by(name='Maximilian Nöthe').first() is None:
     r.access_levels.append(AccessLevel(id='event_registration_admin'))
     r.access_levels.append(AccessLevel(id='person_admin'))
     r.access_levels.append(AccessLevel(id='user_admin'))
+    r.access_levels.append(AccessLevel(id='write_email'))
     u.roles.append(r)
 
     db.session.add(p, u)

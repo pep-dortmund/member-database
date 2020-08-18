@@ -4,6 +4,7 @@ from flask import (
 )
 from flask_login import current_user
 from flask_wtf import FlaskForm
+from flask_mail import Attachment
 from wtforms.fields import StringField, SubmitField
 from wtforms.validators import DataRequired, Regexp
 from wtforms.fields.html5 import EmailField
@@ -22,6 +23,7 @@ from ..authentication import access_required
 
 from .models import Event, EventRegistration, RegistrationStatus
 from .json_forms import create_wtf_form
+from .forms import SendMailForm
 
 
 __all__ = [
@@ -302,6 +304,56 @@ def participants(event_id):
 
     return render_template(
         'events/participants.html', participants=participants, event=event
+    )
+
+
+@events.route('/<int:event_id>/write_mail/', methods=['GET', 'POST'])
+@access_required('write_email')
+def write_mail(event_id):
+    event = Event.query.get(event_id)
+
+    form = SendMailForm(name=current_user.person.name, email=current_user.person.email)
+    n_participants = EventRegistration.query.filter_by(event_id=event_id).count()
+
+    if n_participants == 0:
+        flash(f'No participants yet for event {event.name}', 'danger')
+        return redirect(url_for('events.index'))
+
+    if form.validate_on_submit():
+        participants = (
+            EventRegistration.query
+            .options(joinedload(EventRegistration.person))  # directly fetch persons
+            .filter_by(event_id=event_id)
+        )
+
+        attachments = [
+            Attachment(
+                filename=f.filename,
+                data=f.read(),
+                content_type=f.mimetype,
+            )
+            for f in request.files.getlist(form.attachments.name)
+        ]
+
+        # send to everyone in bcc
+        bcc = [f'{p.person.name} <{p.person.email}>' for p in participants]
+        reply_to = f'{form.name.data} <{form.email.data}>'
+        send_email(
+            sender=current_app.config['MAIL_SENDER'],
+            subject=form.subject.data,
+            recipients=[reply_to],
+            bcc=bcc,
+            body=form.body.data,
+            reply_to=reply_to,
+            attachments=attachments,
+        )
+
+        flash('Mail send', 'success')
+        return redirect(url_for('events.index'))
+
+    return render_template(
+        'events/write_mail.html', event=event, form=form,
+        n_participants=n_participants
     )
 
 
