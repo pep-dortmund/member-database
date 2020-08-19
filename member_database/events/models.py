@@ -30,15 +30,15 @@ class Event(db.Model):
 class EventRegistration(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
-    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
     event = db.relationship('Event', backref=db.backref('registrations', lazy=True))
 
-    person_id = db.Column(db.Integer, db.ForeignKey('person.id'))
+    person_id = db.Column(db.Integer, db.ForeignKey('person.id'), nullable=False)
     person = db.relationship(
         'Person', backref=db.backref('event_registrations', lazy=True)
     )
 
-    status = db.Column(db.String, db.ForeignKey('registration_status.name'))
+    status = db.Column(db.String, db.ForeignKey('registration_status.name'), nullable=False)
 
     data = db.Column(MutableDict.as_mutable(db.JSON))
     timestamp = db.Column(db.DateTime(timezone=True))
