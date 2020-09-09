@@ -72,7 +72,7 @@ def load_user_from_request(request):
 
 @login.unauthorized_handler
 def handle_needs_login():
-    if 'application/json' in request.headers.get('Accept'):
+    if 'application/json' in request.headers.get('Accept', []):
         return jsonify(status='access_denied'), 401
 
     if request.headers.get('Authorization') is not None:
