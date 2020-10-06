@@ -13,6 +13,7 @@ from functools import wraps
 from .models import User
 from .mail import send_email
 from .utils import ext_url_for
+from .queries import get_user_by_name_or_email
 
 
 login = LoginManager()
@@ -62,7 +63,7 @@ def load_user_from_request(request):
             user = None
             password = ''
 
-        user = User.query.filter_by(username=user).first()
+        user = get_user_by_name_or_email(user)
 
         if user and user.check_password(password) is True:
             return user
