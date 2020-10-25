@@ -22,3 +22,28 @@ def client(app):
             with app.app_context():
                 db.create_all()
                 yield client
+
+
+@pytest.fixture(scope='session')
+def admin_user(client):
+    from member_database.models import Person, User, Role, AccessLevel, db
+
+    admin = Role(id='admin', access_levels=[
+        AccessLevel(id='member_management'),
+    ])
+
+    p = Person(name='Richard Feynman', email='rfeynman@example.org')
+    u = User(person=p, username='rfeynman', roles=[admin])
+
+    # store clear text password in object so we can use it in the tests
+    u.password = 'bongos'
+    u.login_data = dict(
+        user_or_email=u.username,
+        password=u.password
+    )
+    u.set_password(u.password)
+
+    db.session.add(u)
+    db.session.commit()
+
+    return u

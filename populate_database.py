@@ -7,7 +7,7 @@ from member_database.utils import get_or_create
 app = create_app()
 app.app_context().push()
 
-if Person.query.filter_by(name='Maximilian Nöthe').first() is None:
+if Person.query.filter_by(email='max.noethe@t-online.de').first() is None:
     print('Creating user mnoethe')
     p = Person(name='Maximilian Nöthe', email='max.noethe@t-online.de')
     u = User(person=p, username='mnoethe')

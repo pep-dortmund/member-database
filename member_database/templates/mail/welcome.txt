@@ -1,18 +1,28 @@
 Hallo {{ new_member.name }},
 
-herzlich Willkommen bei PeP et al. e.V. Schön dass Sie sich als Mitglied angemeldet haben!
+herzlich Willkommen bei PeP et al. e.V.
 
-Damit sich kein Tippfehler eingeschlichen hat, bestätigen Sie bitte über folgenden Link Ihre Email-Adresse:
+PeP et al. lebt vom Mitmachen. Wer Lust hat aktiv am Vereinsleben teilzunehmen,
+schaut auf unserer Homepage nach und trägt sich in den Mail-Verteiler ein:
+https://pep-dortmund.org/mitmachen.html
 
-{{ url }}
 
-PeP et al. lebt vom Mitmachen. Wer Lust hat aktiv am Vereinsleben teilzunehmen, schaut auf unserer Homepage nach und trägt sich in den Mail-Verteiler ein https://pep-dortmund.org/mitmachen.html
-Ebenso kann man auch die regelmäßigen Treffen besuchen. Mehr Details dazu sind ebenfalls auf der Homepage zu finden. Dort finden sich auch aktuelle Informationen über unsere Aktivitäten!
+Ebenso kann man auch die regelmäßigen Treffen besuchen.
+Mehr Details dazu sind ebenfalls auf der Homepage zu finden.
+Dort finden sich auch aktuelle Informationen über unsere Aktivitäten!
 
-Neben den Mitgliedsbeiträgen finanzieren wir uns zum größten Teil aus Spenden. Wir sind ein gemeinnütziger Verein und stellen gerne Spendenquittungen aus. Auch Sachspenden und zweckgebundene Spenden sind möglich. Wenn Sie eigene Ideen für die Verwendung von Spenden haben, nehmen Sie mit uns Kontakt auf um die Details zu besprechen.
+Für den Mitgliedsbeitrag von 10 € im Jahr würden wir uns sehr über einen Dauerauftrag freuen.
+Bachelor- und Master-Studierende sind vom Mitgliedsbeitrag befreit.
+
+Neben den Mitgliedsbeiträgen finanzieren wir uns zum größten Teil aus Spenden.
+Wir sind ein gemeinnütziger Verein und stellen gerne Spendenquittungen aus.
+Auch Sachspenden und zweckgebundene Spenden sind möglich.
+Wenn Sie eigene Ideen für die Verwendung von Spenden haben,
+nehmen Sie mit uns Kontakt auf, um die Details zu besprechen.
 Web: https://pep-dortmund.org/spenden.html
 
-Bei Fragen stehen wir immer gerne zur Verfügung, der PeP-Vorstand ist in den Büros CP-03-198, CP-03-155 und CP-03-110 oder per Email erreichbar: kontakt@pep-dortmund.org
+Bei Fragen stehen wir immer gerne zur Verfügung, der PeP-Vorstand ist in den Büros
+CP-03-198, CP-03-155 und CP-03-110 oder per Email erreichbar: kontakt@pep-dortmund.org
 
 Herzliche Grüße
 Marie, Lena & Kevin

@@ -10,8 +10,12 @@ class Person(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.UnicodeText(), nullable=False)
 
-    membership_pending = db.Column(db.Boolean, default=False)
-    member = db.Column(db.Boolean, default=False)
+    membership_status_id = db.Column(
+        db.String, db.ForeignKey('membership_status.id'),
+    )
+    membership_status = db.relationship(
+        'MembershipStatus', backref='persons', lazy='subquery'
+    )
 
     email = db.Column(db.String(120), unique=True, nullable=False)
     email_valid = db.Column(db.Boolean, default=False)
@@ -25,28 +29,42 @@ class Person(db.Model):
         return f'<Person {self.id}: {self.name}>'
 
 
+class MembershipStatus(db.Model):
+    id = db.Column(db.String, primary_key=True)
+
+
 roles = db.Table(
     'roles',
-    db.Column('user_id',
-              db.Integer,
-              db.ForeignKey('user.id'),
-              primary_key=True),
-    db.Column('role_id',
-              db.String(32),
-              db.ForeignKey('role.id'),
-              primary_key=True))
+    db.Column(
+        'user_id',
+        db.Integer,
+        db.ForeignKey('user.id'),
+        primary_key=True
+    ),
+    db.Column(
+        'role_id',
+        db.String(32),
+        db.ForeignKey('role.id'),
+        primary_key=True
+    )
+)
 
 
 access_levels = db.Table(
     'access_levels',
-    db.Column('role_id',
-              db.String(32),
-              db.ForeignKey('role.id'),
-              primary_key=True),
-    db.Column('access_level_id',
-              db.String(32),
-              db.ForeignKey('access_level.id'),
-              primary_key=True))
+    db.Column(
+        'role_id',
+        db.String(32),
+        db.ForeignKey('role.id'),
+        primary_key=True,
+    ),
+    db.Column(
+        'access_level_id',
+        db.String(32),
+        db.ForeignKey('access_level.id'),
+        primary_key=True,
+    ),
+)
 
 
 class AccessLevel(db.Model):

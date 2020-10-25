@@ -1,0 +1,19 @@
+Hallo {{ new_member.name }},
+
+schön dass Sie Mitglied werden möchten!
+
+Bitte bestätigen Sie ihren Mitgliedsantrag,
+indem Sie den folgenden Link besuchen:
+
+{{ url }}
+
+Falls Sie keinen Mitgliedsantrag gestellt haben, können Sie diese Email
+einfach ignorieren.
+
+Herzliche Grüße
+PeP et al. e.V.
+
+--
+PeP et al. e.V.
+Alumni-Verein der Fakultät Physik an der TU Dortmund
+https://pep-dortmund.org
