@@ -41,7 +41,7 @@ def create_app(config=Config):
     db.init_app(app)
     mail.init_app(app)
     login.init_app(app)
-    Migrate(app, db)
+    Migrate(app, db, render_as_batch=True)
     Bootstrap(app)
     babel = Babel(app)
 
