@@ -270,17 +270,21 @@ def login_page():
         return redirect(url_for('main.index'))
 
     form = LoginForm()
-    if form.validate_on_submit():
-        user = get_user_by_name_or_email(form.user_or_email.data)
+    if form.is_submitted():
+        if form.validate_on_submit():
+            user = get_user_by_name_or_email(form.user_or_email.data)
 
-        if user is None or not user.check_password(form.password.data):
-            flash('Invalid user or password', 'danger')
-            return redirect(
-                url_for('main.login_page', next=request.args.get('next'))
-            )
+            if user is None or not user.check_password(form.password.data):
+                flash('Invalid user or password', 'danger')
+                abort(401)
 
-        login_user(user)
-        return redirect(request.args.get('next') or url_for('main.index'))
+            login_user(user)
+            return redirect(request.args.get('next') or url_for('main.index'))
+
+        else:
+            # if form was posted but is not valid we abort with 401
+            abort(401)
+
     return render_template('simple_form.html', title='Login', form=form)
 
 
