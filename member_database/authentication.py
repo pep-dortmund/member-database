@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, EqualTo
 from flask import (
-    redirect, url_for, request, flash, abort, jsonify, current_app,
+    request, flash, abort, jsonify, current_app,
     render_template
 )
 from itsdangerous import URLSafeTimedSerializer
