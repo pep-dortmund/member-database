@@ -9,6 +9,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadData
 from sqlalchemy.exc import IntegrityError
 
 from .models import db, Person, as_dict
+from .models.person import AccessLevel
 from .queries import get_user_by_name_or_email
 from .utils import get_or_create, ext_url_for
 from .authentication import (
@@ -17,13 +18,21 @@ from .authentication import (
     PasswordResetForm,
     SendPasswordResetForm,
     send_password_reset_mail,
-    load_reset_token
+    load_reset_token,
+    ACCESS_LEVELS,
 )
 from .forms import PersonEditForm
 from .mail import send_email
 
 
 main = Blueprint('main', __name__)
+
+
+@main.before_app_first_request
+def init_database():
+    for access_level in ACCESS_LEVELS:
+        get_or_create(AccessLevel, id=access_level)
+    db.session.commit()
 
 
 @main.route('/')

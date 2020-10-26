@@ -18,6 +18,8 @@ from .queries import get_user_by_name_or_email
 
 login = LoginManager()
 
+ACCESS_LEVELS = set()
+
 
 def access_required(name):
     '''
@@ -29,11 +31,20 @@ def access_required(name):
         specify a name of an access_level. The name will be compared to
         all access_levels of all rules of the current_user.
     '''
+    # register access level,
+    # so it can be inserted into the database @first_request
+    ACCESS_LEVELS.add(name)
+
     def access_decorator(func):
         @wraps(func)
-        @login_required  # first of all a use needs to be logged in
+        @login_required  # first of all, a user needs to be logged in
         def decorated_function(*args, **kwargs):
             if not current_user.has_access(name):
+                flash(
+                    f'Your user does not have the access level "{name}"'
+                    ' required to view this page.',
+                    category='danger',
+                )
                 abort(401)
 
             return func(*args, **kwargs)

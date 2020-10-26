@@ -9,7 +9,7 @@ from wtforms.fields import PasswordField
 
 from .models import db, User, Person, Role, AccessLevel
 from .events import Event, EventRegistration
-from .authentication import handle_needs_login
+from .authentication import handle_needs_login, ACCESS_LEVELS
 
 
 class PrettyJSONField(fields.JSONField):
@@ -35,6 +35,10 @@ class AuthorizedView(ModelView):
     can_set_page_size = True
     can_view_details = True
     details_modal = True
+
+    def __init_subclass__(cls):
+        '''Add a subclasses access level to the set of access levels'''
+        ACCESS_LEVELS.add(cls.access_level)
 
     def is_accessible(self):
         return (
