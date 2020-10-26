@@ -1,5 +1,4 @@
 import re
-from bs4 import BeautifulSoup
 
 
 def test_member_registration(app, client, admin_user):
@@ -11,7 +10,7 @@ def test_member_registration(app, client, admin_user):
 
     with mail.record_messages() as outbox:
         ret = client.post(
-            '/register', data=dict(name=name, email=email),
+            '/register/', data=dict(name=name, email=email),
             follow_redirects=True,
         )
 
