@@ -1,9 +1,20 @@
 {% extends "base.html" %}
 
-{% block content %}
-  <ul>
+{% block app_content %}
+  <h1>Offene Mitgliedsanträge</h1>
+  <ul class="list-group">
   {% for application in applications %}
-  <li> {{ application.joining_date }} {{ application.name }} {{ application.email }} </li>
+    <li class="list-group-item">
+      {{ application.joining_date }} {{ application.name }} {{ application.email }}
+
+      <form class="form form-inline" action="/applications/{{ application.id }}/" method="post">
+        <input type="radio" id="accept" name="decision"  value="accept" checked="checked" />
+        <label for="accept">Annehmen</label>
+        <input type="radio" id="deny" name="decision"  value="deny" />
+        <label for="deny">Ablehnen</label>
+        <input type="submit" value="Enter">
+      </form>
+    </li>
   {% endfor %}
   </ul>
 {% endblock %}

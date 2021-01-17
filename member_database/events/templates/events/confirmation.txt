@@ -7,14 +7,4 @@ bestätige sie bitte durch klicken auf den folgenden Link:
 
 Mit freundlichen Grüßen
 
-
---
-PeP et al. e.V.
-Alumni-Verein der Fakultät Physik an der TU Dortmund
-https://pep-dortmund.org
-
-Facebook: https://www.facebook.com/groups/279810565457942/
-Xing: https://www.xing.com/net/pribcdb16x/physikalumnidortmund
-LinkedIn: http://www.linkedin.com/groups?gid=3585359
-Twitter: https://twitter.com/pepdortmund
-
+{% include "mail/signature.txt" %}

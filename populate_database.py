@@ -7,7 +7,7 @@ from member_database.utils import get_or_create
 app = create_app()
 app.app_context().push()
 
-if Person.query.filter_by(name='Maximilian Nöthe').first() is None:
+if Person.query.filter_by(email='max.noethe@t-online.de').first() is None:
     print('Creating user mnoethe')
     p = Person(name='Maximilian Nöthe', email='max.noethe@t-online.de')
     u = User(person=p, username='mnoethe')
@@ -22,6 +22,8 @@ if Person.query.filter_by(name='Maximilian Nöthe').first() is None:
     r.access_levels.append(AccessLevel(id='person_admin'))
     r.access_levels.append(AccessLevel(id='user_admin'))
     r.access_levels.append(AccessLevel(id='write_email'))
+    r.access_levels.append(AccessLevel(id='member_management'))
+    r.access_levels.append(AccessLevel(id='get_members'))
     u.roles.append(r)
 
     db.session.add(p, u)

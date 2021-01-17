@@ -3,6 +3,6 @@
   <h1>{{ title }}</h1>
 
 {% from 'bootstrap/form.html' import render_form %}
-{{ render_form(form, method='POST') }}
+{{ render_form(form, method='POST', action=action) }}
 
 {% endblock %}

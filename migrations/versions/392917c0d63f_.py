@@ -17,8 +17,10 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('event', sa.Column('force_tu_mail', sa.Boolean(), nullable=True))
+    with op.batch_alter_table("event") as bop:
+        bop.add_column(sa.Column('force_tu_mail', sa.Boolean(), nullable=True))
 
 
 def downgrade():
-    op.drop_column('event', 'force_tu_mail')
+    with op.batch_alter_table("event") as bop:
+        bop.drop_column('force_tu_mail')
