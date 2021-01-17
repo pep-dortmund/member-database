@@ -22,6 +22,8 @@ if Person.query.filter_by(email='max.noethe@t-online.de').first() is None:
     r.access_levels.append(AccessLevel(id='person_admin'))
     r.access_levels.append(AccessLevel(id='user_admin'))
     r.access_levels.append(AccessLevel(id='write_email'))
+    r.access_levels.append(AccessLevel(id='member_management'))
+    r.access_levels.append(AccessLevel(id='get_members'))
     u.roles.append(r)
 
     db.session.add(p, u)
