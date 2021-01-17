@@ -1,4 +1,5 @@
 from datetime import date
+from re import M
 from flask import (
     jsonify, request, url_for, render_template, redirect,
     flash, abort, Blueprint, current_app
@@ -77,7 +78,7 @@ def add_person():
 @access_required('get_members')
 def get_members():
     '''Return a json list with all current members'''
-    members = Person.query.filter_by(membership_status_id="confirmed").all()
+    members = Person.query.filter_by(membership_status_id=MembershipStatus.CONFIRMED).all()
     members = [as_dict(member) for member in members]
     return jsonify(status='success', members=members)
 
@@ -241,7 +242,7 @@ def edit(token):
     if p is None:
         abort(404)
 
-    if p.membership_status_id == 'email_unverified':
+    if p.membership_status_id == MembershipStatus.EMAIL_UNVERIFIED:
         send_email(
             subject='Neuer Mitgliedsantrag',
             sender=current_app.config['MAIL_SENDER'],
@@ -253,14 +254,14 @@ def edit(token):
             )
         )
 
-        p.membership_status_id = "pending"
+        p.membership_status_id = MembershipStatus.PENDING
         p.email_valid = True
 
         db.session.add(p)
         db.session.commit()
         flash(_('Email erfolgreich bestätigt'), category="success")
 
-    if p.membership_status_id == "pending":
+    if p.membership_status_id == MembershipStatus.PENDING:
         flash(
             _('Dein Mitgliedsantrag wartet auf Bestätigung durch den Vorstand'),
             category="info",
@@ -350,10 +351,10 @@ def handle_application(person_id):
                 new_member=application,
             )
         )
-        application.membership_status_id = "confirmed"
+        application.membership_status_id = MembershipStatus.CONFIRMED
     elif decision == 'deny':
         flash(f"Mitgliedsantrag für {application.name} abgelehnt", category="danger")
-        application.membership_status_id = "denied"
+        application.membership_status_id = MembershipStatus.DENIED
     else:
         abort(400)
 
