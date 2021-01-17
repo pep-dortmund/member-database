@@ -1,6 +1,5 @@
 import re
 
-
 def test_member_registration(app, client, admin_user):
     from member_database.mail import mail
     from member_database.models import Person

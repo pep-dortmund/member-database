@@ -11,3 +11,5 @@ klicken, um deine Daten zu ändern.
 
 Viele Grüße
 Die PeP Mitgliederverwaltung
+
+{% include "mail/signature.txt" %}

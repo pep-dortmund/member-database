@@ -9,3 +9,5 @@ Ansonsten kannst du auf den folgenden Link klicken, um deine Daten einzusehen:
 
 Viele Grüße
 Die PeP Mitgliederverwaltung
+
+{% include "mail/signature.txt" %}

@@ -104,8 +104,8 @@ def register():
 
         if p.membership_status_id == MembershipStatus.DENIED:
             flash(
-                'Sie haben bereits einen Mitgliedsantrag eingereicht, der abgelehnt wurde.'
-                ' Bitte kontaktieren Sie uns, falls Sie dies für einen Irrtum halten.'
+                'Du hast bereits einen Mitgliedsantrag eingereicht, der abgelehnt wurde.'
+                ' Bitte kontaktiere uns, falls du dies für einen Irrtum hälst.'
             )
             return redirect(url_for('main.index'))
 

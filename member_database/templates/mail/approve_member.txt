@@ -13,3 +13,4 @@ Bitte überprüft den Antrag auf
 Viele Grüße
 Die PeP Mitgliederverwaltung
 
+{% include "mail/signature.txt" %}
