@@ -20,7 +20,7 @@ from .authentication import (
     send_password_reset_mail,
     load_reset_token
 )
-from .forms import PersonEditForm, MembershipForm
+from .forms import PersonEditForm, MembershipForm, RequestLinkForm
 from .mail import send_email
 
 
@@ -162,58 +162,64 @@ def register():
     )
 
 
-@main.route('/request_edit', methods=['POST'])
-def send_edit_token():
+@main.route('/request_edit', methods=['POST', 'GET'])
+def request_edit():
     '''
     Request a link to edit personal data
     '''
-    email = request.get_json()['email']
+    form = RequestLinkForm()
 
-    p = Person.query.filter_by(email=email).first()
-    if p is None:
-        return jsonify(status='error', message='No such person'), 422
+    if form.validate_on_submit():
+        ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+        token = ts.dumps(form.email.data, salt='edit-key')
 
-    ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
-    token = ts.dumps(email, salt='edit-key')
-
-    send_email(
-        subject=_('PeP et al. e.V. Mitgliedsdatenänderung'),
-        sender=current_app.config['MAIL_SENDER'],
-        recipients=[email],
-        body=render_template(
-            'mail/edit_mail.txt',
-            edit_link=ext_url_for('main.edit', token=token),
+        send_email(
+            subject=_('PeP et al. e.V. Mitgliedsdatenänderung'),
+            sender=current_app.config['MAIL_SENDER'],
+            recipients=[form.email.data],
+            body=render_template(
+                'mail/edit_mail.txt',
+                edit_link=ext_url_for('main.edit', token=token),
+            )
         )
+        flash('E-Mail mit Link für die Datenänderung verschickt', 'success')
+        return redirect(url_for('main.index'))
+
+    return render_template(
+        'simple_form.html',
+        form=form,
+        title='Persönliche Daten ändern',
     )
 
-    return jsonify(status='success', message='Edit mail sent')
 
-
-@main.route('/request_gdpr_data', methods=['POST'])
-def send_request_data_token():
+@main.route('/request_gdpr_data', methods=['POST', 'GET'])
+def request_gdpr_data():
     '''
     Request a link to view personal data
     '''
-    email = request.form['email']
+    form = RequestLinkForm()
 
-    p = Person.query.filter_by(email=email).first()
-    if p is None:
-        return jsonify(status='error', message='No such person'), 422
+    if form.validate_on_submit():
+        ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+        token = ts.dumps(form.email.data, salt='request_gdpr_data-key')
 
-    ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
-    token = ts.dumps(email, salt='request_gdpr_data-key')
-
-    send_email(
-        subject='PeP et al. e.V. - Einsicht in gespeicherte Daten',
-        sender=current_app.config['MAIL_SENDER'],
-        recipients=[email],
-        body=render_template(
-            'mail/request_data_mail.txt',
-            data_link=ext_url_for('main.view_data', token=token),
+        send_email(
+            subject='PeP et al. e.V. - Einsicht in gespeicherte Daten',
+            sender=current_app.config['MAIL_SENDER'],
+            recipients=[form.email.data],
+            body=render_template(
+                'mail/request_data_mail.txt',
+                data_link=ext_url_for('main.view_data', token=token),
+            )
         )
-    )
-    return jsonify(status='success', message='GDPR data request mail sent')
+        flash('E-Mail mit Link für die Dateneinsicht verschickt', 'success')
+        return redirect(url_for('main.index'))
 
+    return render_template(
+        'simple_form.html',
+        form=form,
+        title='Meine gespeicherten Daten einsehen (DSGVO-Anfrage)',
+    )
 
 @main.route('/edit/<token>', methods=['GET', 'POST'])
 def edit(token):

@@ -1,8 +1,16 @@
 from flask_wtf import FlaskForm
 from flask_babel import lazy_gettext as _l
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, ValidationError
 from wtforms.fields.html5 import EmailField, DateField
 from wtforms.validators import DataRequired, Email, Optional
+
+from .models import Person
+
+
+def known_email(form, field):
+    p = Person.query.filter_by(email=field.data).one_or_none()
+    if p is None:
+        raise ValidationError('Unbekannte Email-Adresse')
 
 
 class PersonEditForm(FlaskForm):
@@ -18,3 +26,7 @@ class MembershipForm(FlaskForm):
     name = StringField(_l('Name'), validators=[DataRequired()])
     email = EmailField(_l('E-Mail-Adresse'), validators=[DataRequired(), Email()])
     submit = SubmitField(_l('Mitgliedsantrag abschicken'))
+
+class RequestLinkForm(FlaskForm):
+    email = EmailField(_l('E-Mail-Adresse'), validators=[DataRequired(), Email(), known_email])
+    submit = SubmitField()
