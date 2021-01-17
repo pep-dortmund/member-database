@@ -29,8 +29,7 @@ main = Blueprint('main', __name__)
 
 @main.before_app_first_request
 def init_database():
-    states = ('email_unverified', 'pending', 'confirmed', 'denied', 'canceled')
-    for name in states:
+    for name in MembershipStatus.STATES:
         get_or_create(MembershipStatus, id=name)
     db.session.commit()
 
@@ -85,42 +84,40 @@ def get_members():
 @main.route('/register/', methods=['GET', 'POST'])
 def register():
     '''
-    Create a new Person or find an existing one by email
-    and set it's member attribute to True.
-    Send an email to the board to notify them of a new membership application.
+    Endpoint for membership registration.
+
+    Simple form to sign up to the club, only requiring name and email.
+
+    After a request has been made, the applicant has to confirm their email.
+    After the email was confirmed, the board gets notified that a new application
+    was made and can accept/deny it.
     '''
 
     form = MembershipForm()
 
     if form.validate_on_submit():
-        try:
-            p, new = get_or_create(
-                Person,
-                email=form.email.data,
-                defaults={'name': form.name.data},
-            )
-        except KeyError as e:
-            return jsonify(
-                status='error',
-                message='Missing required parameter {}'.format(e.args[0])
-            ), 422
+        p, _new = get_or_create(
+            Person,
+            email=form.email.data,
+            defaults={'name': form.name.data},
+        )
 
-        if p.membership_status_id == "denied":
+        if p.membership_status_id == MembershipStatus.DENIED:
             flash(
                 'Sie haben bereits einen Mitgliedsantrag eingereicht, der abgelehnt wurde.'
                 ' Bitte kontaktieren Sie uns, falls Sie dies für einen Irrtum halten.'
             )
             return redirect(url_for('main.index'))
 
-        if p.membership_status_id == "email_unverified":
+        if p.membership_status_id == MembershipStatus.EMAIL_UNVERIFIED:
             flash(
                 'Du hast bereits einen Mitgliedsantrag eingereicht,'
-                ' aber deine Email noch nicht bestätigt. '
+                ' aber deine Email noch nicht bestätigt.'
                 f' Wir haben die Bestätigungsemail erneut an {p.email} versendet.',
                 category='warning',
             )
 
-        if p.membership_status_id == "pending":
+        if p.membership_status_id == MembershipStatus.PENDING:
             flash(
                 'Du hast bereits einen Mitgliedsantrag eingereicht,'
                 ' aber dieser ist noch nicht vom Vorstand bestätigt worden.'
@@ -129,11 +126,11 @@ def register():
             )
             return redirect(url_for('main.index'))
 
-        if p.membership_status_id == "confirmed":
+        if p.membership_status_id == MembershipStatus.CONFIRMED:
             flash('Du bist bereits Mitglied', category='danger')
             return redirect(url_for('main.index'))
 
-        p.membership_status_id = "email_unverified"
+        p.membership_status_id = MembershipStatus.EMAIL_UNVERIFIED
         db.session.add(p)
         db.session.commit()
 
@@ -155,7 +152,7 @@ def register():
         flash(
             'Um den Vorgang abzuschließen, klicke auf den Link in der'
             ' Bestätigungsemail. Vorher können wir deinen Antrag'
-            f' nicht bearbteiten. Der Link ist {max_age} Minuten gültig.',
+            f' nicht bearbeiten. Der Link ist {max_age} Minuten gültig.',
             category='warning',
         )
         return redirect(url_for('main.index'))

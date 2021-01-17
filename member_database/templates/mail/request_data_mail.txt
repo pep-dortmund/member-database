@@ -8,4 +8,4 @@ Ansonsten kannst du auf den folgenden Link klicken, um deine Daten einzusehen:
 {{ data_link }}
 
 Viele Grüße
-Die PeP Migliederverwaltung
+Die PeP Mitgliederverwaltung

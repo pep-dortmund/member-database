@@ -32,6 +32,23 @@ class Person(db.Model):
 class MembershipStatus(db.Model):
     id = db.Column(db.String, primary_key=True)
 
+    EMAIL_UNVERIFIED = 'email_unverified'
+    PENDING = 'pending'
+    CONFIRMED = 'confirmed'
+    DENIED = 'denied'
+    CANCELED = 'canceled'
+
+    STATES = (
+        EMAIL_UNVERIFIED,
+        PENDING,
+        CONFIRMED,
+        DENIED,
+        CANCELED,
+    )
+
+
+
+
 
 roles = db.Table(
     'roles',
