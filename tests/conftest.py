@@ -27,9 +27,10 @@ def client(app):
 @pytest.fixture(scope='session')
 def admin_user(client):
     from member_database.models import Person, User, Role, AccessLevel, db
+    from member_database.utils import get_or_create
 
     admin = Role(id='admin', access_levels=[
-        AccessLevel(id='member_management'),
+        get_or_create(AccessLevel, id='member_management')[0],
     ])
 
     p = Person(name='Richard Feynman', email='rfeynman@example.org')
