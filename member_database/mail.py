@@ -37,7 +37,7 @@ def target(app, msg):
                 f'Failed sending mail with subject "{msg.subject}" to {msg.recipients}'
             )
             raise
-    log.info('Mail sent')
+    log.info(f'Mail "{msg.subject}" sent to {msg.recipients}')
 
 
 def send_msg_async(msg):

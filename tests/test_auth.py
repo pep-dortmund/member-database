@@ -44,7 +44,7 @@ def test_login(client):
     """
     Check if the login page delivers a valid response
     """
-    response = client.get('/login')
+    response = client.get('/login/')
     assert response.status_code == 200
 
 

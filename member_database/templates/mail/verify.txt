@@ -1,0 +1,16 @@
+Hallo {{ new_member.name }},
+
+schön, dass du Mitglied werden möchtest!
+
+Bitte bestätige deinen Mitgliedsantrag,
+indem du folgenden Link besuchst:
+
+{{ url }}
+
+Falls Du keinen Mitgliedsantrag gestellt hast, kannst du diese Email
+einfach ignorieren.
+
+Herzliche Grüße
+PeP et al. e.V.
+
+{% include "mail/signature.txt" %}

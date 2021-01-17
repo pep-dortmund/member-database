@@ -10,4 +10,6 @@ klicken, um deine Daten zu ändern.
 {{ edit_link }}
 
 Viele Grüße
-Die PeP Migliederverwaltung
+Die PeP Mitgliederverwaltung
+
+{% include "mail/signature.txt" %}

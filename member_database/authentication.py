@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, EqualTo
 from flask import (
-    redirect, url_for, request, flash, abort, jsonify, current_app,
+    request, flash, abort, jsonify, current_app,
     render_template
 )
 from itsdangerous import URLSafeTimedSerializer
@@ -87,11 +87,8 @@ def handle_needs_login():
     if 'application/json' in request.headers.get('Accept', []):
         return jsonify(status='access_denied'), 401
 
-    if request.headers.get('Authorization') is not None:
-        abort(401)
-
     flash("You have to be logged in to access this page.", category='danger')
-    return redirect(url_for('main.login_page', next=request.full_path))
+    abort(401)
 
 
 class LoginForm(FlaskForm):
