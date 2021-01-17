@@ -1,9 +1,8 @@
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import validates
-from jsonschema import validate
+from jsonschema.validators import Draft7Validator
 
 from ..models import db
-from .common_schemata import META_SCHEMA
 
 
 class Event(db.Model):
@@ -20,7 +19,7 @@ class Event(db.Model):
 
     @validates('registration_schema')
     def validate_schema(self, key, schema):
-        validate(schema, META_SCHEMA)
+        Draft7Validator.check_schema(schema)
         return schema
 
     def __repr__(self):
