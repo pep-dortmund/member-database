@@ -21,7 +21,7 @@ class Person(db.Model):
     email_valid = db.Column(db.Boolean, default=False)
 
     date_of_birth = db.Column(db.Date, nullable=True)
-    joining_date = db.Column(db.Date, default=date.today, nullable=True)
+    joining_date = db.Column(db.Date, default=None, nullable=True)
 
     user = db.relationship('User', backref='person', lazy='subquery')
 
@@ -45,9 +45,6 @@ class MembershipStatus(db.Model):
         DENIED,
         CANCELED,
     )
-
-
-
 
 
 roles = db.Table(

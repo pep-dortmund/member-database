@@ -1,3 +1,4 @@
+from datetime import date
 from flask import (
     jsonify, request, url_for, render_template, redirect,
     flash, abort, Blueprint, current_app
@@ -335,6 +336,10 @@ def handle_application(person_id):
 
     decision = request.form.get('decision')
     if decision == "accept":
+        application.joining_date = date.today()
+        db.session.add(application)
+        db.session.commit()
+
         flash(f"Mitgliedsantrag für {application.name} angenommen", category="success")
         send_email(
             subject=_('Willkommen bei PeP et al. e.V.'),
