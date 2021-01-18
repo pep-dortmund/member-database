@@ -3,7 +3,7 @@
 set -e
 
 # first backup!
-pg_dump $DATABASE_URL > /var/backups/$(date +"%Y-%m-%dT%H%M%S").sql
+pg_dump "$DATABASE_URL" > /var/backups/$(date +"%Y-%m-%dT%H%M%S").sql
 
 # apply database migrations
 flask db upgrade

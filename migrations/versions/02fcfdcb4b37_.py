@@ -42,9 +42,5 @@ def upgrade():
             )
         )
         batch_op.create_unique_constraint(batch_op.f('uq_person_email'), ['email'])
-        batch_op.create_foreign_key(
-            batch_op.f('fk_person_membership_status_id_membership_status'),
-            'membership_status', ['membership_status_id'], ['id']
-        )
         batch_op.drop_column('member')
         batch_op.drop_column('membership_pending')
