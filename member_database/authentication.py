@@ -1,4 +1,4 @@
-from flask_login import LoginManager, login_required, current_user
+from flask_login import LoginManager, login_required, current_user, AnonymousUserMixin
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, EqualTo
@@ -19,6 +19,18 @@ from .queries import get_user_by_name_or_email
 login = LoginManager()
 
 ACCESS_LEVELS = set()
+
+
+class AnonymousUser(AnonymousUserMixin):
+    '''
+    Adds `has_access` method always returning false to the anonymous_user
+    '''
+    @staticmethod
+    def has_access(access):
+        return False
+
+
+login.anonymous_user = AnonymousUser
 
 
 def access_required(name):
