@@ -5,15 +5,28 @@
   <ul class="list-group">
   {% for application in applications %}
     <li class="list-group-item">
-      {{ application.joining_date }} {{ application.name }} {{ application.email }}
+      <div class="row">
+        <div class="col-12 col-sm-4 col-lg-4 d-flex align-items-center">
+          {{ application.name }}
+        </div>
+        <div class="col-12 col-sm-8 col-lg-4 d-flex align-items-center">
+          {{ application.email }}
+        </div>
 
-      <form class="form form-inline" action="/applications/{{ application.id }}/" method="post">
-        <input type="radio" id="accept" name="decision"  value="accept" checked="checked" />
-        <label for="accept">Annehmen</label>
-        <input type="radio" id="deny" name="decision"  value="deny" />
-        <label for="deny">Ablehnen</label>
-        <input type="submit" value="Enter">
-      </form>
+        <div class="col-12 col-lg-4 d-flex align-items-center justify-content-end">
+          <form class="form form-inline" action="/applications/{{ application.id }}/" method="post">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="accept" name="decision"  value="accept" checked="checked" />
+              <label class="form-check-label" for="accept">Annehmen</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="deny" name="decision"  value="deny" />
+              <label class="form-check-label" for="deny">Ablehnen</label>
+            </div>
+            <input class="btn btn-primary btn-small" type="submit" value="Bestätigen">
+          </form>
+        </div>
+      </div>
     </li>
   {% endfor %}
   </ul>

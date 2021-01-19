@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "member-database"
-version = "0.5.1"
+version = "0.5.2"
 description = "Our PeP database solution for members and events"
 authors = ["Kevin Heinicke <kevin.heinicke@tu-dortmund.de>", "Maximilian Nöthe <maximilian.noethe@tu-dortmund.de>"]
 license = "MIT"
@@ -21,6 +21,7 @@ flask-admin = "^1.5.4"
 backoff = "^1.10.0"
 gunicorn = {version = "^20.0.4", optional = true}
 psycopg2-binary = {version = "^2.8.4", optional = true}
+email-validator = "^1.1.2"
 
 [tool.poetry.extras]
 deploy = ["gunicorn", "psycopg2-binary"]
