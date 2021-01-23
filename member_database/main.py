@@ -165,7 +165,7 @@ def register():
         return redirect(url_for('main.index'))
 
     return render_template(
-        'simple_form.html', title='Mitgliedsantrag', form=form
+        'member_registration.html', form=form
     )
 
 
