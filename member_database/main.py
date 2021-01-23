@@ -223,9 +223,9 @@ def request_gdpr_data():
         return redirect(url_for('main.index'))
 
     return render_template(
-        'simple_form.html',
+        'gdpr_form.html',
         form=form,
-        title='Meine gespeicherten Daten einsehen (DSGVO-Anfrage)',
+        title='DSGVO-Anfrage',
     )
 
 @main.route('/edit/<token>', methods=['GET', 'POST'])
