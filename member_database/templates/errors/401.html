@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block app_content %}
+{% block main %}
   <h1>Unauthorized</h1>
   {% if current_user.is_authenticated %}
   You don't have the necessary permissions to access this page.

@@ -126,7 +126,11 @@ class UserView(AuthorizedView):
 
 
 def create_admin_views():
-    admin = Admin(index_view=IndexView())
+    admin = Admin(
+        index_view=IndexView(),
+        template_mode='bootstrap4',
+        base_template="admin_master.html"
+    )
     admin.add_view(EventView(Event, db.session))
     admin.add_view(EventRegistrationView(EventRegistration, db.session))
     admin.add_view(PersonView(Person, db.session))
