@@ -390,7 +390,7 @@ def login_page():
             # if form was posted but is not valid we abort with 401
             abort(401)
 
-    return render_template('simple_form.html', title='Login', form=form)
+    return render_template('login_form.html', title='Login', form=form)
 
 
 @main.route('/password_reset/', methods=['GET', 'POST'])
