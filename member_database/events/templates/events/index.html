@@ -43,7 +43,10 @@
   hier erneut anfordern</a>.
   {% endif %}
 
+  {% if not events and not full_events %}
+  Es gibt zur Zeit keine Veranstaltungen.
+  {% endif %}
+
 
 
 {% endblock %}
-
