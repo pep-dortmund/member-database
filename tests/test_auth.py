@@ -5,9 +5,27 @@ OLD_PW = 'test'
 NEW_PW = 'foo'
 
 
+def test_new_user(client):
+    """
+    Check if we can create a new user and set its password.
+    """
+    from member_database.models import Person, db
+    from member_database.authentication import User
+
+    p = Person(name='Alfred Nobel', email='alfred.nobel@tu-dortmund.de')
+    u = User(person=p)
+    u.set_password('test')
+
+    db.session.add(p, u)
+    db.session.commit()
+
+    assert u.person_id == p.id
+
+
 @pytest.fixture(scope='module')
 def test_user():
-    from member_database.models import Person, User, db
+    from member_database.models import Person, db
+    from member_database.authentication import User
 
     p = Person(name='Albert Einstein', email='albert.einstein@tu-dortmund.de')
     u = User(person=p, username='aeinstein')
@@ -21,7 +39,8 @@ def test_user():
 
 @pytest.fixture(scope='module')
 def test_user2():
-    from member_database.models import Person, User, db
+    from member_database.models import Person, db
+    from member_database.authentication import User
 
     p = Person(name='Marie Curie', email='marie.curie@tu-dortmund.de')
     u = User(person=p, username='mcurie')
@@ -80,7 +99,7 @@ def test_password_reset(client, test_user):
 
 
 def test_get_user(test_user, test_user2):
-    from member_database.queries import get_user_by_name_or_email
+    from member_database.authentication import get_user_by_name_or_email
 
     assert get_user_by_name_or_email(test_user.username).id == test_user.id
     assert get_user_by_name_or_email(test_user.person.email).id == test_user.id

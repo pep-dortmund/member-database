@@ -26,7 +26,8 @@ def client(app):
 
 @pytest.fixture(scope='session')
 def admin_user(client):
-    from member_database.models import Person, User, Role, AccessLevel, db
+    from member_database.models import Person, db
+    from member_database.authentication import User, Role, AccessLevel
     from member_database.utils import get_or_create
 
     admin = Role(id='admin', access_levels=[

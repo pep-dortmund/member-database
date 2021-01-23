@@ -1,5 +1,4 @@
 from datetime import date
-from re import M
 from flask import (
     jsonify, request, url_for, render_template, redirect,
     flash, abort, Blueprint, current_app
@@ -11,18 +10,9 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadData
 from sqlalchemy.exc import IntegrityError
 
 from .models import db, Person, as_dict
-from .models.person import AccessLevel, MembershipStatus
-from .queries import get_user_by_name_or_email
+from .models.person import MembershipStatus
 from .utils import get_or_create, ext_url_for
-from .authentication import (
-    access_required,
-    LoginForm,
-    PasswordResetForm,
-    SendPasswordResetForm,
-    send_password_reset_mail,
-    load_reset_token,
-    ACCESS_LEVELS,
-)
+from .authentication import access_required
 from .forms import PersonEditForm, MembershipForm, RequestLinkForm
 from .mail import send_email
 
@@ -32,9 +22,6 @@ main = Blueprint('main', __name__)
 
 @main.before_app_first_request
 def init_database():
-    for access_level in ACCESS_LEVELS:
-        get_or_create(AccessLevel, id=access_level)
-
     for name in MembershipStatus.STATES:
         get_or_create(MembershipStatus, id=name)
 
@@ -367,77 +354,3 @@ def handle_application(person_id):
     db.session.commit()
 
     return redirect(url_for("main.applications"))
-
-
-@main.route('/login/', methods=['GET', 'POST'])
-def login_page():
-    if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
-
-    form = LoginForm()
-    if form.is_submitted():
-        if form.validate_on_submit():
-            user = get_user_by_name_or_email(form.user_or_email.data)
-
-            if user is None or not user.check_password(form.password.data):
-                flash('Invalid user or password', 'danger')
-                abort(401)
-
-            login_user(user)
-            return redirect(request.args.get('next') or url_for('main.index'))
-
-        else:
-            # if form was posted but is not valid we abort with 401
-            abort(401)
-
-    return render_template('login_form.html', title='Login', form=form)
-
-
-@main.route('/password_reset/', methods=['GET', 'POST'])
-def send_password_reset():
-    form = SendPasswordResetForm()
-
-    if form.validate_on_submit():
-        user = get_user_by_name_or_email(form.user_or_email.data)
-        if user is None:
-            flash('Unknown username or email', 'danger')
-            return redirect(url_for('main.send_password_reset'))
-
-        send_password_reset_mail(user.person)
-
-        flash('Password reset email sent', 'success')
-        return redirect('/')
-
-    return render_template(
-        'simple_form.html', title='Reset Password', form=form
-    )
-
-
-@main.route('/password_reset/<token>', methods=['GET', 'POST'])
-def reset_password(token):
-
-    try:
-        email = load_reset_token(token)
-    except SignatureExpired:
-        flash('Password reset link expired, request a new one', 'danger')
-        return redirect('/')
-    except BadData:
-        abort(404)
-
-    form = PasswordResetForm()
-    if form.validate_on_submit():
-        user = get_user_by_name_or_email(email)
-        user.set_password(form.new_password.data)
-        db.session.add(user)
-        db.session.commit()
-        return redirect('/')
-
-    return render_template(
-        'simple_form.html', title='Reset Password', form=form
-    )
-
-
-@main.route('/logout', methods=['GET', 'POST'])
-def logout():
-    logout_user()
-    return redirect(url_for('main.index'))

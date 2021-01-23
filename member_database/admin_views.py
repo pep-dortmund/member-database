@@ -7,9 +7,9 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import fields
 from wtforms.fields import PasswordField
 
-from .models import db, User, Person, Role, AccessLevel
+from .models import db, Person
 from .events import Event, EventRegistration
-from .authentication import handle_needs_login, ACCESS_LEVELS
+from .authentication import User, Role, AccessLevel, handle_needs_login, ACCESS_LEVELS
 
 
 class PrettyJSONField(fields.JSONField):
