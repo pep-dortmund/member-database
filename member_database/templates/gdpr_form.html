@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block app_content %}
   <h1>{{ title }}</h1>
-  <p>Wir senden dir gerne per Mail alle Daten, die wir über dich gespeichert haben. Gib dazu bitte deine E-Mail-Adresse unten an.</p>
+  <p>Wir senden dir gerne einen Link mit dem du alle Daten einsehen kannst die wir über dich gespeichert haben. Gib dazu bitte deine E-Mail-Adresse unten an.</p>
 
 {% from 'bootstrap/form.html' import render_form %}
 {{ render_form(form, method='POST', action=action) }}
