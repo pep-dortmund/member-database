@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block app_content %}
+  <h1>Mitgliedsantrag</h1>
+
+  <p>Vielen Dank für dein Interesse PeP Mitglied zu werden</p>
+  <p>Mitgliedsbeitrag sind 10€ pro Jahr, Studierende sind ausgenommen</p>
+
+{% from 'bootstrap/form.html' import render_form %}
+{{ render_form(form, method='POST', action=action) }}
+
+{% endblock %}
