@@ -12,7 +12,7 @@ import logging
 
 from .config import Config
 from .models import db
-from .authentication import login
+from .authentication import auth, login
 from .mail import mail
 from .errors import not_found_error, internal_error, unauthorized_error
 from .log import setup_logging
@@ -49,6 +49,7 @@ def create_app(config=Config):
     def get_locale():
         return request.accept_languages.best_match(app.config['LANGUAGES'])
 
+    app.register_blueprint(auth)
     app.register_blueprint(main)
     app.register_blueprint(events, url_prefix='/events')
 

@@ -45,11 +45,11 @@
     <span class="navbar-text ml-auto mr-3">
       Logged in as {{ current_user.username }}
     </span>
-    <form class="form form-inline" action="{{ url_for('main.logout') }}" method="POST">
+    <form class="form form-inline" action="{{ url_for('auth.logout') }}" method="POST">
       <input class="btn btn-primary" type="submit" value="Logout"/>
     </form>
     {% else %}
-      <a class="btn btn-primary" href="{{ url_for('main.login_page', next=request.full_path) }}">Login</a>
+      <a class="btn btn-primary" href="{{ url_for('auth.login_page', next=request.full_path) }}">Login</a>
     {% endif %}
   </div>
 </nav>

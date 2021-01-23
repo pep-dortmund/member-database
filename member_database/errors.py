@@ -24,5 +24,5 @@ def unauthorized_error(error):
     next_link = request.args.get('next', request.full_path)
     return render_template(
         'simple_form.html', title='Login',
-        form=form, action=url_for('main.login_page', next=next_link),
+        form=form, action=url_for('auth.login_page', next=next_link),
     ), 401
