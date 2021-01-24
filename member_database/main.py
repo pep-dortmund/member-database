@@ -284,13 +284,22 @@ def edit(token):
     )
     form.tu_status.choices = [(state.id, state.name) for state in TUStatus.query.all()]
     form.tu_status.choices.append(('', 'Keine Angabe'))
+    
+    # don't show these fields for non-members
+    if p.membership_status is None:
+        del form.membership_type
+        del form.membership_status
+        del form.joining_date
 
     if form.validate_on_submit():
         p.name = form.name.data
-        p.membership_type_id = form.membership_type.data
         p.date_of_birth = form.date_of_birth.data
+
         if form.tu_status.data != '':
             p.tu_status_id = form.tu_status.data
+
+        if p.membership_status is not None:
+            p.membership_type_id = form.membership_type.data
 
         db.session.commit()
         flash(_('Ihre Daten wurden erfolgreich aktualisiert.'), 'success')

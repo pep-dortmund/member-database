@@ -24,7 +24,12 @@ def test_person_edit_form(client, test_person):
     assert test_person.tu_status_id is None
     assert client.get(link).status_code == 200
 
+    print(test_person.tu_status)
     ret = client.post(link, data={'tu_status': 2}, follow_redirects=True)
+
+    person = Person.query.filter_by(email=test_person.email).one()
+    assert person.tu_status.name == 'Doktorand*in'
+
     assert ret.status_code == 200
     assert 'Ihre Daten wurden erfolgreich aktualisiert.' in ret.data.decode('utf-8')
 
