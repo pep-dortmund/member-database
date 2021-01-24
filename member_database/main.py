@@ -9,8 +9,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadData
 
 from sqlalchemy.exc import IntegrityError
 
-from .models import db, Person, as_dict
-from .models.person import MembershipStatus
+from .models import db, Person, as_dict, MembershipStatus, TUStatus
 from .utils import get_or_create, ext_url_for
 from .authentication import access_required
 from .forms import PersonEditForm, MembershipForm, RequestLinkForm
@@ -22,8 +21,11 @@ main = Blueprint('main', __name__)
 
 @main.before_app_first_request
 def init_database():
-    for name in MembershipStatus.STATES:
-        get_or_create(MembershipStatus, id=name)
+    for id_ in MembershipStatus.STATES:
+        get_or_create(MembershipStatus, id=id_)
+
+    for name in TUStatus.STATES:
+        get_or_create(TUStatus, name=name)
 
     db.session.commit()
 
@@ -185,7 +187,7 @@ def request_edit():
         return redirect(url_for('main.index'))
 
     return render_template(
-        'simple_form.html',
+        'request_edit.html',
         form=form,
         title='Persönliche Daten ändern',
     )
@@ -270,16 +272,19 @@ def edit(token):
         date_of_birth=p.date_of_birth,
         joining_date=p.joining_date,
         membership_status=p.membership_status_id,
+        tu_status=p.tu_status_id,
     )
+    form.tu_status.choices = [(state.id, state.name) for state in TUStatus.query.all()]
+    form.tu_status.choices.append(('', 'Keine Angabe'))
 
     if form.validate_on_submit():
         p.name = form.name.data
-        if p.email != form.email.data:
-            p.email_valid = False
-            p.email = form.email.data
         p.date_of_birth = form.date_of_birth.data
+        if form.tu_status.data != '':
+            p.tu_status_id = form.tu_status.data
+
         db.session.commit()
-        flash(_('Ihre Daten wurden erfolgreich aktualisiert.'))
+        flash(_('Ihre Daten wurden erfolgreich aktualisiert.'), 'success')
         return redirect(url_for('main.edit', token=token))
 
     return render_template('edit.html', form=form)

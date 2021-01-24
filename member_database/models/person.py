@@ -15,6 +15,11 @@ class Person(db.Model):
         'MembershipStatus', backref='persons', lazy='subquery'
     )
 
+    tu_status_id = db.Column(db.Integer, db.ForeignKey('tu_status.id'))
+    tu_status = db.relationship(
+        'TUStatus', backref='persons', lazy='subquery'
+    )
+
     email = db.Column(db.String(120), unique=True, nullable=False)
     email_valid = db.Column(db.Boolean, default=False)
 
@@ -23,6 +28,25 @@ class Person(db.Model):
 
     def __repr__(self):
         return f'<Person {self.id}: {self.name}>'
+
+
+class TUStatus(db.Model):
+    STUDENT = 'Student*in'
+    PHD = 'Doktorand*in'
+    ALUMNI = 'Alumnus/Alumna'
+    STAFF = 'Mitarbeiter*in / Lehrende'
+    OTHER = 'Sonstiges'
+
+    STATES = (
+        STUDENT,
+        PHD,
+        ALUMNI,
+        STAFF,
+        OTHER,
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
 
 
 class MembershipStatus(db.Model):

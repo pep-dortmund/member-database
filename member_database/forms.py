@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_babel import lazy_gettext as _l
-from wtforms import StringField, SubmitField, ValidationError
+from wtforms import StringField, SubmitField, ValidationError, RadioField
 from wtforms.fields.html5 import EmailField, DateField
 from wtforms.validators import DataRequired, Email, Optional
 
@@ -15,9 +15,14 @@ def known_email(form, field):
 
 class PersonEditForm(FlaskForm):
     name = StringField(_l('Name'), validators=[DataRequired()])
-    email = EmailField(_l('E-Mail-Adresse'), validators=[DataRequired(), Email()])
+    email = EmailField(
+        _l('E-Mail-Adresse'),
+        validators=[DataRequired(), Email()],
+        render_kw={'readonly': True},
+    )
+    tu_status = RadioField(_l('Aktuelles Verhältnis zur TU Dortmund'))
     date_of_birth = DateField(_l('Geburtstag'), validators=[Optional()])
-    joining_date = DateField(_l('Mitglied seit'), render_kw={'readonly': True})
+    joining_date = DateField(_l('Mitglied seit'), render_kw={'readonly': True}, validators=[Optional()])
     membership_status = StringField(_l('Mitgliedschaftsstatus'), render_kw={'readonly': True})
     submit = SubmitField(_l('Speichern'))
 
