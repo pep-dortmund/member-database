@@ -7,7 +7,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import fields
 from wtforms.fields import PasswordField
 
-from .models import db, Person
+from .models import db, Person, TUStatus
 from .events import Event, EventRegistration
 from .authentication import User, Role, AccessLevel, handle_needs_login, ACCESS_LEVELS
 
@@ -111,6 +111,10 @@ class PersonView(AuthorizedView):
     column_filters = ['name', 'email', Person.membership_status_id]
 
 
+class TUStatusView(AuthorizedView):
+    access_level = 'person_admin'
+
+
 class UserView(AuthorizedView):
     access_level = 'user_admin'
     column_list = ['username', 'person', 'roles']
@@ -137,4 +141,5 @@ def create_admin_views():
     admin.add_view(UserView(User, db.session))
     admin.add_view(RoleView(Role, db.session))
     admin.add_view(AccessLevelView(AccessLevel, db.session))
+    admin.add_view(TUStatusView(TUStatus, db.session))
     return admin

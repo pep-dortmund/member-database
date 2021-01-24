@@ -25,7 +25,17 @@ def client(app):
 
 
 @pytest.fixture(scope='session')
-def admin_user(client):
+def test_person(client):
+    from member_database.models import Person, db
+    p = Person(name='Richard Feynman', email='rfeynman@example.org')
+
+    db.session.add(p)
+    db.session.commit()
+
+    return p
+
+@pytest.fixture(scope='session')
+def admin_user(client, test_person):
     from member_database.models import Person, db
     from member_database.authentication import User, Role, AccessLevel
     from member_database.utils import get_or_create
@@ -34,8 +44,7 @@ def admin_user(client):
         get_or_create(AccessLevel, id='member_management')[0],
     ])
 
-    p = Person(name='Richard Feynman', email='rfeynman@example.org')
-    u = User(person=p, username='rfeynman', roles=[admin])
+    u = User(person=test_person, username='rfeynman', roles=[admin])
 
     # store clear text password in object so we can use it in the tests
     u.password = 'bongos'
