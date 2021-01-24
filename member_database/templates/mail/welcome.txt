@@ -1,29 +1,29 @@
-Hallo {{ new_member.name }}, 
-herzlich Willkommen bei PeP et al. e.V.
+Hallo {{ new_member.name }},
+herzlich willkommen bei PeP et al. e.V.
+Wir freuen uns, Sie als Mitglied begrüßen zu dürfen!
 
-PeP et al. lebt vom Mitmachen. Wer Lust hat aktiv am Vereinsleben teilzunehmen,
-schaut auf unserer Homepage nach und trägt sich in den Mail-Verteiler ein:
-https://pep-dortmund.org/mitmachen.html
+Unser Verein lebt vom Mitmachen. Wenn Sie selbst Lust haben, aktiv am
+Vereinsleben teilzunehmen, schauen Sie auf unserer Homepage nach und tragen Sie sich
+in den Mail-Verteiler ein: http://pep-dortmund.org/mitmachen.html.
+Sie können auch gerne die regelmäßigen Treffen besuchen. Mehr Details dazu sind
+ebenfalls auf unserer Homepage https://pep-dortmund.org/mitmachen.html unter Punkt Vorstandssitzungen zu finden.
 
+Für den Mitgliedsbeitrag von 10 € im Jahr würden wir uns sehr über einen Dauerauftrag freuen. Bachelor- und Master-Studierende sind vom Mitgliedsbeitrag befreit. Neben den Mitgliedsbeiträgen finanzieren wir uns zum größten Teil aus
+Spenden und stellen dafür gerne Spendenquittungen aus.
+http://pep-dortmund.org/spenden.html
 
-Ebenso kann man auch die regelmäßigen Treffen besuchen.
-Mehr Details dazu sind ebenfalls auf der Homepage zu finden.
-Dort finden sich auch aktuelle Informationen über unsere Aktivitäten!
+Mit den Einnahmen gestalten wir ein vielfältiges Programm. Projekte und Veranstaltungen, wie die jährliche Absolventenfeier, die Sommerakademie und unterschiedliche Workshops sowie die Vergabe diverser Stipendien sollen den Austausch zwischen Alumnis und Studierenden sowie zwischen den Studierenden untereinander fördern.
 
-Für den Mitgliedsbeitrag von 10 € im Jahr würden wir uns sehr über einen Dauerauftrag freuen.
-Bachelor- und Master-Studierende sind vom Mitgliedsbeitrag befreit.
+Bei regelmäßigen Stammtischen besteht die Möglichkeit andere Mitglieder
+kennenzulernen und sich über das Studium und die Zeit danach
+auszutauschen. Wir würden uns freuen, Sie persönlich kennenzulernen.
 
-Neben den Mitgliedsbeiträgen finanzieren wir uns zum größten Teil aus Spenden.
-Wir sind ein gemeinnütziger Verein und stellen gerne Spendenquittungen aus.
-Auch Sachspenden und zweckgebundene Spenden sind möglich.
-Wenn du eigene Ideen für die Verwendung von Spenden hast,
-nimm mit uns Kontakt auf, um die Details zu besprechen.
-Web: https://pep-dortmund.org/spenden.html
+Für Fragen und Anregungen stehen wir immer gerne zur Verfügung. Kontaktieren Sie uns per E-Mail: kontakt@pep-dortmund.org.
 
-Bei Fragen stehen wir immer gerne zur Verfügung, der PeP-Vorstand ist unter dieser Email erreichbar: kontakt@pep-dortmund.org
 
 Herzliche Grüße
 Kevin, Karl & Lena
 für PeP et al. e.V.
+
 
 {% include "mail/signature.txt" %}
