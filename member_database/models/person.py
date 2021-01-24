@@ -15,6 +15,13 @@ class Person(db.Model):
         'MembershipStatus', backref='persons', lazy='subquery'
     )
 
+    membership_type_id = db.Column(
+        db.String, db.ForeignKey('membership_type.id'),
+    )
+    membership_type = db.relationship(
+        'MembershipType', backref='persons', lazy='subquery'
+    )
+
     tu_status_id = db.Column(db.Integer, db.ForeignKey('tu_status.id'))
     tu_status = db.relationship(
         'TUStatus', backref='persons', lazy='subquery'
@@ -64,5 +71,17 @@ class MembershipStatus(db.Model):
         CONFIRMED,
         DENIED,
         CANCELED,
+    )
+
+
+class MembershipType(db.Model):
+    id = db.Column(db.String, primary_key=True)
+
+    ORDENTLICH = 'ordentlich'
+    AUSSERORDENTLICH = 'ausserordentlich'
+
+    TYPES = (
+        ORDENTLICH,
+        AUSSERORDENTLICH,
     )
 

@@ -9,7 +9,14 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadData
 
 from sqlalchemy.exc import IntegrityError
 
-from .models import db, Person, as_dict, MembershipStatus, TUStatus
+from .models import (
+    db,
+    Person,
+    as_dict,
+    MembershipStatus,
+    MembershipType,
+    TUStatus,
+)
 from .utils import get_or_create, ext_url_for
 from .authentication import access_required
 from .forms import PersonEditForm, MembershipForm, RequestLinkForm
@@ -26,6 +33,9 @@ def init_database():
 
     for name in TUStatus.STATES:
         get_or_create(TUStatus, name=name)
+
+    for id_ in MembershipType.TYPES:
+        get_or_create(MembershipType, id=id_)
 
     db.session.commit()
 
@@ -126,7 +136,9 @@ def register():
             flash('Du bist bereits Mitglied', category='danger')
             return redirect(url_for('main.index'))
 
+        p.name = form.name.data
         p.membership_status_id = MembershipStatus.EMAIL_UNVERIFIED
+        p.membership_type_id = form.membership_type.data
         db.session.add(p)
         db.session.commit()
 
@@ -267,16 +279,27 @@ def edit(token):
         date_of_birth=p.date_of_birth,
         joining_date=p.joining_date,
         membership_status=p.membership_status_id,
+        membership_type=p.membership_type_id,
         tu_status=p.tu_status_id,
     )
     form.tu_status.choices = [(state.id, state.name) for state in TUStatus.query.all()]
     form.tu_status.choices.append(('', 'Keine Angabe'))
+    
+    # don't show these fields for non-members
+    if p.membership_status is None:
+        del form.membership_type
+        del form.membership_status
+        del form.joining_date
 
     if form.validate_on_submit():
         p.name = form.name.data
         p.date_of_birth = form.date_of_birth.data
+
         if form.tu_status.data != '':
             p.tu_status_id = form.tu_status.data
+
+        if p.membership_status is not None:
+            p.membership_type_id = form.membership_type.data
 
         db.session.commit()
         flash(_('Ihre Daten wurden erfolgreich aktualisiert.'), 'success')

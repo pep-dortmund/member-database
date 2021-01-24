@@ -6,14 +6,17 @@
   {% for application in applications %}
     <li class="list-group-item">
       <div class="row">
-        <div class="col-12 col-sm-4 col-lg-4 d-flex align-items-center">
+        <div class="col-12 col-sm-4 col-lg-3 d-flex align-items-center">
           {{ application.name }}
         </div>
-        <div class="col-12 col-sm-8 col-lg-4 d-flex align-items-center">
+        <div class="col-12 col-sm-4 col-lg-3 d-flex align-items-center">
           {{ application.email }}
         </div>
+        <div class="col-12 col-sm-4 col-lg-1 d-flex align-items-center">
+          {{ application.membership_type_id }}
+        </div>
 
-        <div class="col-12 col-lg-4 d-flex align-items-center justify-content-end">
+        <div class="col-12 col-lg-5 d-flex align-items-center justify-content-end">
           <form class="form form-inline" action="/applications/{{ application.id }}/" method="post">
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" id="accept" name="decision"  value="accept" checked="checked" />

@@ -25,6 +25,7 @@ def test_person_edit_form(client, test_person):
     assert client.get(link).status_code == 200
 
     ret = client.post(link, data={'tu_status': 2}, follow_redirects=True)
+
     assert ret.status_code == 200
     assert 'Ihre Daten wurden erfolgreich aktualisiert.' in ret.data.decode('utf-8')
 
