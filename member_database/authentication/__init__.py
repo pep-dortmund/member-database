@@ -1,6 +1,6 @@
 from flask import (
     Blueprint, redirect, request, url_for, flash, abort,
-    render_template, current_app,
+    render_template, current_app
 )
 from flask_login import logout_user, current_user, login_user
 from itsdangerous import SignatureExpired, BadData, URLSafeTimedSerializer
@@ -68,7 +68,7 @@ def send_password_reset():
         user = get_user_by_name_or_email(form.user_or_email.data)
         if user is None:
             flash('Unknown username or email', 'danger')
-            return redirect(url_for('main.send_password_reset'))
+            return redirect(url_for('auth.send_password_reset'))
 
         send_password_reset_mail(user.person)
 
