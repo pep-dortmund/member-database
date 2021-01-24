@@ -8,23 +8,13 @@ from member_database.utils import get_or_create
 app = create_app()
 app.app_context().push()
 
-if Person.query.filter_by(email='max.noethe@t-online.de').first() is None:
-    print('Creating user mnoethe')
-    p = Person(name='Maximilian Nöthe', email='max.noethe@t-online.de')
-    u = User(person=p, username='mnoethe')
+if Person.query.filter_by(email='admin@pep-dortmund.org').first() is None:
+    print('Creating user admin')
+    p = Person(name='Albert Admin', email='admin@pep-dortmund.org')
+    u = User(person=p, username='admin')
     u.set_password('testdb')
 
-    r = Role(id='workshop')
-    r.access_levels.append(get_or_create(AccessLevel, id='get_participants')[0])
-    r.access_levels.append(get_or_create(AccessLevel, id='event_admin')[0])
-    r.access_levels.append(get_or_create(AccessLevel, id='role_admin')[0])
-    r.access_levels.append(get_or_create(AccessLevel, id='access_level_admin')[0])
-    r.access_levels.append(get_or_create(AccessLevel, id='event_registration_admin')[0])
-    r.access_levels.append(get_or_create(AccessLevel, id='person_admin')[0])
-    r.access_levels.append(get_or_create(AccessLevel, id='user_admin')[0])
-    r.access_levels.append(get_or_create(AccessLevel, id='write_email')[0])
-    r.access_levels.append(get_or_create(AccessLevel, id='member_management')[0])
-    r.access_levels.append(get_or_create(AccessLevel, id='get_members')[0])
+    r = Role(id='admin', access_levels=AccessLevel.query.all()) 
     u.roles.append(r)
 
     db.session.add(p, u)
