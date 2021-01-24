@@ -30,7 +30,9 @@ jobs:
         run: poetry run flask db upgrade
 
       - name: "Check for schema changes"
-        run: poetry run flask db migrate 2>&1 | grep 'No changes in schema detected.'
+        run: |
+          poetry run flask db migrate 2>&1 | tee migrate.log
+          grep 'No changes in schema detected.' migrate.log
 
       - name: tests
         run: poetry run python -m pytest --cov member_database --cov-report=xml
