@@ -1,11 +1,10 @@
-Liebes PeP-Mitglied
+Liebes PeP-Mitglied,
 
-Ein Link zur Änderung deiner Persönlichen Daten wurde angefordert.
-Falls du diese Änderung nicht angefordert hast, kannst du diese Email einfach
-Ignorieren.
+ein Link zur Änderung Ihrer von PeP et al. gespeicherten Daten wurde angefordert.
+Falls Sie diese Änderung nicht angefordert haben, können Sie diese E-Mail einfach
+ignorieren.
 
-Falls du den Änderungslink angefordert hast, kannst du auf den folgenden Link
-klicken, um deine Daten zu ändern.
+Ansonsten können Sie auf den folgenden Link klicken, um Ihre Daten zu ändern:
 
 {{ edit_link }}
 
