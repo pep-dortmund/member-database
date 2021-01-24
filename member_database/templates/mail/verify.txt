@@ -1,13 +1,13 @@
 Hallo {{ new_member.name }},
 
-schön, dass du Mitglied werden möchtest!
+schön, dass Sie Mitglied bei PeP et al. werden möchten!
 
-Bitte bestätige deinen Mitgliedsantrag,
-indem du folgenden Link besuchst:
+Bitte bestätigen Sie Ihren Mitgliedsantrag und vervollständigen Sie Ihr Profil, indem Sie folgenden Link besuchen:
+
 
 {{ url }}
 
-Falls Du keinen Mitgliedsantrag gestellt hast, kannst du diese Email
+Falls Sie keinen Mitgliedsantrag gestellt haben, können Sie diese E-Mail
 einfach ignorieren.
 
 Herzliche Grüße
