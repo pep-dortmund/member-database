@@ -180,7 +180,7 @@ def request_edit():
         return redirect(url_for('main.index'))
 
     return render_template(
-        'simple_form.html',
+        'request_edit.html',
         form=form,
         title='Persönliche Daten ändern',
     )
