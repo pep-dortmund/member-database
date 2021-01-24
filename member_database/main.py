@@ -33,6 +33,11 @@ def index():
     return render_template('index.html')
 
 
+@main.route('/data_privacy_statement')
+def data_privacy_statement():
+    return render_template('data_privacy_statement.html')
+
+
 @main.route('/persons', methods=['GET'])
 @access_required('get_persons')
 def get_persons():
