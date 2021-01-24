@@ -1,5 +1,6 @@
 from member_database import create_app, db
-from member_database.models import Person, User, Role, AccessLevel
+from member_database.models import Person
+from member_database.authentication import User, Role, AccessLevel
 from member_database.events.models import Event, RegistrationStatus
 from member_database.events.common_schemata import ABSOLVENTENFEIER, TOOLBOX
 from member_database.utils import get_or_create

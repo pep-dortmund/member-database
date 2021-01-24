@@ -1,5 +1,4 @@
 memberdb.log*
-migrations
 dev/
 *.sqlite
 
