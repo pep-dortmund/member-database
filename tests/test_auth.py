@@ -97,6 +97,14 @@ def test_password_reset(client, test_user):
     assert test_user.check_password(NEW_PW)
     assert not test_user.check_password(OLD_PW)
 
+    # unknown user should give a flashed message
+    ret = client.post(
+        '/password_reset/',
+        data={'user_or_email': 'non_existent_user'},
+        follow_redirects=True
+    )
+    assert "Unknown username or email" in ret.data.decode('utf-8')
+
 
 def test_get_user(test_user, test_user2):
     from member_database.authentication import get_user_by_name_or_email
