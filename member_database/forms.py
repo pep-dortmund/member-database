@@ -24,8 +24,9 @@ class PersonEditForm(FlaskForm):
     tu_status = RadioField(_l('Aktuelles Verhältnis zur TU Dortmund'), validators=[Optional()])
     date_of_birth = DateField(_l('Geburtstag'), validators=[Optional()])
     joining_date = DateField(
-        _l('Mitglied seit'), render_kw={'readonly': True}, validators=[Optional()]
-                             )
+        _l('Mitglied seit'),
+        render_kw={'readonly': True}, validators=[Optional()]
+    )
     membership_status = StringField(_l('Mitgliedschaftsstatus'), render_kw={'readonly': True})
     membership_type = RadioField(
         _l('Art der Mitgliedschaft'),

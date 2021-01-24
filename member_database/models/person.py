@@ -81,7 +81,7 @@ class MembershipType(db.Model):
     AUSSERORDENTLICH = 'ausserordentlich'
 
     TYPES = (
-    ORDENTLICH,
-    AUSSERORDENTLICH,
+        ORDENTLICH,
+        AUSSERORDENTLICH,
     )
 
