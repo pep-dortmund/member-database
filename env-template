@@ -5,7 +5,7 @@ export FLASK_DEBUG=true
 # Set this to an absolute! path on your machine
 # or to the connection to the actual database for the deployment
 # e.g. "sqlite:////home/maxnoe/pepdb.sqlite"
-export DATABASE_URL='sqlite:////'
+export DATABASE_URL='sqlite:////dbpath'
 
 # Set this to the domain this runs on for deployment
 export SERVER_NAME=''
