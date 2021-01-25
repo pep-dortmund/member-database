@@ -1,3 +1,5 @@
+from datetime import date
+
 from werkzeug.utils import validate_arguments
 from flask_wtf import FlaskForm
 from flask_babel import lazy_gettext as _l
@@ -14,6 +16,11 @@ def known_email(form, field):
         raise ValidationError('Unbekannte Email-Adresse')
 
 
+def not_in_future(form, field):
+    if field.data > date.today():
+        raise ValidationError("Datum darf nicht in der Zukunft liegen")
+
+
 class PersonEditForm(FlaskForm):
     name = StringField(_l('Name'), validators=[DataRequired()])
     email = EmailField(
@@ -22,7 +29,7 @@ class PersonEditForm(FlaskForm):
         render_kw={'readonly': True},
     )
     tu_status = RadioField(_l('Aktuelles Verhältnis zur TU Dortmund'), validators=[Optional()])
-    date_of_birth = DateField(_l('Geburtstag'), validators=[Optional()])
+    date_of_birth = DateField(_l('Geburtstag'), validators=[Optional(), not_in_future])
     joining_date = DateField(
         _l('Mitglied seit'),
         render_kw={'readonly': True}, validators=[Optional()]
