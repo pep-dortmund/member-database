@@ -1,19 +1,31 @@
-# e.g. "sqlite:////home/maxnoe/pepdb.sqlite"
-export FLASK_APP=member_database
+# Debug will show tracebacks in the browser
+# print mails instead of sending them and reload on changes
 export FLASK_DEBUG=true
-export DATABASE_URL='sqlite:///dbpath'
+
+# Set this to an absolute! path on your machine
+# or to the connection to the actual database for the deployment
+# e.g. "sqlite:////home/maxnoe/pepdb.sqlite"
+export DATABASE_URL='sqlite:////dbpath'
+
+# Set this to the domain this runs on for deployment
 export SERVER_NAME=''
-export USE_HTTPS=true
+# set to true for deployment
+export USE_HTTPS=false
 export SECRET_KEY='changeme'
 
 export MAIL_SENDER='PeP Database'
 export MAIL_SERVER=''
 export MAIL_PORT=587
 export MAIL_USE_TLS=true
-export MAIL_USE_SSL=true
+export MAIL_USE_SSL=false
 export MAIL_USERNAME=''
 export MAIL_PASSWORD=''
 
+# This mail address gets notified if new members register
 export APPROVE_MAIL=''
+# This email get's error logs
 export ADMIN_MAIL=''
+
 export LOG_FILE='memberdb.log'
+
+export FLASK_APP=member_database

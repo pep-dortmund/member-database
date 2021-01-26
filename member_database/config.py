@@ -17,6 +17,10 @@ class Config:
     # needed for url_for
     USE_HTTPS = os.getenv('USE_HTTPS', '').lower() == 'true'
 
+    # force secure cookie if HTTPS is used
+    # https://blog.miguelgrinberg.com/post/cookie-security-for-flask-applications
+    SESSION_COOKIE_SECURE = True # USE_HTTPS
+
     # config for the email server so this app can send mails
     MAIL_SENDER = os.environ['MAIL_SENDER']
     MAIL_SERVER = os.environ['MAIL_SERVER']

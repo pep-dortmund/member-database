@@ -24,7 +24,7 @@ jobs:
         run: |
           pip install poetry
           poetry install
-          cp env-template .env
+          sed < env-template -e "s:dbpath:$HOME/pep.sqlite:" > .env
 
       - name: "Perform migrations"
         run: poetry run flask db upgrade
