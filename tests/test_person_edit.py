@@ -1,5 +1,6 @@
 from member_database.mail import mail
 from member_database.models import Person
+from datetime import date, timedelta
 import re
 
 
@@ -31,3 +32,10 @@ def test_person_edit_form(client, test_person):
 
     person = Person.query.filter_by(email=test_person.email).one()
     assert person.tu_status.name == 'Doktorand*in'
+
+    # test that future dates are rejected
+    date_of_birth = date.today() + timedelta(days=365)
+    ret = client.post(link, data={'date_of_birth': date_of_birth}, follow_redirects=True)
+    # check date was not updated
+    person = Person.query.filter_by(email=test_person.email).one()
+    assert person.date_of_birth is None
