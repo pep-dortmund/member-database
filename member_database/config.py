@@ -19,7 +19,7 @@ class Config:
 
     # force secure cookie if HTTPS is used
     # https://blog.miguelgrinberg.com/post/cookie-security-for-flask-applications
-    SESSION_COOKIE_SECURE = USE_HTTPS
+    SESSION_COOKIE_SECURE = True # USE_HTTPS
 
     # config for the email server so this app can send mails
     MAIL_SENDER = os.environ['MAIL_SENDER']
