@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block app_content %}
+{% block main %}
   <h1>{{ title }}</h1>
 
 {% from 'bootstrap/form.html' import render_form %}
 {{ render_form(form, method='POST', action=action) }}
 
-<p>Passwort vergessen? <a href="{{ url_for('main.send_password_reset') }}">Password Reset anfordern</a>
+<p>Passwort vergessen? <a href="{{ url_for('auth.send_password_reset') }}">Password Reset anfordern</a>
 
 {% endblock %}

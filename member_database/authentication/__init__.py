@@ -25,7 +25,7 @@ __all__ = [
 login.anonymous_user = AnonymousUser
 
 
-auth = Blueprint('auth', __name__)
+auth = Blueprint('auth', __name__, template_folder='templates')
 
 
 @auth.before_app_first_request
@@ -57,7 +57,7 @@ def login_page():
             # if form was posted but is not valid we abort with 401
             abort(401)
 
-    return render_template('simple_form.html', title='Login', form=form)
+    return render_template('authentication/login_form.html', title='Login', form=form)
 
 
 @auth.route('/password_reset/', methods=['GET', 'POST'])
