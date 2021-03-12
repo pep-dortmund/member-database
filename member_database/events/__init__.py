@@ -313,7 +313,7 @@ def write_mail(event_id):
     event = Event.query.get(event_id)
 
     form = SendMailForm(name=current_user.person.name, email=current_user.person.email)
-    n_participants = EventRegistration.query.filter_by(event_id=event_id).count()
+    n_participants = EventRegistration.query.filter_by(event_id=event_id, status="confirmed").count()
 
     if n_participants == 0:
         flash(f'No participants yet for event {event.name}', 'danger')
@@ -323,7 +323,7 @@ def write_mail(event_id):
         participants = (
             EventRegistration.query
             .options(joinedload(EventRegistration.person))  # directly fetch persons
-            .filter_by(event_id=event_id)
+            .filter_by(event_id=event_id, status="confirmed")
         )
 
         attachments = [
