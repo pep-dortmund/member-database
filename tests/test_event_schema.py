@@ -6,6 +6,16 @@ def has_validator(field, validator_cls):
     return any(isinstance(v, validator_cls) for v in field.validators)
 
 
+def test_empty():
+    '''Test empty schema works'''
+    from member_database.events.json_forms import create_wtf_form
+    schema = {}
+
+    Form = create_wtf_form(schema, baseclasses=(wtforms.Form, ))
+    form = Form()
+    assert isinstance(form.submit, wtforms.SubmitField)
+
+
 def test_basic_elements():
     from member_database.events.json_forms import create_wtf_form
     schema = dict(
