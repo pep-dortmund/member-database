@@ -93,12 +93,14 @@ def create_wtf_form(
         for name, field in additional_fields.items():
             attrs[name] = field
 
-    for name, field_schema in schema['properties'].items():
-        attrs[name] = create_wtf_field(
-            name,
-            field_schema,
-            required=name in required,
-        )
+    if "properties" in schema:
+        for name, field_schema in schema['properties'].items():
+            attrs[name] = create_wtf_field(
+                name,
+                field_schema,
+                required=name in required,
+            )
+
     if submit:
         attrs['submit'] = wtforms.SubmitField('Anmelden')
 
