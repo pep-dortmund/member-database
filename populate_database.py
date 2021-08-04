@@ -1,6 +1,6 @@
 from member_database import create_app, db
 from member_database.models import Person
-from member_database.authentication import User, Role, AccessLevel
+from member_database.authentication import User, Role, AccessLevel, ACCESS_LEVELS
 from member_database.events.models import Event, RegistrationStatus
 from member_database.events.common_schemata import ABSOLVENTENFEIER, TOOLBOX
 from member_database.utils import get_or_create
@@ -14,7 +14,9 @@ if Person.query.filter_by(email='admin@pep-dortmund.org').first() is None:
     u = User(person=p, username='admin')
     u.set_password('testdb')
 
-    r = Role(id='admin', access_levels=AccessLevel.query.all()) 
+    access_levels = [AccessLevel(id=level) for level in ACCESS_LEVELS]
+    r = Role(id='admin', access_levels=access_levels)
+    print(r.access_levels)
     u.roles.append(r)
 
     db.session.add(p, u)
