@@ -6,6 +6,10 @@
 {% from 'bootstrap/form.html' import render_form %}
 {% block main %}
 
+  {% if current_user.has_access("get_participants") %}
+    <a class="btn btn-primary" href="{{ url_for('events.participants', event_id=event.id) }}">Zu den Teilnehmenden</a>
+  {% endif %}
+
   <h1>Anmeldung {{ event.name }}</h1>
 
   <p> Falls du dich bereits für diese Veranstaltung angemeldet hast,
