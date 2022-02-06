@@ -8,6 +8,8 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.8"
 Django = "^4.0.2"
+python-dotenv = "^0.19.2"
+psycopg2 = {version = "^2.9.3", extras = ["postgresql"]}
 
 [tool.poetry.dev-dependencies]
 

@@ -9,8 +9,26 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+def getenv_bool(key, default=False):
+    '''Generate a boolean value from env
+
+    Values 1, true and yes are considered `True`, case-insensitively.
+    '''
+    value = os.getenv(key)
+    if value is None:
+        return default
+    result = value.lower() in {'1', 'true', 'yes'}
+    return result
+
+
+CONFIG_PREFIX = "PEPDB_"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +38,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-a0ou==gzgc4z&_h6$l=670_&mya6fk)ibl9l98(f^$@cy-m13c'
+SECRET_KEY = os.environ[CONFIG_PREFIX + 'SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = getenv_bool(CONFIG_PREFIX + 'DEBUG', False)
 
-ALLOWED_HOSTS = []
+hosts = os.environ.get(CONFIG_PREFIX + "ALLOWED_HOSTS")
+ALLOWED_HOSTS = hosts.split(",") if hosts is not None else []
 
 
 # Application definition
@@ -72,18 +91,26 @@ WSGI_APPLICATION = 'pepdb.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+default_db = {
+    "ENGINE": os.getenv(CONFIG_PREFIX + "DB_ENGINE", "django.db.backends.sqlite3"),
 }
+
+_is_sqlite = default_db["ENGINE"] == "django.db.backends.sqlite3"
+default_db["NAME"] = os.getenv(
+    CONFIG_PREFIX + "DB_NAME",
+    str(BASE_DIR / 'pepdb.sqlite3') if _is_sqlite else ""
+)
+
+for key in ("USER", "PASSWORD", "HOST", "PORT"):
+    config_key = f"{CONFIG_PREFIX}DB_{key}"
+    if config_key in os.environ:
+        default_db[key] = os.environ[config_key]
+
+DATABASES = {'default': default_db}
 
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -102,22 +129,16 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = os.getenv(CONFIG_PREFIX + 'LANGUAGE_CODE', 'de-de')
+TIME_ZONE = os.getenv(CONFIG_PREFIX + 'TIME_ZONE', 'Europe/Berlin')
 USE_I18N = True
-
 USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
-
 STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

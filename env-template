@@ -1,0 +1,21 @@
+# vim: set syntax=bash:
+# PEPDB example configuration
+
+# basic settings
+export PEPDB_SECRET_KEY='changeme'
+export PEPDB_DEBUG=1
+# export PEPDB_ALLOWED_HOSTS=""
+
+
+# Database Connection
+# export PEPDB_DB_ENGINE="django.db.backends.postgresql"
+# export PEPDB_DB_NAME="pepdb"
+# export PEPDB_DB_USER="pepdb"
+# export PEPDB_DB_PASSWORD=""
+# export PEPDB_DB_HOST="db"
+# export PEPDB_DB_PORT=""
+
+
+# Locale Settings
+# export PEPDB_LANGUAGE_CODE="de-de"
+# export PEPDB_TIME_ZONE="Europe/Berlin"
