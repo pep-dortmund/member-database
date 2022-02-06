@@ -29,6 +29,7 @@ def getenv_bool(key, default=False):
 
 
 CONFIG_PREFIX = "PEPDB_"
+AUTH_USER_MODEL = 'pepdb_auth.User'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -50,6 +51,7 @@ ALLOWED_HOSTS = hosts.split(",") if hosts is not None else []
 # Application definition
 
 INSTALLED_APPS = [
+    'pepdb_auth.apps.PepdbAuthConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
