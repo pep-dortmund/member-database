@@ -15,6 +15,14 @@ export PEPDB_DEBUG=1
 # export PEPDB_DB_HOST="db"
 # export PEPDB_DB_PORT=""
 
+# Email config
+export PEDB_EMAIL_HOST=''
+export PEDB_EMAIL_PORT=''
+export PEDB_EMAIL_USER=''
+export PEDB_EMAIL_PASSWORD=''
+# export PEPDN_EMAIL_USE_TLS=''
+# export PEPDN_EMAIL_USE_SSL=''
+
 
 # Locale Settings
 # export PEPDB_LANGUAGE_CODE="de-de"
