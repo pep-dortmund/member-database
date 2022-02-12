@@ -148,10 +148,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email settings
 # https://docs.djangoproject.com/en/4.0/ref/settings/#email-backend
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.environ[CONFIG_PREFIX + 'EMAIL_HOST']
-EMAIL_PORT = os.environ[CONFIG_PREFIX + 'EMAIL_PORT']
-EMAIL_HOST_USER = os.environ[CONFIG_PREFIX + 'EMAIL_USER']
-EMAIL_HOST_PASSWORD = os.environ[CONFIG_PREFIX + 'EMAIL_PASSWORD']
-EMAIL_USE_TLS = getenv_bool(CONFIG_PREFIX + 'EMAIL_USE_TLS', False)
-EMAIL_USE_SSL = getenv_bool(CONFIG_PREFIX + 'EMAIL_USE_SSL', False)
+# by default, just print to console
+backend = os.getenv(CONFIG_PREFIX + 'EMAIL_BACKEND', 'console')
+EMAIL_BACKEND = f'django.core.mail.backends.{backend}.EmailBackend'
+if backend == 'smtp':
+    EMAIL_HOST = os.environ[CONFIG_PREFIX + 'EMAIL_HOST']
+    EMAIL_PORT = os.environ[CONFIG_PREFIX + 'EMAIL_PORT']
+    EMAIL_HOST_USER = os.environ[CONFIG_PREFIX + 'EMAIL_USER']
+    EMAIL_HOST_PASSWORD = os.environ[CONFIG_PREFIX + 'EMAIL_PASSWORD']
+    EMAIL_USE_TLS = getenv_bool(CONFIG_PREFIX + 'EMAIL_USE_TLS', False)
+    EMAIL_USE_SSL = getenv_bool(CONFIG_PREFIX + 'EMAIL_USE_SSL', False)
