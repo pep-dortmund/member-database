@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang=en>
+<head>
+  <meta charset=utf-8>
+  <title>{% block title %}PeP-DB{% endblock %}</title>
+</head>
+
+<body>
+  <header>
+  {% block header %}
+  <h1>{% block h1 %}PeP-Database{% endblock %}</h1>
+  {% endblock %}
+  </header>
+  <main>
+  {% block content %}
+  {% endblock %}
+  </main>
+</body>
+</html>

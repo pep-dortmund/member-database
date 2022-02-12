@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
-from pathlib import Path
 from dotenv import load_dotenv
+
+from .common_settings import *
 
 load_dotenv()
 
@@ -29,67 +30,12 @@ def getenv_bool(key, default=False):
 
 
 CONFIG_PREFIX = "PEPDB_"
-AUTH_USER_MODEL = 'pepdb_auth.User'
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ[CONFIG_PREFIX + 'SECRET_KEY']
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = getenv_bool(CONFIG_PREFIX + 'DEBUG', False)
 
 hosts = os.environ.get(CONFIG_PREFIX + "ALLOWED_HOSTS")
 ALLOWED_HOSTS = hosts.split(",") if hosts is not None else []
-
-
-# Application definition
-
-INSTALLED_APPS = [
-    'pepdb_auth.apps.PepdbAuthConfig',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-]
-
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
-
-ROOT_URLCONF = 'pepdb.urls'
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
-
-WSGI_APPLICATION = 'pepdb.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -113,20 +59,6 @@ DATABASES = {'default': default_db}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
 
 
 # Internationalization
@@ -158,3 +90,4 @@ if backend == 'smtp':
     EMAIL_HOST_PASSWORD = os.environ[CONFIG_PREFIX + 'EMAIL_PASSWORD']
     EMAIL_USE_TLS = getenv_bool(CONFIG_PREFIX + 'EMAIL_USE_TLS', False)
     EMAIL_USE_SSL = getenv_bool(CONFIG_PREFIX + 'EMAIL_USE_SSL', False)
+

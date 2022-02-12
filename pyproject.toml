@@ -10,9 +10,16 @@ python = "^3.8"
 Django = "^4.0.2"
 python-dotenv = "^0.19.2"
 psycopg2-binary = {version = "^2.9.3", extras = ["postgresql"], optional=true}
+pytest-django = "^4.5.2"
+pytest = "^7.0.1"
 
 [tool.poetry.dev-dependencies]
+ipython = "^8.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "pepdb.test_settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
