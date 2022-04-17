@@ -26,4 +26,5 @@ urlpatterns = [
     path("", index),
     path("", include("pepdb_auth.urls")),
     path('admin/', admin.site.urls),
+    path('events/', include('pepdb_events.urls')),
 ]

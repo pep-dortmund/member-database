@@ -10,6 +10,7 @@ ROOT_URLCONF = 'pepdb.urls'
 
 INSTALLED_APPS = [
     'pepdb_auth.apps.PepdbAuthConfig',
+    'pepdb_events.apps.PepdbEventsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
