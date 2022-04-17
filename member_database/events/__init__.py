@@ -7,7 +7,7 @@ from flask_wtf import FlaskForm
 from flask_mail import Attachment
 from wtforms.fields import StringField, SubmitField
 from wtforms.validators import DataRequired, Regexp
-from wtforms.fields.html5 import EmailField
+from wtforms.fields import EmailField
 from itsdangerous import URLSafeSerializer, BadData
 from flask_babel import _
 from jsonschema import validate, ValidationError

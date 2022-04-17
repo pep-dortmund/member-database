@@ -1,10 +1,9 @@
 from datetime import date
 
-from werkzeug.utils import validate_arguments
 from flask_wtf import FlaskForm
 from flask_babel import lazy_gettext as _l
 from wtforms import StringField, SubmitField, ValidationError, RadioField
-from wtforms.fields.html5 import EmailField, DateField
+from wtforms.fields import EmailField, DateField
 from wtforms.validators import DataRequired, Email, Optional
 
 from .models import Person, MembershipType
