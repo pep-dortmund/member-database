@@ -98,8 +98,16 @@ class AccessLevelView(AuthorizedView):
 class EventRegistrationView(AuthorizedView):
     access_level = 'event_registration_admin'
     column_filters = [
-        Event.id, Event.name, Person.email, Person.membership_status_id
+        Event.id,
+        Event.name,
+        Person.email,
+        Person.membership_status_id,
     ]
+
+    form_columns = [
+        'id', 'event', 'person', 'status', 'data', 'timestamp',
+    ]
+
 
 
 class PersonView(AuthorizedView):
