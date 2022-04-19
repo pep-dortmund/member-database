@@ -28,7 +28,7 @@ deploy = ["gunicorn", "psycopg2-binary"]
 
 [tool.poetry.dev-dependencies]
 ipython = "^8.0"
-httpie = "^1.0"
+httpie = "^3.1"
 pytest = "^7.1"
 pytest-cov = "^3.0"
 coverage-badge = "^1.0"
