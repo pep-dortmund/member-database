@@ -1,6 +1,9 @@
 from flask_wtf import FlaskForm
 import wtforms
-from wtforms.fields import html5, TextAreaField
+from wtforms.fields import (
+    TextAreaField, EmailField, IntegerField,
+    DecimalField,
+)
 from wtforms.validators import DataRequired, NumberRange, Regexp
 
 from ..widgets import LatexInput
@@ -29,7 +32,7 @@ def create_wtf_field(name, schema, required=True):
             kwargs['widget'] = LatexInput()
 
         elif fmt == 'email':
-            return html5.EmailField(**kwargs)
+            return EmailField(**kwargs)
 
         elif fmt == 'multiline':
             return TextAreaField(**kwargs)
@@ -56,10 +59,10 @@ def create_wtf_field(name, schema, required=True):
         )
 
     if schema['type'] == 'integer':
-        return html5.IntegerField(**kwargs)
+        return IntegerField(**kwargs)
 
     if schema['type'] == 'number':
-        return html5.DecimalField(**kwargs)
+        return DecimalField(**kwargs)
 
     if schema['type'] == 'boolean':
         # forces checkbox to be clicked
