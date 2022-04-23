@@ -10,7 +10,23 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: [3.9]
+        db: [sqlite, postgres]
+
+    services:
+      db:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: pep
+          POSTGRES_USER: pep
+          POSTGRES_DB: memberdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
       - uses: actions/checkout@v2
@@ -23,8 +39,17 @@ jobs:
       - name: Install dependencies
         run: |
           pip install poetry
-          poetry install
+          poetry install -E deploy
+
+      - name: Prepare sqlite env
+        if: matrix.db == 'sqlite'
+        run: |
           sed < env-template -e "s:dbpath:$HOME/pep.sqlite:" > .env
+
+      - name: Prepare postgres env
+        if: matrix.db == 'postgres'
+        run: |
+          sed < env-template -e 's/DATABASE_URL=.*$/DATABASE_URL=postgresql:\/\/pep:pep@localhost\/memberdb/' > .env
 
       - name: "Perform migrations"
         run: poetry run flask db upgrade
@@ -38,3 +63,4 @@ jobs:
         run: poetry run python -m pytest --cov member_database --cov-report=xml
 
       - uses: codecov/codecov-action@v1
+        if: matrix.db == 'postgres'
