@@ -71,7 +71,7 @@ def index():
     subquery = (
         db.session
         .query(EventRegistration.event_id, func.count('*').label('participants'))
-        .filter_by(status='confirmed')
+        .filter_by(status_name='confirmed')
         .group_by(EventRegistration.event_id)
         .subquery()
     )
@@ -102,7 +102,7 @@ def registration(event_id):
     event = Event.query.filter_by(id=event_id).first_or_404()
 
     n_participants = EventRegistration.query.filter_by(
-        event_id=event.id, status='confirmed'
+        event_id=event.id, status_name='confirmed'
     ).count()
     if event.max_participants:
         free_places = event.max_participants - n_participants
@@ -152,21 +152,21 @@ def registration(event_id):
             EventRegistration,
             person_id=person.id,
             event_id=event.id,
-            defaults={'data': data, 'status': 'pending'},
+            defaults={'data': data, 'status_name': 'pending'},
         )
 
         if not new:
-            if registration.status == 'pending':
+            if registration.status_name == 'pending':
                 flash(
                     render_template('events/pending.html', registration=registration),
                     category='danger'
                 )
-            elif registration.status == 'confirmed':
+            elif registration.status_name == 'confirmed':
                 flash(
                     render_template('events/registered.html', registration=registration),
                     category='danger'
                 )
-            elif registration.status == 'waitinglist':
+            elif registration.status_name == 'waitinglist':
                 flash(
                     render_template('events/waiting.html', registration=registration),
                     category='danger'
@@ -200,7 +200,7 @@ def send_registration_mail(registration):
     token = ts.dumps(
         (person.id, registration.id),
     )
-    if registration.status == 'pending':
+    if registration.status_name == 'pending':
         subject = 'Bestätige deine Anmeldung zu '
     else:
         subject = 'Bearbeite deine Anmeldung zu '
@@ -271,10 +271,10 @@ def resend_emails():
 def get_event(event_id):
     event = Event.query.filter_by(id=event_id).first()
     if event is None:
-        return jsonify(status='No such event'), 404
+        return jsonify(status_name='No such event'), 404
 
     return jsonify(
-        status='success',
+        status_name='success',
         event=as_dict(event),
     )
 
@@ -299,7 +299,7 @@ def participants(event_id):
             data.append(d)
 
         return jsonify(
-            status='success', participants=data,
+            status_name='success', participants=data,
         )
 
     return render_template(
@@ -313,7 +313,7 @@ def write_mail(event_id):
     event = Event.query.get(event_id)
 
     form = SendMailForm(name=current_user.person.name, email=current_user.person.email)
-    n_participants = EventRegistration.query.filter_by(event_id=event_id, status="confirmed").count()
+    n_participants = EventRegistration.query.filter_by(event_id=event_id, status_name="confirmed").count()
 
     if n_participants == 0:
         flash(f'No participants yet for event {event.name}', 'danger')
@@ -323,7 +323,7 @@ def write_mail(event_id):
         participants = (
             EventRegistration.query
             .options(joinedload(EventRegistration.person))  # directly fetch persons
-            .filter_by(event_id=event_id, status="confirmed")
+            .filter_by(event_id=event_id, status_name="confirmed")
         )
 
         attachments = [
@@ -372,19 +372,19 @@ def confirmation(token):
     person = Person.query.get(person_id)
     registration = EventRegistration.query.get(registration_id)
     event = registration.event
-    n_participants = EventRegistration.query.filter_by(event_id=event.id, status='confirmed').count()
+    n_participants = EventRegistration.query.filter_by(event_id=event.id, status_name='confirmed').count()
     booked_out = event.max_participants and n_participants >= event.max_participants
 
     log.info(f'Confirmation for {event} by {person} ({registration})')
 
-    if registration.status == 'pending':
+    if registration.status_name == 'pending':
         if booked_out:
-            registration.status = 'waitinglist'
+            registration.status_name = 'waitinglist'
             subject = 'Auf der Warteliste: '
             msg = 'Du befindest dich jetzt auf der Warteliste'
             category = 'warning'
         else:
-            registration.status = 'confirmed'
+            registration.status_name = 'confirmed'
             subject = 'Anmeldung bestätigt: '
             msg = 'Deine Anmeldung ist jetzt bestätigt'
             category = 'success'

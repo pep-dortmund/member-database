@@ -3,7 +3,7 @@ Hallo,
 {{ person.name }} <{{ person.email }}>
 hat sich soeben für Veranstaltung
 "{{ event.name }}"
-{% if registration.status == "confirmed" -%}
+{% if registration.status_name == "confirmed" -%}
 angemeldet.
 {%- else -%}
 auf der Warteliste eingetragen.
