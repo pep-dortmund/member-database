@@ -41,6 +41,5 @@ def upgrade():
                 sa.String, sa.ForeignKey('membership_status.id'),
             )
         )
-        batch_op.create_unique_constraint(batch_op.f('uq_person_email'), ['email'])
         batch_op.drop_column('member')
         batch_op.drop_column('membership_pending')

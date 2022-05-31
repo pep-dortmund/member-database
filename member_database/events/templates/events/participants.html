@@ -23,13 +23,13 @@
         <td>{{ participant.data[k] }}</td>
         {% endfor %}
         <td>
-          {% if participant.status == "confirmed" %}
+          {% if participant.status_name == "confirmed" %}
           ✓
-          {% elif participant.status == "waitinglist" %}
+          {% elif participant.status_name == "waitinglist" %}
           🕑
-          {% elif participant.status == "pending" %}
+          {% elif participant.status_name == "pending" %}
           ⌛
-          {% elif participant.status == "canceled" %}
+          {% elif participant.status_name == "canceled" %}
           ✗
           {% endif %}
         </td>

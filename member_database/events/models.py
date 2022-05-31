@@ -37,7 +37,8 @@ class EventRegistration(db.Model):
         'Person', backref=db.backref('event_registrations', lazy=True)
     )
 
-    status = db.Column(db.String, db.ForeignKey('registration_status.name'), nullable=False)
+    status_name = db.Column(db.String, db.ForeignKey('registration_status.name'), nullable=False)
+    status = db.relationship('RegistrationStatus', backref=db.backref('event_registrations', lazy=True))
 
     data = db.Column(MutableDict.as_mutable(db.JSON))
     timestamp = db.Column(db.DateTime(timezone=True))
