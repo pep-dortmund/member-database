@@ -1,6 +1,4 @@
-# create a build stage
-# see https://stackoverflow.com/a/54763270/3838691
-FROM python:3.8-slim
+FROM python:3.10-slim
 
 # we always want to serve the member_database app
 ENV FLASK_APP=member_database \
@@ -16,7 +14,7 @@ RUN useradd --system --user-group memberdb
 RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install poetry==1.0.5
+RUN pip install poetry==1.2.2
 WORKDIR /home/memberdb/
 
 # this will be our startup script
