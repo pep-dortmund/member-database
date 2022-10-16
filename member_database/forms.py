@@ -55,6 +55,10 @@ class MembershipForm(FlaskForm):
             (MembershipType.AUSSERORDENTLICH, "Außerordentliches Mitglied"),
         ],
         default=MembershipType.ORDENTLICH,
+        description=(
+            "Alle Angehörigen oder ehemaligen Angehörigen der Fakultät Physik der TU Dortmund können und sollten ordentliche Mitglieder werden."
+            " Für alle anderen besteht die Möglichkeit einer außerordentlichen Mitgliedschaft."
+        )
     )
     submit = SubmitField(_l('Mitgliedsantrag abschicken'))
 
