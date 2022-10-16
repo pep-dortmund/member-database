@@ -1016,7 +1016,7 @@ deploy = ["gunicorn", "psycopg2-binary"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "37b9852752198695e28224652d2bc374fa31e2a76f1c4f7c98e00acceacd918e"
+content-hash = "d9d90f9197c1fe9221d0d46f646c7b73daf9a4e9fb7ad738e8a37e74bcd84c24"
 
 [metadata.files]
 alembic = [
