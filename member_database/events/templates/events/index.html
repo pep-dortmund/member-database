@@ -47,6 +47,16 @@
   Es gibt zur Zeit keine Veranstaltungen.
   {% endif %}
 
-
-
+  {% if current_user.is_authenticated and closed_events %}
+  <p>Veranstaltungen für die keine Anmeldung (mehr) möglich ist:
+  <ul class="list-group">
+    {% for event in closed_events %}
+    <a class="list-group-item"
+       href="{{ url_for('events.registration', event_id=event.id)}}"
+      >
+      {{ event.name }}
+    </a>
+    {% endfor %}
+  </ul>
+  {% endif %}
 {% endblock %}

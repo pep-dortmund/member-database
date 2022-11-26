@@ -78,23 +78,29 @@ def index():
     query = (
         db.session.query(
             Event.id, Event.name, Event.description,
-            Event.max_participants,
+            Event.max_participants, Event.registration_open,
             func.coalesce(subquery.c.participants, 0).label('n_participants'),
         )
         .join(subquery, Event.id == subquery.c.event_id, isouter=True)
-        .filter(Event.registration_open == True)
-        .all()
     )
+
+    if not current_user.is_authenticated:
+        query = query.filter(Event.registration_open == True)
+
+    query = query.all()
 
     events = []
     full_events = []
+    closed_events = []
     for event in query:
-        if event.max_participants and event.n_participants >= event.max_participants:
+        if not event.registration_open:
+            closed_events.append(event)
+        elif event.max_participants and event.n_participants >= event.max_participants:
             full_events.append(event)
         else:
             events.append(event)
 
-    return render_template('events/index.html', events=events, full_events=full_events)
+    return render_template('events/index.html', events=events, full_events=full_events, closed_events=closed_events)
 
 
 @events.route('/<int:event_id>/registration/', methods=['GET', 'POST'])
