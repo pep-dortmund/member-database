@@ -84,6 +84,8 @@ def index():
         .join(subquery, Event.id == subquery.c.event_id, isouter=True)
     )
 
+    # for logged in users, we want to show all events, all others
+    # only get to see the ones that are currently open
     if not current_user.is_authenticated:
         query = query.filter(Event.registration_open == True)
 
