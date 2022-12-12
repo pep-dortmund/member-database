@@ -105,18 +105,23 @@ def index():
     return render_template('events/index.html', events=events, full_events=full_events, closed_events=closed_events)
 
 
-@events.route('/<int:event_id>/registration/', methods=['GET', 'POST'])
-def registration(event_id):
-    event = Event.query.filter_by(id=event_id).first_or_404()
-
+def get_free_places(event):
     n_participants = EventRegistration.query.filter_by(
         event_id=event.id, status_name='confirmed'
     ).count()
     if event.max_participants:
-        free_places = event.max_participants - n_participants
+        return event.max_participants - n_participants
+    return None
+
+
+@events.route('/<int:event_id>/registration/', methods=['GET', 'POST'])
+def registration(event_id):
+    event = Event.query.filter_by(id=event_id).first_or_404()
+
+    free_places = get_free_places(event)
+    if free_places is not None:
         booked_out = free_places < 1
     else:
-        free_places = None
         booked_out = False
 
     if not event.registration_open:
@@ -281,9 +286,12 @@ def get_event(event_id):
     if event is None:
         return jsonify(status_name='No such event'), 404
 
+    evt_info = as_dict(event)
+    evt_info['free_places'] = get_free_places(event)
+
     return jsonify(
         status_name='success',
-        event=as_dict(event),
+        event=evt_info,
     )
 
 
