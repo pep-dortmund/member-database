@@ -2,6 +2,7 @@ from flask import (
     Blueprint, render_template, abort, flash, redirect, url_for, jsonify, current_app,
     request,
 )
+from flask_cors import cross_origin
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from flask_mail import Attachment
@@ -281,6 +282,7 @@ def resend_emails():
 
 
 @events.route('/<int:event_id>/')
+@cross_origin(origins=["https://([a-z]+.)?pep-dortmund.(org|de)"])
 def get_event(event_id):
     event = Event.query.filter_by(id=event_id).first()
     if event is None:
