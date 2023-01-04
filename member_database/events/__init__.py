@@ -2,6 +2,7 @@ from flask import (
     Blueprint, render_template, abort, flash, redirect, url_for, jsonify, current_app,
     request,
 )
+from flask_cors import cross_origin
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from flask_mail import Attachment
@@ -105,18 +106,23 @@ def index():
     return render_template('events/index.html', events=events, full_events=full_events, closed_events=closed_events)
 
 
-@events.route('/<int:event_id>/registration/', methods=['GET', 'POST'])
-def registration(event_id):
-    event = Event.query.filter_by(id=event_id).first_or_404()
-
+def get_free_places(event):
     n_participants = EventRegistration.query.filter_by(
         event_id=event.id, status_name='confirmed'
     ).count()
     if event.max_participants:
-        free_places = event.max_participants - n_participants
+        return event.max_participants - n_participants
+    return None
+
+
+@events.route('/<int:event_id>/registration/', methods=['GET', 'POST'])
+def registration(event_id):
+    event = Event.query.filter_by(id=event_id).first_or_404()
+
+    free_places = get_free_places(event)
+    if free_places is not None:
         booked_out = free_places < 1
     else:
-        free_places = None
         booked_out = False
 
     if not event.registration_open:
@@ -276,14 +282,18 @@ def resend_emails():
 
 
 @events.route('/<int:event_id>/')
+@cross_origin(origins=["https://([a-z]+.)?pep-dortmund.(org|de)"])
 def get_event(event_id):
     event = Event.query.filter_by(id=event_id).first()
     if event is None:
         return jsonify(status_name='No such event'), 404
 
+    evt_info = as_dict(event)
+    evt_info['free_places'] = get_free_places(event)
+
     return jsonify(
         status_name='success',
-        event=as_dict(event),
+        event=evt_info,
     )
 
 
