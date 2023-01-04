@@ -32,7 +32,7 @@ COPY pyproject.toml poetry.lock ./
 # pg_config
 # this will create a wheel file that contains all dependencies
 RUN poetry config virtualenvs.create false \
-	&& poetry install -E deploy --no-dev
+	&& poetry install -E deploy --only main
 
 COPY member_database ./member_database
 
