@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "member-database"
-version = "0.7.3"
+version = "0.8.0"
 description = "Our PeP database solution for members and events"
 authors = ["Kevin Heinicke <kevin.heinicke@tu-dortmund.de>", "Maximilian Linhoff <maximilian.linhoff@tu-dortmund.de>"]
 license = "MIT"
