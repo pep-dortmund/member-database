@@ -1,6 +1,7 @@
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import validates
 from jsonschema.validators import Draft7Validator
+from urllib.parse import quote
 
 from ..models import db
 
@@ -11,6 +12,13 @@ class Event(db.Model):
     description = db.Column(db.Text)
     notify_email = db.Column(db.Text)
     force_tu_mail = db.Column(db.Boolean, default=False)
+
+    
+    def default_shortlink(context):
+        """Generates a default shortlink out of the name of the event, by removing spaces and making it URL-safe."""
+        return quote(context.get_current_parameters()["name"].replace(" ", ""))
+
+    shortlink = db.Column(db.Text, default=default_shortlink)
 
     max_participants = db.Column(db.Integer)
 

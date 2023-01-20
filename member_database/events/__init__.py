@@ -1,4 +1,4 @@
-from flask import (
+rom flask import (
     Blueprint,
     render_template,
     abort,
@@ -22,6 +22,7 @@ from jsonschema import validate, ValidationError
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from datetime import datetime, timezone
+from functools import wraps
 import logging
 
 from ..models import db, Person, as_dict
@@ -143,7 +144,34 @@ def get_free_places(event):
     return None
 
 
-@events.route("/<int:event_id>/registration/", methods=["GET", "POST"])
+def route_name_to_id(route, **options):
+    """Decorator to add a route, which transforms the var 'name' in the route to 
+       the corresponding event and call the view func(event_id)"""
+    def route_name_to_id_decorator(func):
+        @wraps(func)
+        def call_with_id(name):
+            # It'd be better to add a `.order_by(Event.date)`, but 
+            # events currently are not associated with a date (new github issue?)
+            event = Event.query.filter_by(shortlink=name).first()
+            
+            if event is None:
+                # event = None will return None for event.id query
+                # of wrapped function, to let the function deside 
+                # what to do: 404, status error, json...
+                return func(None)
+            return func(event.id)
+       
+        # have to rename the function, becauce flask has to have 
+        # unique id's on view_functions
+        call_with_id.__name__ = call_with_id.__name__+"_by_name"
+        events.add_url_rule(route, view_func=call_with_id, **options)
+
+        return func
+    return route_name_to_id_decorator
+
+
+@events.route('/<int:event_id>/registration/', methods=['GET', 'POST'])
+@route_name_to_id('/<string:name>/registration/', methods=['GET', 'POST'])
 def registration(event_id):
     event = Event.query.filter_by(id=event_id).first_or_404()
 
@@ -315,7 +343,8 @@ def resend_emails():
         return render_template("events/resend_emails.html", form=form)
 
 
-@events.route("/<int:event_id>/")
+@events.route('/<int:event_id>/')
+@route_name_to_id('/<string:name>/')
 @cross_origin(origins=["https://([a-z]+.)?pep-dortmund.(org|de)"])
 def get_event(event_id):
     event = Event.query.filter_by(id=event_id).first()
@@ -331,8 +360,9 @@ def get_event(event_id):
     )
 
 
-@events.route("/<int:event_id>/participants/")
-@access_required("get_participants")
+@events.route('/<int:event_id>/participants/')
+@route_name_to_id('/<string:name>/participants/')
+@access_required('get_participants')
 def participants(event_id):
     event = db.get_or_404(Event, event_id)
     participants = db.session.execute(
@@ -360,8 +390,9 @@ def participants(event_id):
     )
 
 
-@events.route("/<int:event_id>/write_mail/", methods=["GET", "POST"])
-@access_required("write_email")
+@events.route('/<int:event_id>/write_mail/', methods=['GET', 'POST'])
+@route_name_to_id('/<string:name>/write_mail/', methods=['GET', 'POST'])
+@access_required('write_email')
 def write_mail(event_id):
     event = Event.query.get(event_id)
 
