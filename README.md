@@ -17,8 +17,7 @@ therefore we want to use
 - itsdangerous (token-based authentication)
 - sqlalchemy (ORM)
 - if we don't know what to do: follow [the flask mega tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world)
-- vue.js for the interface(s)
-  - if possible CDNs, avoiding webpack et. al
+- Server-side rendering (flask templates) for the ui with a little sprinkle of client-side js and KaTeX for math
 
 ## Development
 
