@@ -18,10 +18,10 @@ class Event(db.Model):
         if context is not None:
             return quote(context.get_current_parameters()["name"].replace(" ", ""))
         else:
-            return ""
+            return "DEFAULT"
 
     shortlink = db.Column(
-        db.Text, default=default_shortlink, nullable=True, unique=True
+        db.String, default=default_shortlink, nullable=True, unique=True
     )
 
     max_participants = db.Column(db.Integer)
