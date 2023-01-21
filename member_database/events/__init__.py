@@ -81,6 +81,14 @@ def init_event_database():
         get_or_create(RegistrationStatus, name=name)
     db.session.commit()
 
+@events.add_app_template_global
+def url_for_event(endpoint, event_id):
+    """"Returns the shortlink version of the url, if there is a shortlink."""
+    event = Event.query.get(event_id)
+    if event.shortlink is None:
+        return url_for(endpoint, event_id=event_id)
+    return url_for(endpoint+"_by_name", name=event.shortlink)
+
 
 @events.route("/")
 def index():
