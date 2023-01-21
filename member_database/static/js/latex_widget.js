@@ -1,56 +1,46 @@
-var seperateTex = function(string){
-  var stringArray = [];
-  var index = 0;
-  while(index > -1){
-    index = string.indexOf('$') > -1 ? string.indexOf('$') : string.length;
-    string.substring(0, index) ?
-      stringArray.push(string.substring(0, index)) : undefined;
-    string = string.substring(index + 1, string.length);
-    index = string.indexOf('$');
-    if(index > -1){
-      string.substring(0, index) ?
-        stringArray.push('$' + string.substring(0, index)) : undefined;
-      string = string.substring(index+1, string.length);
-    }
-  }
-  return stringArray;
+function count(s, item) {
+  return s.length - s.replaceAll(item, "").length;
+}
+function evenDollars(str) {
+  return count(str, "$") % 2 == 0;
 }
 
-var toTex = function(str){
-  var stringArray = seperateTex(str);
-  try {
-    var completeString = "";
-    for(var i=0; i<stringArray.length; i++){
-      var string = stringArray[i];
-      if(string.substring(0, 1) == "$"){
-        completeString += katex.renderToString(
-          string.substring(1, string.length)
-        );
-      } else {
-        completeString += string;
+
+// Only after everything has rendered in
+document.addEventListener("DOMContentLoaded", () => {
+
+  // go trough all "render-katex" inputs
+  document.querySelectorAll("div.render-katex").forEach(item => {
+
+    let input = item.querySelector("input");
+    let output = item.querySelector("span.katex-output");
+
+    function update() {
+      output.innerHTML = input.value;
+
+      // check we have a valid math env
+      if (!evenDollars(input.value)) {
+        // this prevents submitting the form and shows an error to the user
+        input.setCustomValidity("Unclosed $");
+        return;
       }
-    }
-    return completeString;
-  }
-  catch(err){
-    console.log("Error while parsing tex");
-  };
-}
 
-var vueApps = {};
+      // this removes the error and allows submission
+      input.setCustomValidity("");
 
-window.onload = function(event) {
-  document.querySelectorAll('[type="latex"]').forEach(function(item){
-    vueApps[item.id] = new Vue({
-      el: '#input_group_' + item.id,
-      data: {
-        title: item.value,
-      },
-      computed: {
-        title_html: function(){
-          return toTex(this.title);
+      // render math, on error, show error in tooltip and prevent submission
+      renderMathInElement(
+        output,
+        {
+          delimiters: [{left: '$', right: '$', display: false}],
+          errorCallback: (error, stack) => {
+            input.setCustomValidity(stack.toString());
+          },
         }
-      }
-    })
+      );
+    };
+
+    update();
+    input.addEventListener("input", update);
   });
-}
+});

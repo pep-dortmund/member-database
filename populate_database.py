@@ -14,7 +14,7 @@ if Person.query.filter_by(email='admin@pep-dortmund.org').first() is None:
     u = User(person=p, username='admin')
     u.set_password('testdb')
 
-    access_levels = [AccessLevel(id=level) for level in ACCESS_LEVELS]
+    access_levels = [get_or_create(AccessLevel, id=level)[0] for level in ACCESS_LEVELS]
     r = Role(id='admin', access_levels=access_levels)
     print(r.access_levels)
     u.roles.append(r)
