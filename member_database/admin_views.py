@@ -6,6 +6,7 @@ from flask_admin import Admin, expose, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import fields
 from wtforms.fields import PasswordField
+from urllib.parse import quote
 
 from .models import db, Person, TUStatus
 from .events import Event, EventRegistration
@@ -55,24 +56,17 @@ class AuthorizedView(ModelView):
 
 
 class EventView(AuthorizedView):
-    access_level = "event_admin"
-    column_list = [
-        "name",
-        "notify_email",
-        "max_participants",
-        "force_tu_mail",
-        "registration_open",
-    ]
-    column_filters = [
-        "name",
-        "max_participants",
-        "force_tu_mail",
-        "registration_open",
-        "notify_email",
-    ]
-    form_excluded_columns = ["registrations"]
-    column_editable_list = ["name", "registration_open"]
-    column_descriptions = {"description": "HTML is allowed in this field."}
+    access_level = 'event_admin'
+    column_list = ['name', 'notify_email', 'max_participants', 'force_tu_mail',
+                   'registration_open', Event.shortlink]
+    column_filters = ['name', 'max_participants', 'force_tu_mail',
+                      'registration_open', 'notify_email']
+    form_excluded_columns = ['registrations']
+    column_editable_list = ['name', 'registration_open', 'shortlink']
+    column_descriptions = {
+        'description': 'HTML is allowed in this field.',
+        'shortlink': 'Makes event available via "events/{shortlink}". Leave empty for standard shortlink generation from event name.'
+    }
     form_widget_args = {
         "description": {
             "rows": 10,
@@ -85,6 +79,10 @@ class EventView(AuthorizedView):
     }
     form_overrides = {"registration_schema": PrettyJSONField}
 
+    def on_model_change(self, form, model, is_created):
+        if form.shortlink.data.strip() == "":
+            model.shortlink = quote(model.name.replace(" ", ""))
+            form.shortlink = quote(model.name.replace(" ", ""))
 
 class RoleView(AuthorizedView):
     column_display_pk = True

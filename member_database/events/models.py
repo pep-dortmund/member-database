@@ -16,7 +16,10 @@ class Event(db.Model):
     
     def default_shortlink(context):
         """Generates a default shortlink out of the name of the event, by removing spaces and making it URL-safe."""
-        return quote(context.get_current_parameters()["name"].replace(" ", ""))
+        if context is not None:
+            return quote(context.get_current_parameters()["name"].replace(" ", ""))
+        else:
+            return ""
 
     shortlink = db.Column(db.Text, default=default_shortlink)
 
