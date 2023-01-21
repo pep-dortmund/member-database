@@ -4,7 +4,11 @@ Um deine Anmeldung für die Veranstaltung „{{ event }}” abzuschließen,
 bestätige sie bitte durch klicken auf den folgenden Link:
 
 {{ confirmation_link }}
+{% if edit %}
 
+Möchtest du dich von der Veranstaltung abmelden klicke auf folgenden Link:
+{{ cancel_link }}
+{% endif %}
 Mit freundlichen Grüßen
 
 {% include "mail/signature.txt" %}

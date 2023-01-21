@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block main %}
+
+  <h1>Von Veranstaltung abmelden</h1>
+
+  {% from 'bootstrap/form.html' import render_form %}
+  {{ render_form(form, method='POST') }}
+
+{% endblock %}

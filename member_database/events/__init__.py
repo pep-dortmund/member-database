@@ -214,7 +214,9 @@ def send_registration_mail(registration):
     token = ts.dumps(
         (person.id, registration.id),
     )
-    if registration.status_name == 'pending':
+    
+    edit = registration.status_name != 'pending'
+    if not edit:
         subject = 'Bestätige deine Anmeldung zu '
     else:
         subject = 'Bearbeite deine Anmeldung zu '
@@ -228,9 +230,44 @@ def send_registration_mail(registration):
             name=person.name,
             event=event.name,
             confirmation_link=ext_url_for('events.confirmation', token=token),
-            submit_url=url_for('events.registration', event_id=event.id)
+            submit_url=url_for('events.registration', event_id=event.id),
+            cancel_link=ext_url_for("events.cancel", token=token),
+            edit=edit
         )
     )
+
+
+@events.route('/cancel/<token>/', methods=['GET', 'POST'])
+def cancel(token):
+    ts = URLSafeSerializer(
+        current_app.config["SECRET_KEY"],
+        salt='registration-key',
+    )
+    try:
+        person_id, registration_id = ts.loads(token)
+    except BadData as e:
+        print(e)
+        abort(404)
+    
+    person = Person.query.get(person_id)
+    registration = EventRegistration.query.get_or_404(registration_id)
+    
+    class CancelForm(FlaskForm):
+        submit = SubmitField(f'{person.name} ({person.email}) von {registration.event.name} abmelden.')
+
+    form = CancelForm()
+    if form.validate_on_submit():
+        if not registration.event.registration_open:
+            flash('Abmelden nicht möglich. Veranstaltung schon vorbei.', category='danger')
+            return redirect(url_for('events.index'))
+
+        # Delete registration
+        db.session.delete(registration)
+        db.session.commit()
+        flash('Von Veranstaltung abgemeldet.', category='success')
+        return redirect(url_for('events.index'))
+    else:
+        return render_template('events/cancel.html', form=form)
 
 
 @events.route('/resend_email/', methods=['POST'])
@@ -388,7 +425,8 @@ def confirmation(token):
         abort(404)
 
     person = Person.query.get(person_id)
-    registration = EventRegistration.query.get(registration_id)
+    registration = EventRegistration.query.get_or_404(registration_id)
+
     event = registration.event
     n_participants = EventRegistration.query.filter_by(event_id=event.id, status_name='confirmed').count()
     booked_out = event.max_participants and n_participants >= event.max_participants
@@ -420,6 +458,7 @@ def confirmation(token):
                 name=person.name,
                 event=registration.event.name,
                 edit_link=ext_url_for('events.confirmation', token=token),
+                cancel_link=ext_url_for('events.cancel', token=token)
             )
         )
         if event.notify_email:
