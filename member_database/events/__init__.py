@@ -425,7 +425,8 @@ def confirmation(token):
         abort(404)
 
     person = Person.query.get(person_id)
-    registration = EventRegistration.query.get(registration_id)
+    registration = EventRegistration.query.get_or_404(registration_id)
+
     event = registration.event
     n_participants = EventRegistration.query.filter_by(event_id=event.id, status_name='confirmed').count()
     booked_out = event.max_participants and n_participants >= event.max_participants
