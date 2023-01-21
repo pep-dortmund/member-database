@@ -42,8 +42,9 @@ class AuthorizedView(ModelView):
         ACCESS_LEVELS.add(cls.access_level)
 
     def is_accessible(self):
-        return current_user.is_authenticated and current_user.has_access(
-            self.access_level
+        return (
+            current_user.is_authenticated 
+            and current_user.has_access(self.access_level)
         )
 
     def inaccessible_callback(self, name, **kwargs):
