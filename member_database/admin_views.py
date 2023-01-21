@@ -56,16 +56,27 @@ class AuthorizedView(ModelView):
 
 
 class EventView(AuthorizedView):
-    access_level = 'event_admin'
-    column_list = ['name', 'notify_email', 'max_participants', 'force_tu_mail',
-                   'registration_open', Event.shortlink]
-    column_filters = ['name', 'max_participants', 'force_tu_mail',
-                      'registration_open', 'notify_email']
-    form_excluded_columns = ['registrations']
-    column_editable_list = ['name', 'registration_open', 'shortlink']
+    access_level = "event_admin"
+    column_list = [
+        "name",
+        "notify_email",
+        "max_participants",
+        "force_tu_mail",
+        "registration_open",
+        "shortlink",
+    ]
+    column_filters = [
+        "name",
+        "max_participants",
+        "force_tu_mail",
+        "registration_open",
+        "notify_email",
+    ]
+    form_excluded_columns = ["registrations"]
+    column_editable_list = ["name", "registration_open", "shortlink"]
     column_descriptions = {
-        'description': 'HTML is allowed in this field.',
-        'shortlink': 'Makes event available via "events/{shortlink}". Leave empty for standard shortlink generation from event name.'
+        "description": "HTML is allowed in this field.",
+        "shortlink": 'Makes event available via "events/{shortlink}". Leave empty for standard shortlink generation from event name.',
     }
     form_widget_args = {
         "description": {
@@ -83,6 +94,7 @@ class EventView(AuthorizedView):
         if form.shortlink.data.strip() == "":
             model.shortlink = quote(model.name.replace(" ", ""))
             form.shortlink = quote(model.name.replace(" ", ""))
+
 
 class RoleView(AuthorizedView):
     column_display_pk = True
