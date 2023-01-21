@@ -6,6 +6,10 @@ Wenn du deine Anmeldung ändern möchtest, kannst du dies unter
 {{ edit_link }}
 tun.
 
+Wenn du dich von der Veranstaltung abmelden möchtest, kannst du das unter 
+{{ cancel_link }}
+tun.
+
 Mit freundlichen Grüßen
 
 {% include "mail/signature.txt" %}
