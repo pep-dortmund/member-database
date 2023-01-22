@@ -1,0 +1,11 @@
+Liebe*r {{ name }},
+
+Sie haben PeP et al. e.V. ein SEPA-Lastschriftmandat erteilt.
+Ihr SEPA-Lastschriftmandat hat die Mandatsreferenz {{ reference }}.
+Unter folgendem Link können Sie das SEPA-Lastschriftmandat bearbeiten und widerrufen:
+{{ link }}
+
+Viele Grüße
+Die PeP Mitgliederverwaltung
+
+{% include "mail/signature.txt" %}
