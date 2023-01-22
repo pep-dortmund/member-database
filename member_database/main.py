@@ -1,11 +1,19 @@
 from datetime import date
 from flask import (
-    jsonify, request, url_for, render_template, redirect,
-    flash, abort, Blueprint, current_app
+    jsonify,
+    request,
+    url_for,
+    render_template,
+    redirect,
+    flash,
+    abort,
+    Blueprint,
+    current_app,
 )
 from flask_login import current_user, login_user, logout_user
 from flask_babel import _
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadData
+from datetime import datetime, timezone
 
 from sqlalchemy.exc import IntegrityError
 
@@ -16,14 +24,15 @@ from .models import (
     MembershipStatus,
     MembershipType,
     TUStatus,
+    SepaMandate,
 )
 from .utils import get_or_create, ext_url_for
 from .authentication import access_required
-from .forms import PersonEditForm, MembershipForm, RequestLinkForm
+from .forms import PersonEditForm, MembershipForm, RequestLinkForm, SepaForm
 from .mail import send_email
 
 
-main = Blueprint('main', __name__)
+main = Blueprint("main", __name__)
 
 
 @main.before_app_first_request
@@ -40,56 +49,64 @@ def init_database():
     db.session.commit()
 
 
-@main.route('/')
+@main.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
 
-@main.route('/persons', methods=['GET'])
-@access_required('get_persons')
+@main.route("/persons", methods=["GET"])
+@access_required("get_persons")
 def get_persons():
     persons = [as_dict(person) for person in Person.query.all()]
-    return jsonify(status='success', persons=persons)
+    return jsonify(status="success", persons=persons)
 
 
-@main.route('/persons', methods=['POST'])
+@main.route("/persons", methods=["POST"])
 def add_person():
-    '''
+    """
     Add a new person via a http post request using a json payload
     that has name and email.
-    '''
+    """
     data = request.get_json()
 
     try:
-        p = Person(name=data['name'], email=data['email'])
+        p = Person(name=data["name"], email=data["email"])
         db.session.add(p)
         db.session.commit()
     except KeyError as e:
-        return jsonify(
-            status='error',
-            message='Missing required parameter {}'.format(e.args[0])
-        ), 422
+        return (
+            jsonify(
+                status="error",
+                message="Missing required parameter {}".format(e.args[0]),
+            ),
+            422,
+        )
     except IntegrityError:
-        return jsonify(
-            status='error',
-            message='Person already exists',
-        ), 422
+        return (
+            jsonify(
+                status="error",
+                message="Person already exists",
+            ),
+            422,
+        )
 
-    return jsonify(status='success')
+    return jsonify(status="success")
 
 
-@main.route('/members/', methods=['GET'])
-@access_required('get_members')
+@main.route("/members/", methods=["GET"])
+@access_required("get_members")
 def get_members():
-    '''Return a json list with all current members'''
-    members = Person.query.filter_by(membership_status_id=MembershipStatus.CONFIRMED).all()
+    """Return a json list with all current members"""
+    members = Person.query.filter_by(
+        membership_status_id=MembershipStatus.CONFIRMED
+    ).all()
     members = [as_dict(member) for member in members]
-    return jsonify(status='success', members=members)
+    return jsonify(status="success", members=members)
 
 
-@main.route('/register/', methods=['GET', 'POST'])
+@main.route("/register/", methods=["GET", "POST"])
 def register():
-    '''
+    """
     Endpoint for membership registration.
 
     Simple form to sign up to the club, only requiring name and email.
@@ -97,7 +114,7 @@ def register():
     After a request has been made, the applicant has to confirm their email.
     After the email was confirmed, the board gets notified that a new application
     was made and can accept/deny it.
-    '''
+    """
 
     form = MembershipForm()
 
@@ -105,36 +122,36 @@ def register():
         p, _new = get_or_create(
             Person,
             email=form.email.data,
-            defaults={'name': form.name.data},
+            defaults={"name": form.name.data},
         )
 
         if p.membership_status_id == MembershipStatus.DENIED:
             flash(
-                'Du hast bereits einen Mitgliedsantrag eingereicht, der abgelehnt wurde.'
-                ' Bitte kontaktiere uns, falls du dies für einen Irrtum hälst.'
+                "Du hast bereits einen Mitgliedsantrag eingereicht, der abgelehnt wurde."
+                " Bitte kontaktiere uns, falls du dies für einen Irrtum hälst."
             )
-            return redirect(url_for('main.index'))
+            return redirect(url_for("main.index"))
 
         if p.membership_status_id == MembershipStatus.EMAIL_UNVERIFIED:
             flash(
-                'Du hast bereits einen Mitgliedsantrag eingereicht,'
-                ' aber deine Email noch nicht bestätigt.'
-                f' Wir haben die Bestätigungsemail erneut an {p.email} versendet.',
-                category='warning',
+                "Du hast bereits einen Mitgliedsantrag eingereicht,"
+                " aber deine Email noch nicht bestätigt."
+                f" Wir haben die Bestätigungsemail erneut an {p.email} versendet.",
+                category="warning",
             )
 
         if p.membership_status_id == MembershipStatus.PENDING:
             flash(
-                'Du hast bereits einen Mitgliedsantrag eingereicht,'
-                ' aber dieser ist noch nicht vom Vorstand bestätigt worden.'
-                ' Dies kann ein paar Tage dauern.',
-                category='info',
+                "Du hast bereits einen Mitgliedsantrag eingereicht,"
+                " aber dieser ist noch nicht vom Vorstand bestätigt worden."
+                " Dies kann ein paar Tage dauern.",
+                category="info",
             )
-            return redirect(url_for('main.index'))
+            return redirect(url_for("main.index"))
 
         if p.membership_status_id == MembershipStatus.CONFIRMED:
-            flash('Du bist bereits Mitglied', category='danger')
-            return redirect(url_for('main.index'))
+            flash("Du bist bereits Mitglied", category="danger")
+            return redirect(url_for("main.index"))
 
         p.name = form.name.data
         p.membership_status_id = MembershipStatus.EMAIL_UNVERIFIED
@@ -143,104 +160,230 @@ def register():
         db.session.commit()
 
         ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
-        token = ts.dumps(p.email, salt='edit-key')
+        token = ts.dumps(p.email, salt="edit-key")
 
         send_email(
-            subject=_('PeP et al. Mitgliedsantrag: Email bestätigen'),
-            sender=current_app.config['MAIL_SENDER'],
+            subject=_("PeP et al. Mitgliedsantrag: Email bestätigen"),
+            sender=current_app.config["MAIL_SENDER"],
             recipients=[p.email],
             body=render_template(
-                'mail/verify.txt',
+                "mail/verify.txt",
                 new_member=p,
-                url=ext_url_for('main.edit', token=token),
-            )
+                url=ext_url_for("main.edit", token=token),
+            ),
         )
 
-        max_age = current_app.config['TOKEN_MAX_AGE'] // 60
+        max_age = current_app.config["TOKEN_MAX_AGE"] // 60
         flash(
-            'Um den Vorgang abzuschließen, klicke auf den Link in der'
-            ' Bestätigungsemail. Vorher können wir deinen Antrag'
-            f' nicht bearbeiten. Der Link ist {max_age} Minuten gültig.',
-            category='warning',
+            "Um den Vorgang abzuschließen, klicke auf den Link in der"
+            " Bestätigungsemail. Vorher können wir deinen Antrag"
+            f" nicht bearbeiten. Der Link ist {max_age} Minuten gültig.",
+            category="warning",
         )
-        return redirect(url_for('main.index'))
+        return redirect(url_for("main.index"))
+
+    return render_template("member_registration.html", form=form)
+
+
+def get_confirmed_member_or_none(email):
+    """Checks wether the mail belongs to a member."""
+    p = Person.query.filter_by(email=email).first()
+    if p is None:
+        return p
+    if p.membership_status_id == MembershipStatus.CONFIRMED:
+        return p
+    return None
+
+
+@main.route("/request_sepa", methods=["POST", "GET"])
+def request_sepa():
+    """
+    Request a link to add a sepa mandate
+    """
+    form = RequestLinkForm()
+
+    if form.validate_on_submit():
+        person = get_confirmed_member_or_none(form.email.data)
+        if person is not None:
+            ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+            token = ts.dumps(person.id, salt="sepa-key")
+
+            send_email(
+                subject=_("PeP et al. e.V. SEPA Lastschriftmandat"),
+                sender=current_app.config["MAIL_SENDER"],
+                recipients=[form.email.data],
+                body=render_template(
+                    "mail/request_sepa_mail.txt",
+                    link=ext_url_for("main.sepa", token=token),
+                    name=person.name,
+                ),
+            )
+            flash(
+                "E-Mail mit Link für das Erstellen eines SEPA-Mandates verschickt.",
+                "success",
+            )
+        else:
+            flash(
+                "E-Mail gehört nicht zu einem Mitglied mit bestätigter E-Mail Adresse.",
+                "danger",
+            )
+        return redirect(url_for("main.index"))
 
     return render_template(
-        'member_registration.html', form=form
+        "request_sepa.html",
+        form=form,
+        title="SEPA-Lastschriftmandat erstellen oder ändern",
     )
 
 
-@main.route('/request_edit', methods=['POST', 'GET'])
+@main.route("/sepa/<token>", methods=["GET", "POST"])
+def sepa(token):
+    try:
+        ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+        person_id = ts.loads(
+            token,
+            salt="sepa-key",
+            max_age=current_app.config["TOKEN_MAX_AGE"],
+        )
+    except SignatureExpired:
+        flash(_("Ihre Sitzung ist abgelaufen"), category="danger")
+        return redirect(url_for("main.index"))
+    except BadData:
+        abort(404)
+
+    p: Person = Person.query.get(person_id)
+    if p is None:
+        abort(404)
+
+    if p.membership_status_id != MembershipStatus.CONFIRMED:
+        flash("Du musst ein bestätigtes Mitglied in unserer Datenbank sein.", "warn")
+        return redirect(url_for("main.index"))
+
+    m = SepaMandate.query.filter_by(person_id=p.id).first()
+
+    old_given = False
+
+    if m is not None:
+        form = SepaForm(
+            adress=m.adress,
+            iban=" ".join(m.iban[i : i + 4] for i in range(0, len(m.iban), 4)),
+            bank=m.bank,
+            default=m.default,
+            value=m.value,
+            given=m.given,
+        )
+        old_given = m.given
+    else:
+        form = SepaForm()
+
+    if form.validate_on_submit():
+        m, _new = get_or_create(
+            SepaMandate,
+            person_id=p.id,
+        )
+        m.adress = form.adress.data
+        m.iban = form.iban.data.replace(" ", "")
+        m.bank = form.bank.data
+        m.default = form.default.data
+        m.value = form.value.data
+        m.given = form.given.data
+
+        if _new:
+            m.creation_date = datetime.now()
+
+        db.session.commit()
+
+        if old_given == False and m.given == True:
+            send_email(
+                subject=_("PeP et al. e.V. SEPA Lastschriftmandat erteilt"),
+                sender=current_app.config["MAIL_SENDER"],
+                recipients=[p.email],
+                body=render_template(
+                    "mail/confirm_sepa_mail.txt",
+                    link=ext_url_for("main.sepa", token=token),
+                    name=p.name,
+                    reference=m.id,
+                ),
+            )
+
+        flash(_("Ihre Daten wurden erfolgreich aktualisiert."), "success")
+        return redirect(url_for("main.sepa", token=token))
+
+    return render_template("sepa.html", form=form)
+
+
+@main.route("/request_edit", methods=["POST", "GET"])
 def request_edit():
-    '''
+    """
     Request a link to edit personal data
-    '''
+    """
     form = RequestLinkForm()
 
     if form.validate_on_submit():
         ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
-        token = ts.dumps(form.email.data, salt='edit-key')
+        token = ts.dumps(form.email.data, salt="edit-key")
 
         send_email(
-            subject=_('PeP et al. e.V. Mitgliedsdatenänderung'),
-            sender=current_app.config['MAIL_SENDER'],
+            subject=_("PeP et al. e.V. Mitgliedsdatenänderung"),
+            sender=current_app.config["MAIL_SENDER"],
             recipients=[form.email.data],
             body=render_template(
-                'mail/edit_mail.txt',
-                edit_link=ext_url_for('main.edit', token=token),
-            )
+                "mail/edit_mail.txt",
+                edit_link=ext_url_for("main.edit", token=token),
+            ),
         )
-        flash('E-Mail mit Link für die Datenänderung verschickt', 'success')
-        return redirect(url_for('main.index'))
+        flash("E-Mail mit Link für die Datenänderung verschickt", "success")
+        return redirect(url_for("main.index"))
 
     return render_template(
-        'request_edit.html',
+        "request_edit.html",
         form=form,
-        title='Persönliche Daten ändern',
+        title="Persönliche Daten ändern",
     )
 
 
-@main.route('/request_gdpr_data', methods=['POST', 'GET'])
+@main.route("/request_gdpr_data", methods=["POST", "GET"])
 def request_gdpr_data():
-    '''
+    """
     Request a link to view personal data
-    '''
+    """
     form = RequestLinkForm()
 
     if form.validate_on_submit():
         ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
-        token = ts.dumps(form.email.data, salt='request_gdpr_data-key')
+        token = ts.dumps(form.email.data, salt="request_gdpr_data-key")
 
         send_email(
-            subject='PeP et al. e.V. - Einsicht in gespeicherte Daten',
-            sender=current_app.config['MAIL_SENDER'],
+            subject="PeP et al. e.V. - Einsicht in gespeicherte Daten",
+            sender=current_app.config["MAIL_SENDER"],
             recipients=[form.email.data],
             body=render_template(
-                'mail/request_data_mail.txt',
-                data_link=ext_url_for('main.view_data', token=token),
-            )
+                "mail/request_data_mail.txt",
+                data_link=ext_url_for("main.view_data", token=token),
+            ),
         )
-        flash('E-Mail mit Link für die Dateneinsicht verschickt', 'success')
-        return redirect(url_for('main.index'))
+        flash("E-Mail mit Link für die Dateneinsicht verschickt", "success")
+        return redirect(url_for("main.index"))
 
     return render_template(
-        'gdpr_form.html',
+        "gdpr_form.html",
         form=form,
-        title='DSGVO-Anfrage',
+        title="DSGVO-Anfrage",
     )
 
-@main.route('/edit/<token>', methods=['GET', 'POST'])
+
+@main.route("/edit/<token>", methods=["GET", "POST"])
 def edit(token):
     try:
         ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
         email = ts.loads(
             token,
-            salt='edit-key',
-            max_age=current_app.config['TOKEN_MAX_AGE'],
+            salt="edit-key",
+            max_age=current_app.config["TOKEN_MAX_AGE"],
         )
     except SignatureExpired:
-        flash(_('Ihre Sitzung ist abgelaufen'), category='danger')
-        return redirect(url_for('main.index'))
+        flash(_("Ihre Sitzung ist abgelaufen"), category="danger")
+        return redirect(url_for("main.index"))
     except BadData:
         abort(404)
 
@@ -250,14 +393,14 @@ def edit(token):
 
     if p.membership_status_id == MembershipStatus.EMAIL_UNVERIFIED:
         send_email(
-            subject='Neuer Mitgliedsantrag',
-            sender=current_app.config['MAIL_SENDER'],
-            recipients=[current_app.config['APPROVE_MAIL']],
+            subject="Neuer Mitgliedsantrag",
+            sender=current_app.config["MAIL_SENDER"],
+            recipients=[current_app.config["APPROVE_MAIL"]],
             body=render_template(
-                'mail/approve_member.txt',
+                "mail/approve_member.txt",
                 new_member=p,
-                url=ext_url_for('main.applications'),
-            )
+                url=ext_url_for("main.applications"),
+            ),
         )
 
         p.membership_status_id = MembershipStatus.PENDING
@@ -265,11 +408,11 @@ def edit(token):
 
         db.session.add(p)
         db.session.commit()
-        flash(_('Email erfolgreich bestätigt'), category="success")
+        flash(_("Email erfolgreich bestätigt"), category="success")
 
     if p.membership_status_id == MembershipStatus.PENDING:
         flash(
-            _('Dein Mitgliedsantrag wartet auf Bestätigung durch den Vorstand'),
+            _("Dein Mitgliedsantrag wartet auf Bestätigung durch den Vorstand"),
             category="info",
         )
 
@@ -283,8 +426,8 @@ def edit(token):
         tu_status=p.tu_status_id,
     )
     form.tu_status.choices = [(state.id, state.name) for state in TUStatus.query.all()]
-    form.tu_status.choices.append(('', 'Keine Angabe'))
-    
+    form.tu_status.choices.append(("", "Keine Angabe"))
+
     # don't show these fields for non-members
     if p.membership_status is None:
         del form.membership_type
@@ -295,26 +438,26 @@ def edit(token):
         p.name = form.name.data
         p.date_of_birth = form.date_of_birth.data
 
-        if form.tu_status.data != '':
+        if form.tu_status.data != "":
             p.tu_status_id = form.tu_status.data
 
         if p.membership_status is not None:
             p.membership_type_id = form.membership_type.data
 
         db.session.commit()
-        flash(_('Ihre Daten wurden erfolgreich aktualisiert.'), 'success')
-        return redirect(url_for('main.edit', token=token))
+        flash(_("Ihre Daten wurden erfolgreich aktualisiert."), "success")
+        return redirect(url_for("main.edit", token=token))
 
-    return render_template('edit.html', form=form)
+    return render_template("edit.html", form=form)
 
 
-@main.route('/view_data/<token>')
+@main.route("/view_data/<token>")
 def view_data(token):
     try:
         ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
-        email = ts.loads(token, salt='request_gdpr_data-key')
+        email = ts.loads(token, salt="request_gdpr_data-key")
     except SignatureExpired:
-        flash(_('Ihre Sitzung ist abgelaufen'))
+        flash(_("Ihre Sitzung ist abgelaufen"))
     except BadData:
         abort(404)
 
@@ -324,38 +467,35 @@ def view_data(token):
         abort(404)
 
     personal_data = as_dict(p)
-    personal_data['event_registrations'] = []
+    personal_data["event_registrations"] = []
 
     for reg in p.event_registrations:
-        personal_data['event_registrations'].append({
-            'event': as_dict(reg.event),
-            'registration': as_dict(reg)
-        })
+        personal_data["event_registrations"].append(
+            {"event": as_dict(reg.event), "registration": as_dict(reg)}
+        )
 
-    return jsonify(status='success', personal_data=personal_data)
+    return jsonify(status="success", personal_data=personal_data)
 
 
-@main.route('/applications')
-@access_required('member_management')
+@main.route("/applications")
+@access_required("member_management")
 def applications():
     applications = Person.query.filter_by(membership_status_id="pending").all()
-    return render_template('applications.html', applications=applications)
+    return render_template("applications.html", applications=applications)
 
 
-@main.route('/applications/<int:person_id>/', methods=['POST'])
-@access_required('member_management')
+@main.route("/applications/<int:person_id>/", methods=["POST"])
+@access_required("member_management")
 def handle_application(person_id):
-    application = (
-        Person.query
-        .filter_by(id=person_id, membership_status_id="pending")
-        .one_or_none()
-    )
+    application = Person.query.filter_by(
+        id=person_id, membership_status_id="pending"
+    ).one_or_none()
 
     if application is None:
         flash("Kein offener Mitgliedsantrag für diese Person", category="danger")
         abort(404)
 
-    decision = request.form.get('decision')
+    decision = request.form.get("decision")
     if decision == "accept":
         application.joining_date = date.today()
         db.session.add(application)
@@ -363,16 +503,16 @@ def handle_application(person_id):
 
         flash(f"Mitgliedsantrag für {application.name} angenommen", category="success")
         send_email(
-            subject=_('Willkommen bei PeP et al. e.V.'),
-            sender=current_app.config['MAIL_SENDER'],
+            subject=_("Willkommen bei PeP et al. e.V."),
+            sender=current_app.config["MAIL_SENDER"],
             recipients=[application.email],
             body=render_template(
-                'mail/welcome.txt',
+                "mail/welcome.txt",
                 new_member=application,
-            )
+            ),
         )
         application.membership_status_id = MembershipStatus.CONFIRMED
-    elif decision == 'deny':
+    elif decision == "deny":
         flash(f"Mitgliedsantrag für {application.name} abgelehnt", category="danger")
         application.membership_status_id = MembershipStatus.DENIED
     else:

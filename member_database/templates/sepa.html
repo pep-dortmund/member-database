@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block main %}
+<h1>{{ _('SEPA-Lastschriftmandat erteilen oder ändern') }}</h1>
+
+{% from 'bootstrap/form.html' import render_form %}
+{{ render_form(form, method='POST') }}
+
+{% endblock %}

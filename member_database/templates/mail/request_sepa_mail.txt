@@ -1,0 +1,13 @@
+Liebe*r {{ name }},
+
+ein Link um PeP et al. ein SEPA-Lastschriftmandat zu erteilen oder ein bestehendes 
+zu ändern, wurde angefordert.
+Falls Sie das nicht angefordert haben, können Sie diese E-Mail einfach ignorieren.
+
+Unter folgendem Link können Sie ein SEPA-Lastschriftmandat erteilen bzw. bearbeiten:
+{{ link }}
+
+Viele Grüße
+Die PeP Mitgliederverwaltung
+
+{% include "mail/signature.txt" %}

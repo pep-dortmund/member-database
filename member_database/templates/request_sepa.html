@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block main %}
+  <h1>{{ title }}</h1>
+  <p>
+  Falls Sie Mitglied unseres Vereines sind, können Sie uns jetzt ein SEPA-Lastschriftmandat erteilen 
+  um Ihren Mitglieds- oder Förderbeitrag zu bezahlen.
+  Falls Sie uns bereits ein SEPA-Mandat erteilt haben, können Sie ein 
+  bestehendes Mandat ändern oder widerrufen.
+  Geben Sie dazu bitte Ihre E-Mail-Adresse unten an.</p>
+
+{% from 'bootstrap/form.html' import render_form %}
+{{ render_form(form, method='POST', action=action) }}
+
+{% endblock %}
