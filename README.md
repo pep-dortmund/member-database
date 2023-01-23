@@ -31,7 +31,7 @@ We strongly recommend to read through the first chapters of the [the flask mega 
 1. Install the dependencies using `poetry install`
 
 1. copy `env-template` to `.env` and fill the variables with the appropriate information
-  
+
   For the mail settings, you can either use your own mail account or just use DEBUG mode,
   which will log email text but not actually send it.
 
@@ -41,6 +41,17 @@ We strongly recommend to read through the first chapters of the [the flask mega 
   ```
 
 1. Start the server using `FLASK_DEBUG=true poetry run flask run`
+
+### Code Style
+
+We use [Black](github.com/psf/black) to have a opinionated and deterministic code style.
+To not forget to use black, you can install the pre-commit hook:
+```
+$ poetry run pre-commit install
+```
+This will automatically run black before you commit and aborts the commit if
+the code does not follow the black code style.
+This allows you to add the formatted files to the commit.
 
 ### Runnig the tests
 
@@ -105,11 +116,11 @@ for now is to do this interactively in an iPython shell.
 ### Adding Roles
 
 To enable fine-grained access management for users to specific endpoints,
-each protected endpoint is associated with a uniquely named access level.  
+each protected endpoint is associated with a uniquely named access level.
 A role combines multiple access levels and multiple roles can be assigned to
-different users.  
+different users.
 All access levels that are currently available will be added to the database
-automatically at app startup.  
+automatically at app startup.
 Just like in the above example, you can fire up an ipython session and...
 
 1. To create a new role with some access levels run
