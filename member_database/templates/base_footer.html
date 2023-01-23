@@ -1,4 +1,18 @@
 <footer class="bg-light text-center text-lg-start mt-auto p-1">
+  <span class="mr-3">
   <a class="text-center px-3" href="https://pep-dortmund.org/ueber_uns/impressum.html">Impressum</a>
+  {% if current_user.is_authenticated %}
+  <span class="navbar-text ml-auto mr-3">
+    Logged in as {{ current_user.username }}
+  </span>
+  <form style="display: inline" class="form form-inline" action="{{ url_for('auth.logout') }}" method="POST">
+    <input class="btn btn-primary" type="submit" value="Logout"/>
+  </form>
+  {% else %}
+  <a class="" href="{{ url_for('auth.login_page', next=request.full_path) }}">Admin Login</a>
+  {% endif %}
+  </span>
+
   &copy; PeP et al. e.V. All rights reserved.
+
 </footer>
