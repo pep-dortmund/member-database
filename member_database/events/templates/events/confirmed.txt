@@ -2,7 +2,7 @@ Hallo {{ name }},
 
 Hiermit bestätigen wir deine Anmeldung für unsere Veranstaltung „{{ event }}”.
 
-Wenn du deine Anmeldung ändern möchtest, kannst du dies unter 
+Wenn du deine Anmeldung ändern möchtest, kannst du dies unter
 {{ edit_link }}
 tun.
 

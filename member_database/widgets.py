@@ -1,7 +1,6 @@
 from wtforms.widgets import TextInput
 
 
-
 latex_div = """
 <div id="input_group_{id}" class="render-katex">
   <span class="latex-hint">LaTeX-Mathe möglich in $...$</span>
@@ -12,7 +11,7 @@ latex_div = """
 
 
 class LatexInput(TextInput):
-    input_type = 'latex'
+    input_type = "latex"
 
     def __call__(self, field, **kwargs):
         markup = super().__call__(field, **kwargs)

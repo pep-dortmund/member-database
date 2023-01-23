@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '02fcfdcb4b37'
-down_revision = '288c44807361'
+revision = "02fcfdcb4b37"
+down_revision = "288c44807361"
 branch_labels = None
 depends_on = None
 
@@ -26,20 +26,21 @@ def upgrade():
     # The deletion of the old table is not possible with integrity checks
     # enabled.
     con = op.get_bind()
-    if con.engine.name == 'sqlite':
-        con.execute('PRAGMA foreign_keys = OFF;')
+    if con.engine.name == "sqlite":
+        con.execute("PRAGMA foreign_keys = OFF;")
 
     op.create_table(
-        'membership_status',
-        sa.Column('id', sa.String(), nullable=False),
-        sa.PrimaryKeyConstraint('id', name=op.f('pk_membership_status'))
+        "membership_status",
+        sa.Column("id", sa.String(), nullable=False),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_membership_status")),
     )
-    with op.batch_alter_table('person', schema=None) as batch_op:
+    with op.batch_alter_table("person", schema=None) as batch_op:
         batch_op.add_column(
             sa.Column(
-                'membership_status_id',
-                sa.String, sa.ForeignKey('membership_status.id'),
+                "membership_status_id",
+                sa.String,
+                sa.ForeignKey("membership_status.id"),
             )
         )
-        batch_op.drop_column('member')
-        batch_op.drop_column('membership_pending')
+        batch_op.drop_column("member")
+        batch_op.drop_column("membership_pending")

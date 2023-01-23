@@ -22,15 +22,15 @@ from .main import main
 from .admin_views import create_admin_views
 
 
-@event.listens_for(Engine, 'connect')
+@event.listens_for(Engine, "connect")
 def pragma_on_connect(dbapi_con, con_record):
-    '''
+    """
     Make sure sqlite uses foreing key constraints
     https://stackoverflow.com/a/15542046/3838691
-    '''
+    """
     if isinstance(dbapi_con, SQLite3Connection):
         cursor = dbapi_con.cursor()
-        cursor.execute('PRAGMA foreign_keys = ON;')
+        cursor.execute("PRAGMA foreign_keys = ON;")
         cursor.close()
 
 
@@ -47,11 +47,11 @@ def create_app(config=Config):
 
     @babel.localeselector
     def get_locale():
-        return request.accept_languages.best_match(app.config['LANGUAGES'])
+        return request.accept_languages.best_match(app.config["LANGUAGES"])
 
     app.register_blueprint(auth)
     app.register_blueprint(main)
-    app.register_blueprint(events, url_prefix='/events')
+    app.register_blueprint(events, url_prefix="/events")
 
     app.json_encoder = JSONEncoderISO8601
 
@@ -65,6 +65,6 @@ def create_app(config=Config):
     admin.init_app(app)
 
     app.logger.setLevel(logging.INFO)
-    app.logger.info('App created')
+    app.logger.info("App created")
 
     return app
