@@ -2,7 +2,8 @@
 
 ![build status](https://www.travis-ci.org/pep-dortmund/member-database.svg?branch=master) ![coverage](https://contabo.pep-dortmund.org/travis-ci/coverage.svg)
 
-Our member database application
+Our member database application. 
+Hosted at [registration.pep-dortmund.org](https://registration.pep-dortmund.org).
 
 ## Design Choices
 - keep it simple
@@ -38,6 +39,10 @@ We strongly recommend to read through the first chapters of the [the flask mega 
 1. To initialise the database, run
   ```
   $ poetry run flask db upgrade
+  ```
+1. To populate the database with some test user `admin` with password `testdb` and 2 test events, run 
+  ```
+  $ poetry run python populate_database.py
   ```
 
 1. Start the server using `FLASK_DEBUG=true poetry run flask run`
