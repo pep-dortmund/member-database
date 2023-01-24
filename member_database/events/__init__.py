@@ -57,13 +57,6 @@ def create_email_field(force_tu_mail=False):
     )
 
 
-@events.before_app_first_request
-def init_database():
-    for name in ('confirmed', 'pending', 'waitinglist', 'canceled'):
-        get_or_create(RegistrationStatus, name=name)
-    db.session.commit()
-
-
 @events.route('/')
 def index():
     ''' Index page for the event registration, provides a list with links to

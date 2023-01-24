@@ -6,11 +6,11 @@ from flask_login import logout_user, current_user, login_user
 from itsdangerous import SignatureExpired, BadData, URLSafeTimedSerializer
 
 
-from .login import login, access_required, AnonymousUser, ACCESS_LEVELS, handle_needs_login
+from .login import login, access_required, AnonymousUser, handle_needs_login, ACCESS_LEVELS
 from .models import AccessLevel, Role, User, get_user_by_name_or_email
 from .forms import LoginForm, SendPasswordResetForm, PasswordResetForm
 
-from ..utils import get_or_create,  ext_url_for
+from ..utils import ext_url_for
 from ..models import db
 from ..mail import send_email
 
@@ -19,21 +19,13 @@ from ..mail import send_email
 __all__ = [
     'auth', 'login', 'access_required', 'AnonymousUser',
     'AccessLevel', 'Role', 'User', 'get_user_by_name_or_email',
-    'handle_needs_login',
+    'handle_needs_login', "ACCESS_LEVELS",
 ]
 
 login.anonymous_user = AnonymousUser
 
 
 auth = Blueprint('auth', __name__, template_folder='templates')
-
-
-@auth.before_app_first_request
-def init_database():
-    for access_level in ACCESS_LEVELS:
-        get_or_create(AccessLevel, id=access_level)
-
-    db.session.commit()
 
 
 @auth.route('/login/', methods=['GET', 'POST'])

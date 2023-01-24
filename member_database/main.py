@@ -14,7 +14,6 @@ from .models import (
     Person,
     as_dict,
     MembershipStatus,
-    MembershipType,
     TUStatus,
 )
 from .utils import get_or_create, ext_url_for
@@ -24,20 +23,6 @@ from .mail import send_email
 
 
 main = Blueprint('main', __name__)
-
-
-@main.before_app_first_request
-def init_database():
-    for id_ in MembershipStatus.STATES:
-        get_or_create(MembershipStatus, id=id_)
-
-    for name in TUStatus.STATES:
-        get_or_create(TUStatus, name=name)
-
-    for id_ in MembershipType.TYPES:
-        get_or_create(MembershipType, id=id_)
-
-    db.session.commit()
 
 
 @main.route('/')
