@@ -9,23 +9,23 @@ class Person(db.Model):
     name = db.Column(db.UnicodeText(), nullable=False)
 
     membership_status_id = db.Column(
-        db.String, db.ForeignKey('membership_status.id'),
+        db.String,
+        db.ForeignKey("membership_status.id"),
     )
     membership_status = db.relationship(
-        'MembershipStatus', backref='persons', lazy='subquery'
+        "MembershipStatus", backref="persons", lazy="subquery"
     )
 
     membership_type_id = db.Column(
-        db.String, db.ForeignKey('membership_type.id'),
+        db.String,
+        db.ForeignKey("membership_type.id"),
     )
     membership_type = db.relationship(
-        'MembershipType', backref='persons', lazy='subquery'
+        "MembershipType", backref="persons", lazy="subquery"
     )
 
-    tu_status_id = db.Column(db.Integer, db.ForeignKey('tu_status.id'))
-    tu_status = db.relationship(
-        'TUStatus', backref='persons', lazy='subquery'
-    )
+    tu_status_id = db.Column(db.Integer, db.ForeignKey("tu_status.id"))
+    tu_status = db.relationship("TUStatus", backref="persons", lazy="subquery")
 
     email = db.Column(db.String(120), unique=True, nullable=False)
     email_valid = db.Column(db.Boolean, default=False)
@@ -34,15 +34,15 @@ class Person(db.Model):
     joining_date = db.Column(db.Date, default=None, nullable=True)
 
     def __repr__(self):
-        return f'<Person {self.id}: {self.name}>'
+        return f"<Person {self.id}: {self.name}>"
 
 
 class TUStatus(db.Model):
-    STUDENT = 'Student*in'
-    PHD = 'Doktorand*in'
-    ALUMNI = 'Alumnus/Alumna'
-    STAFF = 'Mitarbeiter*in / Lehrende'
-    OTHER = 'Sonstiges'
+    STUDENT = "Student*in"
+    PHD = "Doktorand*in"
+    ALUMNI = "Alumnus/Alumna"
+    STAFF = "Mitarbeiter*in / Lehrende"
+    OTHER = "Sonstiges"
 
     STATES = (
         STUDENT,
@@ -59,11 +59,11 @@ class TUStatus(db.Model):
 class MembershipStatus(db.Model):
     id = db.Column(db.String, primary_key=True)
 
-    EMAIL_UNVERIFIED = 'email_unverified'
-    PENDING = 'pending'
-    CONFIRMED = 'confirmed'
-    DENIED = 'denied'
-    CANCELED = 'canceled'
+    EMAIL_UNVERIFIED = "email_unverified"
+    PENDING = "pending"
+    CONFIRMED = "confirmed"
+    DENIED = "denied"
+    CANCELED = "canceled"
 
     STATES = (
         EMAIL_UNVERIFIED,
@@ -77,11 +77,10 @@ class MembershipStatus(db.Model):
 class MembershipType(db.Model):
     id = db.Column(db.String, primary_key=True)
 
-    ORDENTLICH = 'ordentlich'
-    AUSSERORDENTLICH = 'ausserordentlich'
+    ORDENTLICH = "ordentlich"
+    AUSSERORDENTLICH = "ausserordentlich"
 
     TYPES = (
         ORDENTLICH,
         AUSSERORDENTLICH,
     )
-

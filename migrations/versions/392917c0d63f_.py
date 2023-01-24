@@ -10,17 +10,17 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '392917c0d63f'
-down_revision = 'aaabaee93687'
+revision = "392917c0d63f"
+down_revision = "aaabaee93687"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     with op.batch_alter_table("event") as bop:
-        bop.add_column(sa.Column('force_tu_mail', sa.Boolean(), nullable=True))
+        bop.add_column(sa.Column("force_tu_mail", sa.Boolean(), nullable=True))
 
 
 def downgrade():
     with op.batch_alter_table("event") as bop:
-        bop.drop_column('force_tu_mail')
+        bop.drop_column("force_tu_mail")

@@ -19,11 +19,11 @@ class PrettyJSONField(fields.JSONField):
         elif self.data:
             return json.dumps(self.data, ensure_ascii=False, indent=2)
         else:
-            return ''
+            return ""
 
 
 class IndexView(AdminIndexView):
-    @expose('/')
+    @expose("/")
     def index(self):
         if not current_user.is_authenticated:
             return handle_needs_login()
@@ -37,13 +37,12 @@ class AuthorizedView(ModelView):
     details_modal = True
 
     def __init_subclass__(cls):
-        '''Add a subclasses access level to the set of access levels'''
+        """Add a subclasses access level to the set of access levels"""
         ACCESS_LEVELS.add(cls.access_level)
 
     def is_accessible(self):
-        return (
-            current_user.is_authenticated
-            and current_user.has_access(self.access_level)
+        return current_user.is_authenticated and current_user.has_access(
+            self.access_level
         )
 
     def inaccessible_callback(self, name, **kwargs):
@@ -56,47 +55,53 @@ class AuthorizedView(ModelView):
 
 
 class EventView(AuthorizedView):
-    access_level = 'event_admin'
-    column_list = ['name', 'notify_email', 'max_participants', 'force_tu_mail',
-                   'registration_open']
-    column_filters = ['name', 'max_participants', 'force_tu_mail',
-                      'registration_open', 'notify_email']
-    form_excluded_columns = ['registrations']
-    column_editable_list = ['name', 'registration_open']
-    column_descriptions = {
-        'description': 'HTML is allowed in this field.'
-    }
+    access_level = "event_admin"
+    column_list = [
+        "name",
+        "notify_email",
+        "max_participants",
+        "force_tu_mail",
+        "registration_open",
+    ]
+    column_filters = [
+        "name",
+        "max_participants",
+        "force_tu_mail",
+        "registration_open",
+        "notify_email",
+    ]
+    form_excluded_columns = ["registrations"]
+    column_editable_list = ["name", "registration_open"]
+    column_descriptions = {"description": "HTML is allowed in this field."}
     form_widget_args = {
-        'description': {
-            'rows': 10,
-            'style': 'width: 100%; font-family: monospace;',
+        "description": {
+            "rows": 10,
+            "style": "width: 100%; font-family: monospace;",
         },
-        'registration_schema': {
-            'rows': 16,
-            'style': 'width: 100%; font-family: monospace;',
-        }
+        "registration_schema": {
+            "rows": 16,
+            "style": "width: 100%; font-family: monospace;",
+        },
     }
-    form_overrides = {
-        'registration_schema': PrettyJSONField
-    }
+    form_overrides = {"registration_schema": PrettyJSONField}
 
 
 class RoleView(AuthorizedView):
     column_display_pk = True
-    column_list = ['id', 'access_levels', 'users']
-    form_columns = ['id', 'access_levels', 'users']
-    access_level = 'role_admin'
+    column_list = ["id", "access_levels", "users"]
+    form_columns = ["id", "access_levels", "users"]
+    access_level = "role_admin"
 
 
 class AccessLevelView(AuthorizedView):
     column_display_pk = True
-    column_list = ['id', 'roles']
-    form_columns = ['id', 'roles']
-    access_level = 'access_level_admin'
+    column_list = ["id", "roles"]
+    form_columns = ["id", "roles"]
+    access_level = "access_level_admin"
 
 
 class EventRegistrationView(AuthorizedView):
-    access_level = 'event_registration_admin'
+    access_level = "event_registration_admin"
     column_filters = [
         Event.id,
         Event.name,
@@ -105,31 +110,39 @@ class EventRegistrationView(AuthorizedView):
     ]
 
     form_columns = [
-        'id', 'event', 'person', 'status', 'data', 'timestamp',
+        "id",
+        "event",
+        "person",
+        "status",
+        "data",
+        "timestamp",
     ]
-
 
 
 class PersonView(AuthorizedView):
-    access_level = 'person_admin'
+    access_level = "person_admin"
     column_list = [
-        'name', 'email', 'user', 'event_registrations',
-        'membership_status', 'joining_date',
+        "name",
+        "email",
+        "user",
+        "event_registrations",
+        "membership_status",
+        "joining_date",
     ]
-    column_filters = ['name', 'email', Person.membership_status_id]
+    column_filters = ["name", "email", Person.membership_status_id]
 
 
 class TUStatusView(AuthorizedView):
-    access_level = 'person_admin'
+    access_level = "person_admin"
 
 
 class UserView(AuthorizedView):
-    access_level = 'user_admin'
-    column_list = ['username', 'person', 'roles']
-    column_filters = ['username', Person.email]
-    form_excluded_columns = ['password_hash']
+    access_level = "user_admin"
+    column_list = ["username", "person", "roles"]
+    column_filters = ["username", Person.email]
+    form_excluded_columns = ["password_hash"]
     form_extra_fields = {
-        'new_password': PasswordField('New Password'),
+        "new_password": PasswordField("New Password"),
     }
 
     def on_model_change(self, form, user, is_created):
@@ -140,8 +153,8 @@ class UserView(AuthorizedView):
 def create_admin_views():
     admin = Admin(
         index_view=IndexView(),
-        template_mode='bootstrap4',
-        base_template="admin_master.html"
+        template_mode="bootstrap4",
+        base_template="admin_master.html",
     )
     admin.add_view(EventView(Event, db.session))
     admin.add_view(EventRegistrationView(EventRegistration, db.session))

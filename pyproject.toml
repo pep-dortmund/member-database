@@ -37,6 +37,10 @@ beautifulsoup4 = "^4.8"
 blinker = "^1.4"
 pyflakes = "^2.1"
 
+[tool.poetry.group.dev.dependencies]
+black = "^22.12.0"
+pre-commit = "^2.21.0"
+
 [build-system]
 requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

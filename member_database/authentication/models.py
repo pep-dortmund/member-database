@@ -6,43 +6,31 @@ from ..models import db, Person
 
 def get_user_by_name_or_email(name_or_email):
     return (
-        User.query
-        .join(Person)
-        .filter(
-            (User.username == name_or_email) | (Person.email == name_or_email)
-        ).one_or_none()
+        User.query.join(Person)
+        .filter((User.username == name_or_email) | (Person.email == name_or_email))
+        .one_or_none()
     )
 
 
 roles = db.Table(
-    'roles',
-    db.Column(
-        'user_id',
-        db.Integer,
-        db.ForeignKey('user.id'),
-        primary_key=True
-    ),
-    db.Column(
-        'role_id',
-        db.String(32),
-        db.ForeignKey('role.id'),
-        primary_key=True
-    )
+    "roles",
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
+    db.Column("role_id", db.String(32), db.ForeignKey("role.id"), primary_key=True),
 )
 
 
 access_levels = db.Table(
-    'access_levels',
+    "access_levels",
     db.Column(
-        'role_id',
+        "role_id",
         db.String(32),
-        db.ForeignKey('role.id'),
+        db.ForeignKey("role.id"),
         primary_key=True,
     ),
     db.Column(
-        'access_level_id',
+        "access_level_id",
         db.String(32),
-        db.ForeignKey('access_level.id'),
+        db.ForeignKey("access_level.id"),
         primary_key=True,
     ),
 )
@@ -55,10 +43,10 @@ class AccessLevel(db.Model):
 class Role(db.Model):
     id = db.Column(db.String(32), primary_key=True)
     access_levels = db.relationship(
-        'AccessLevel',
+        "AccessLevel",
         secondary=access_levels,
-        lazy='subquery',
-        backref=db.backref('roles', lazy=True)
+        lazy="subquery",
+        backref=db.backref("roles", lazy=True),
     )
 
 
@@ -68,16 +56,13 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     password_hash = db.Column(db.String(128))
 
-    person_id = db.Column(db.Integer, db.ForeignKey('person.id'), nullable=False)
+    person_id = db.Column(db.Integer, db.ForeignKey("person.id"), nullable=False)
 
     roles = db.relationship(
-        'Role',
-        secondary=roles,
-        lazy='subquery',
-        backref=db.backref('users', lazy=True)
+        "Role", secondary=roles, lazy="subquery", backref=db.backref("users", lazy=True)
     )
 
-    person = db.relationship('Person', backref='user', lazy='subquery')
+    person = db.relationship("Person", backref="user", lazy="subquery")
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -92,4 +77,4 @@ class User(UserMixin, db.Model):
         return False
 
     def __repr__(self):
-        return f'<User {self.id}: {self.username}>'
+        return f"<User {self.id}: {self.username}>"
