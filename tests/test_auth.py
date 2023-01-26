@@ -23,7 +23,7 @@ def test_new_user(client):
 
 
 @pytest.fixture(scope="module")
-def test_user():
+def test_user(client):
     from member_database.models import Person, db
     from member_database.authentication import User
 
@@ -38,7 +38,7 @@ def test_user():
 
 
 @pytest.fixture(scope="module")
-def test_user2():
+def test_user2(client):
     from member_database.models import Person, db
     from member_database.authentication import User
 

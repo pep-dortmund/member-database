@@ -53,7 +53,7 @@ def create_app(config=Config):
     app.register_blueprint(main)
     app.register_blueprint(events, url_prefix="/events")
 
-    app.json_encoder = JSONEncoderISO8601
+    app.json_provider_class = JSONEncoderISO8601
 
     app.register_error_handler(401, unauthorized_error)
     app.register_error_handler(404, not_found_error)

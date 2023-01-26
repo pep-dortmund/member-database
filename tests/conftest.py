@@ -1,12 +1,17 @@
 import pytest
-import tempfile
 
 
 @pytest.fixture(scope="session")
-def app():
+def db_path(tmp_path_factory):
+    return tmp_path_factory.mktemp("db_") / "db_testing.sqlite"
+
+
+@pytest.fixture(scope="session")
+def app(db_path):
     from config import TestingConfig
     from member_database import create_app
 
+    TestingConfig.SQLALCHEMY_DATABASE_URI = f"sqlite:///{db_path}"
     app = create_app(TestingConfig)
     return app
 
@@ -15,13 +20,10 @@ def app():
 def client(app):
     from member_database import db
 
-    with tempfile.NamedTemporaryFile(suffix=".sqlite", prefix="db_testing") as f:
-        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + f.name
-
-        with app.test_client() as client:
-            with app.app_context():
-                db.create_all()
-                yield client
+    with app.test_client() as client:
+        with app.app_context():
+            db.create_all()
+            yield client
 
 
 @pytest.fixture(scope="session")

@@ -123,10 +123,16 @@ def index():
     )
 
 
+def get_n_participants(event):
+    return (
+        db.session.query(EventRegistration)
+        .filter_by(event_id=event.id, status_name="confirmed")
+        .count()
+    )
+
+
 def get_free_places(event):
-    n_participants = EventRegistration.query.filter_by(
-        event_id=event.id, status_name="confirmed"
-    ).count()
+    n_participants = get_n_participants(event)
     if event.max_participants:
         return event.max_participants - n_participants
     return None
@@ -261,7 +267,7 @@ def send_registration_mail(registration):
 def resend_email():
     registration_id = request.form["registration_id"]
 
-    registration = EventRegistration.query.get_or_404(registration_id)
+    registration = db.get_or_404(EventRegistration, registration_id)
     send_registration_mail(registration)
     flash("Email versendet", category="success")
 
@@ -323,13 +329,12 @@ def get_event(event_id):
 @events.route("/<int:event_id>/participants/")
 @access_required("get_participants")
 def participants(event_id):
-    event = Event.query.get(event_id)
-    participants = (
-        EventRegistration.query.options(
-            joinedload(EventRegistration.person)
-        )  # directly fetch persons
+    event = db.get_or_404(Event, event_id)
+    participants = db.session.execute(
+        db.select(EventRegistration)
         .filter_by(event_id=event_id)
         .order_by(EventRegistration.timestamp.is_(None), EventRegistration.timestamp)
+        .execution_options(joinedload(EventRegistration.person))
     )
 
     if "application/json" in request.headers.get("Accept"):
@@ -356,9 +361,7 @@ def write_mail(event_id):
     event = Event.query.get(event_id)
 
     form = SendMailForm(name=current_user.person.name, email=current_user.person.email)
-    n_participants = EventRegistration.query.filter_by(
-        event_id=event_id, status_name="confirmed"
-    ).count()
+    n_participants = get_n_participants(event)
 
     if n_participants == 0:
         flash(f"No participants yet for event {event.name}", "danger")
@@ -413,12 +416,10 @@ def confirmation(token):
         print(e)
         abort(404)
 
-    person = Person.query.get(person_id)
-    registration = EventRegistration.query.get(registration_id)
+    person = db.session.get(Person, person_id)
+    registration = db.session.get(EventRegistration, registration_id)
     event = registration.event
-    n_participants = EventRegistration.query.filter_by(
-        event_id=event.id, status_name="confirmed"
-    ).count()
+    n_participants = get_n_participants(event)
     booked_out = event.max_participants and n_participants >= event.max_participants
 
     log.info(f"Confirmation for {event} by {person} ({registration})")

@@ -2,7 +2,7 @@
 
 ![build status](https://www.travis-ci.org/pep-dortmund/member-database.svg?branch=master) ![coverage](https://contabo.pep-dortmund.org/travis-ci/coverage.svg)
 
-Our member database application. 
+Our member database application.
 Hosted at [registration.pep-dortmund.org](https://registration.pep-dortmund.org).
 
 ## Design Choices
@@ -40,7 +40,7 @@ We strongly recommend to read through the first chapters of the [the flask mega 
   ```
   $ poetry run flask db upgrade
   ```
-1. To populate the database with some test user `admin` with password `testdb` and 2 test events, run 
+1. To populate the database with some test user `admin` with password `testdb` and 2 test events, run
   ```
   $ poetry run python populate_database.py
   ```
@@ -134,8 +134,8 @@ Just like in the above example, you can fire up an ipython session and...
    from member_database.models import Role, AccessLevel
    admin_role = Role(id='admin')
    admin_role.access_levels = [
-       AccessLevel.query.get('get_persons'),
-       AccessLevel.query.get('get_members'),
+       db.session.get(AccessLevel, 'get_persons'),
+       db.session.get(AccessLevel, 'get_members'),
    ]
    db.session.add(admin_role)
    db.session.commit()
@@ -146,7 +146,7 @@ Just like in the above example, you can fire up an ipython session and...
    from member_database import app, db
    from member_database.models import Role, User
    user = User.query.filter_by(username='aeinstein').first()
-   user.roles.append(Role.query.get('admin'))
+   user.roles.append(db.session.get(Role, 'admin'))
    db.session.add(user)
    db.session.commit()
    ```
