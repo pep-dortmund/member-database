@@ -14,7 +14,7 @@ RUN useradd --system --user-group memberdb
 RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install poetry==1.2.2
+RUN pip install poetry==1.3.1
 WORKDIR /home/memberdb/
 
 # this will be our startup script
@@ -32,7 +32,7 @@ COPY pyproject.toml poetry.lock ./
 # pg_config
 # this will create a wheel file that contains all dependencies
 RUN poetry config virtualenvs.create false \
-	&& poetry install -E deploy --no-dev
+	&& poetry install -E deploy --only main
 
 COPY member_database ./member_database
 
