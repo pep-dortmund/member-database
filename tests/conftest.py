@@ -44,12 +44,12 @@ def admin_user(client, test_person):
     from member_database.authentication import User, Role, AccessLevel
     from member_database.utils import get_or_create
 
+    member_management, _ = get_or_create(AccessLevel, id="member_management")
     admin = Role(
         id="admin",
-        access_levels=[
-            get_or_create(AccessLevel, id="member_management")[0],
-        ],
+        access_levels=[member_management],
     )
+    db.session.add(admin)
 
     u = User(person=test_person, username="rfeynman", roles=[admin])
 

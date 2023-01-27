@@ -46,7 +46,8 @@ class Role(db.Model):
         "AccessLevel",
         secondary=access_levels,
         lazy="subquery",
-        backref=db.backref("roles", lazy=True),
+        backref=db.backref("roles", lazy=True, cascade_backrefs=False),
+        cascade_backrefs=False,
     )
 
 
@@ -59,10 +60,18 @@ class User(UserMixin, db.Model):
     person_id = db.Column(db.Integer, db.ForeignKey("person.id"), nullable=False)
 
     roles = db.relationship(
-        "Role", secondary=roles, lazy="subquery", backref=db.backref("users", lazy=True)
+        "Role",
+        secondary=roles,
+        lazy="subquery",
+        backref=db.backref("users", lazy=True, cascade_backrefs=False),
+        cascade_backrefs=False,
     )
 
-    person = db.relationship("Person", backref="user", lazy="subquery")
+    person = db.relationship(
+        "Person",
+        backref=db.backref("user", lazy=True, cascade_backrefs=False),
+        lazy="subquery", cascade_backrefs=False
+    )
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

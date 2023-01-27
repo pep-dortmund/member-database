@@ -44,3 +44,9 @@ pre-commit = "^2.21.0"
 [build-system]
 requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "error::sqlalchemy.exc.RemovedIn20Warning",
+]
