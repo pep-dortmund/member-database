@@ -1,6 +1,6 @@
 from flask import Flask, request
 from flask_migrate import Migrate
-from flask_bootstrap import Bootstrap
+from flask_bootstrap import Bootstrap4
 from flask_babel import Babel
 
 
@@ -42,7 +42,7 @@ def create_app(config=Config):
     mail.init_app(app)
     login.init_app(app)
     Migrate(app, db, render_as_batch=True)
-    Bootstrap(app)
+    Bootstrap4(app)
     babel = Babel(app)
 
     @babel.localeselector

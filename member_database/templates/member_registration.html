@@ -9,7 +9,7 @@
 
 <p>Um Mitglied zu werden, melden Sie sich hier an. Nachdem Sie Ihre E-Mail Adresse über einen Bestätigungs-Link verifiziert haben, können Sie freigeschaltet werden:</p>
 
-{% from 'bootstrap/form.html' import render_form %}
+{% from 'bootstrap4/form.html' import render_form %}
 {{ render_form(form, method='POST', action=action) }}
 
 {% endblock %}
