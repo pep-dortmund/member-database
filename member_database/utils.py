@@ -1,4 +1,5 @@
 from sqlalchemy.sql.expression import ClauseElement
+from sqlalchemy import inspect
 from flask import url_for, current_app
 from .models import db
 
@@ -45,3 +46,8 @@ def ext_url_for(*args, **kwargs):
         _external=True,
         _scheme="https" if current_app.config["USE_HTTPS"] else "http",
     )
+
+
+def table_exists(model):
+    """Check if table for given model already exists in db"""
+    return inspect(db.engine).has_table(inspect(model).tables[0].name)

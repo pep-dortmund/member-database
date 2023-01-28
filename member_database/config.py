@@ -9,6 +9,7 @@ class Config:
         "DATABASE_URL", "sqlite:///" + os.path.abspath("memberdb.sqlite")
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {"future": True}
 
     # secret key is needed for sessions and tokens
     SECRET_KEY = os.environ["SECRET_KEY"]

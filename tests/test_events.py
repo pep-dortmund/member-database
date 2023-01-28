@@ -52,7 +52,7 @@ def test_event(client):
             )
             assert ret.status_code == 200
 
-        assert EventRegistration.query.get(i).status_name == "pending"
+        assert db.session.get(EventRegistration, i).status_name == "pending"
 
         # test mail was send
         assert len(outbox) == 1
@@ -70,7 +70,7 @@ def test_event(client):
         else:
             assert soup.find("div", {"class": "alert alert-success"})
 
-        assert EventRegistration.query.get(i).status_name == state
+        assert db.session.get(EventRegistration, i).status_name == state
 
     # test event is now full
     r = client.get("/events/1/registration/")

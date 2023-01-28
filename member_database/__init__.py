@@ -12,13 +12,13 @@ import logging
 
 from .config import Config
 from .models import db
-from .authentication import auth, login
+from .authentication import auth, login, init_authentication_database
 from .mail import mail
 from .errors import not_found_error, internal_error, unauthorized_error
 from .log import setup_logging
-from .events import events
+from .events import events, init_event_database
 from .json import JSONEncoderISO8601
-from .main import main
+from .main import main, init_main_database
 from .admin_views import create_admin_views
 
 
@@ -53,7 +53,7 @@ def create_app(config=Config):
     app.register_blueprint(main)
     app.register_blueprint(events, url_prefix="/events")
 
-    app.json_encoder = JSONEncoderISO8601
+    app.json_provider_class = JSONEncoderISO8601
 
     app.register_error_handler(401, unauthorized_error)
     app.register_error_handler(404, not_found_error)
@@ -66,5 +66,12 @@ def create_app(config=Config):
 
     app.logger.setLevel(logging.INFO)
     app.logger.info("App created")
+
+    app.logger.info("Initializing app dbs")
+    with app.app_context():
+        init_authentication_database()
+        init_main_database()
+        init_event_database()
+        app.logger.info("app db initialized")
 
     return app
