@@ -42,9 +42,8 @@ class AuthorizedView(ModelView):
         ACCESS_LEVELS.add(cls.access_level)
 
     def is_accessible(self):
-        return (
-            current_user.is_authenticated 
-            and current_user.has_access(self.access_level)
+        return current_user.is_authenticated and current_user.has_access(
+            self.access_level
         )
 
     def inaccessible_callback(self, name, **kwargs):
@@ -77,7 +76,7 @@ class EventView(AuthorizedView):
     column_editable_list = ["name", "registration_open", "shortlink"]
     column_descriptions = {
         "description": "HTML is allowed in this field.",
-        "shortlink": 'Makes event available via "events/{shortlink}". Set to "DEFAULT" for standard shortlink generation from event name and to "NONE" for no shortlink.',
+        "shortlink": 'Makes event available via "events/{shortlink}".',
     }
     form_widget_args = {
         "description": {
@@ -90,12 +89,6 @@ class EventView(AuthorizedView):
         },
     }
     form_overrides = {"registration_schema": PrettyJSONField}
-
-    def on_model_change(self, form, model, is_created):
-        if form.shortlink.data.strip() == "DEFAULT":
-            model.shortlink = quote(model.name.replace(" ", ""))
-        elif form.shortlink.data.strip() == "NONE":
-            model.shortlink = None
 
 
 class RoleView(AuthorizedView):
