@@ -1,17 +1,20 @@
+import pytest
 from bs4 import BeautifulSoup
 import re
 
 
-def test_event(client):
+@pytest.mark.parametrize("endpoint", ["id", "shortlink"])
+def test_event(client, endpoint):
     from member_database import db
     from member_database.events import EventRegistration, Event
     from member_database.mail import mail
 
-    e = Event(
+    event = Event(
         name="Test Event",
         description="Just to test this stuff",
         registration_open=True,
         max_participants=1,
+        shortlink="test" if endpoint == "shortlink" else None,
         registration_schema={
             "properties": {
                 "semester": {"type": "integer", "label": "Semester"},
@@ -20,11 +23,12 @@ def test_event(client):
             "required": ["semester", "course"],
         },
     )
-    db.session.add(e)
+    db.session.add(event)
     db.session.commit()
 
     # test registration form is accessible
-    ret = client.get(f"/events/{e.id}/registration/")
+    event_id = event.id if endpoint == "id" else event.shortlink
+    ret = client.get(f"/events/{event_id}/registration/")
     assert ret.status_code == 200
     text = ret.data.decode("utf-8")
     assert "Es sind noch 1 Plätze" in text
@@ -36,11 +40,12 @@ def test_event(client):
 
     mails = "test1", "test2"
     expected_state = "confirmed", "waitinglist"
-    for i, (email, state) in enumerate(zip(mails, expected_state), start=1):
+    start = db.session.query(EventRegistration).count() + 1
+    for i, (email, state) in enumerate(zip(mails, expected_state), start=start):
         # test registering
         with mail.record_messages() as outbox:
             ret = client.post(
-                "/events/1/registration/",
+                f"/events/{event_id}/registration/",
                 data={
                     "semester": 1,
                     "course": "Physik",
@@ -52,11 +57,12 @@ def test_event(client):
             )
             assert ret.status_code == 200
 
-        assert db.session.get(EventRegistration, i).status_name == "pending"
+        registration = db.session.get(EventRegistration, i)
+        assert registration.status_name == "pending"
 
         # test mail was send
         assert len(outbox) == 1
-        assert e.name in outbox[0].subject
+        assert event.name in outbox[0].subject
         m = re.search(r"http(s)?:\/\/.*events\/registration\/.*", outbox[0].body)
         assert m
         link = m.group(0)
@@ -73,7 +79,7 @@ def test_event(client):
         assert db.session.get(EventRegistration, i).status_name == state
 
     # test event is now full
-    r = client.get("/events/1/registration/")
+    r = client.get(f"/events/{event_id}/registration/")
     s = BeautifulSoup(r.data.decode("utf-8"), "html.parser")
     alert = s.find("div", {"class": "alert alert-warning"})
     assert alert

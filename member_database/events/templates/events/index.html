@@ -9,7 +9,7 @@
   <ul class="list-group">
     {% for event in events %}
     <a class="list-group-item"
-       href="{{ url_for('events.registration', event_id=event.id)}}"
+       href="{{ url_for_event('events.registration', event_id=event.id)}}"
       >
       {{ event.name }}
 
@@ -30,7 +30,7 @@
   du kannst dich auf unserer Warteliste eintragen:
     {% for event in full_events %}
     <a class="list-group-item"
-       href="{{ url_for('events.registration', event_id=event.id)}}"
+       href="{{ url_for_event('events.registration', event_id=event.id)}}"
       >
       {{ event.name }}
     </a>
@@ -52,7 +52,7 @@
   <ul class="list-group">
     {% for event in closed_events %}
     <a class="list-group-item"
-       href="{{ url_for('events.registration', event_id=event.id)}}"
+       href="{{ url_for_event('events.registration', event_id=event.id)}}"
       >
       {{ event.name }}
     </a>

@@ -1,6 +1,7 @@
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import validates
 from jsonschema.validators import Draft7Validator
+from urllib.parse import quote
 
 from ..models import db
 
@@ -11,6 +12,8 @@ class Event(db.Model):
     description = db.Column(db.Text)
     notify_email = db.Column(db.Text)
     force_tu_mail = db.Column(db.Boolean, default=False)
+
+    shortlink = db.Column(db.String, default=None, nullable=True, unique=True)
 
     max_participants = db.Column(db.Integer)
 

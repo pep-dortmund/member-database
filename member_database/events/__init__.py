@@ -22,6 +22,7 @@ from jsonschema import validate, ValidationError
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from datetime import datetime, timezone
+from functools import wraps
 import logging
 
 from ..models import db, Person, as_dict
@@ -79,6 +80,15 @@ def init_event_database():
     for name in RegistrationStatus.STATES:
         get_or_create(RegistrationStatus, name=name)
     db.session.commit()
+
+
+@events.add_app_template_global
+def url_for_event(endpoint, event_id):
+    """ "Returns the shortlink version of the url, if there is a shortlink."""
+    event = db.session.get(Event, event_id)
+    if event.shortlink is None:
+        return url_for(endpoint, event_id=event_id)
+    return url_for(endpoint + "_via_shortlink", shortlink=event.shortlink)
 
 
 @events.route("/")
@@ -143,9 +153,31 @@ def get_free_places(event):
     return None
 
 
+def add_shortlink_route(route, **options):
+    """
+    Add a second route, transforming shortlink into id
+    """
+
+    def route_name_to_id_decorator(func):
+        @wraps(func)
+        def call_with_id(shortlink):
+            event = db.one_or_404(db.select(Event).filter_by(shortlink=shortlink))
+            return func(event.id)
+
+        # have to rename the function, becauce flask has to have
+        # unique id's on view_functions
+        call_with_id.__name__ = call_with_id.__name__ + "_via_shortlink"
+        events.add_url_rule(route, view_func=call_with_id, **options)
+
+        return func
+
+    return route_name_to_id_decorator
+
+
 @events.route("/<int:event_id>/registration/", methods=["GET", "POST"])
+@add_shortlink_route("/<string:shortlink>/registration/", methods=["GET", "POST"])
 def registration(event_id):
-    event = Event.query.filter_by(id=event_id).first_or_404()
+    event = db.get_or_404(Event, event_id)
 
     free_places = get_free_places(event)
     if free_places is not None:
@@ -316,6 +348,7 @@ def resend_emails():
 
 
 @events.route("/<int:event_id>/")
+@add_shortlink_route("/<string:shortlink>/")
 @cross_origin(origins=["https://([a-z]+.)?pep-dortmund.(org|de)"])
 def get_event(event_id):
     event = Event.query.filter_by(id=event_id).first()
@@ -332,6 +365,7 @@ def get_event(event_id):
 
 
 @events.route("/<int:event_id>/participants/")
+@add_shortlink_route("/<string:shortlink>/participants/")
 @access_required("get_participants")
 def participants(event_id):
     event = db.get_or_404(Event, event_id)
@@ -361,6 +395,7 @@ def participants(event_id):
 
 
 @events.route("/<int:event_id>/write_mail/", methods=["GET", "POST"])
+@add_shortlink_route("/<string:shortlink>/write_mail/", methods=["GET", "POST"])
 @access_required("write_email")
 def write_mail(event_id):
     event = Event.query.get(event_id)

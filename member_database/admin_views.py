@@ -6,6 +6,7 @@ from flask_admin import Admin, expose, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import fields
 from wtforms.fields import PasswordField
+from urllib.parse import quote
 
 from .models import db, Person, TUStatus
 from .events import Event, EventRegistration
@@ -62,6 +63,7 @@ class EventView(AuthorizedView):
         "max_participants",
         "force_tu_mail",
         "registration_open",
+        "shortlink",
     ]
     column_filters = [
         "name",
@@ -71,8 +73,11 @@ class EventView(AuthorizedView):
         "notify_email",
     ]
     form_excluded_columns = ["registrations"]
-    column_editable_list = ["name", "registration_open"]
-    column_descriptions = {"description": "HTML is allowed in this field."}
+    column_editable_list = ["name", "registration_open", "shortlink"]
+    column_descriptions = {
+        "description": "HTML is allowed in this field.",
+        "shortlink": 'Makes event available via "events/{shortlink}".',
+    }
     form_widget_args = {
         "description": {
             "rows": 10,
