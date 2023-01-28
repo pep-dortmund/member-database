@@ -1,4 +1,9 @@
 import pytest
+from member_database import (
+    init_authentication_database,
+    init_main_database,
+    init_event_database,
+)
 
 
 @pytest.fixture(scope="session")
@@ -23,6 +28,9 @@ def client(app):
     with app.test_client() as client:
         with app.app_context():
             db.create_all()
+            init_authentication_database()
+            init_main_database()
+            init_event_database()
             yield client
 
 

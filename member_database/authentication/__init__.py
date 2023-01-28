@@ -22,7 +22,7 @@ from .login import (
 from .models import AccessLevel, Role, User, get_user_by_name_or_email
 from .forms import LoginForm, SendPasswordResetForm, PasswordResetForm
 
-from ..utils import get_or_create, ext_url_for
+from ..utils import get_or_create, ext_url_for, table_exists
 from ..models import db
 from ..mail import send_email
 
@@ -45,11 +45,15 @@ login.anonymous_user = AnonymousUser
 auth = Blueprint("auth", __name__, template_folder="templates")
 
 
-@auth.before_app_first_request
-def init_database():
+def init_authentication_database():
+    if not table_exists(AccessLevel):
+        current_app.logger.info(
+            "Skipping auth db init as table does not exist (run flask db upgrade)"
+        )
+        return
+
     for access_level in ACCESS_LEVELS:
         get_or_create(AccessLevel, id=access_level)
-
     db.session.commit()
 
 

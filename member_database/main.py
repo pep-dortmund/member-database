@@ -24,7 +24,7 @@ from .models import (
     MembershipType,
     TUStatus,
 )
-from .utils import get_or_create, ext_url_for
+from .utils import get_or_create, ext_url_for, table_exists
 from .authentication import access_required
 from .forms import PersonEditForm, MembershipForm, RequestLinkForm
 from .mail import send_email
@@ -33,8 +33,13 @@ from .mail import send_email
 main = Blueprint("main", __name__)
 
 
-@main.before_app_first_request
-def init_database():
+def init_main_database():
+    if not table_exists(MembershipStatus):
+        current_app.logger.info(
+            "Skipping main db init as table does not exist (run flask db upgrade)"
+        )
+        return
+
     for id_ in MembershipStatus.STATES:
         get_or_create(MembershipStatus, id=id_)
 

@@ -58,3 +58,9 @@ class EventRegistration(db.Model):
 
 class RegistrationStatus(db.Model):
     name = db.Column(db.String, primary_key=True)
+
+    CONFIRMED = "confirmed"
+    PENDING = "pending"
+    WAITING = "waitinglist"
+    CANCELED = "canceled"
+    STATES = (CONFIRMED, PENDING, WAITING, CANCELED)

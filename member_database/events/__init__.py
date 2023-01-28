@@ -25,7 +25,7 @@ from datetime import datetime, timezone
 import logging
 
 from ..models import db, Person, as_dict
-from ..utils import get_or_create, ext_url_for
+from ..utils import get_or_create, ext_url_for, table_exists
 from ..mail import send_email
 from ..authentication import access_required
 
@@ -69,9 +69,14 @@ def create_email_field(force_tu_mail=False):
     )
 
 
-@events.before_app_first_request
-def init_database():
-    for name in ("confirmed", "pending", "waitinglist", "canceled"):
+def init_event_database():
+    if not table_exists(RegistrationStatus):
+        current_app.logger.info(
+            "Skipping event db init as table does not exist (run flask db upgrade)"
+        )
+        return
+
+    for name in RegistrationStatus.STATES:
         get_or_create(RegistrationStatus, name=name)
     db.session.commit()
 
