@@ -13,16 +13,7 @@ class Event(db.Model):
     notify_email = db.Column(db.Text)
     force_tu_mail = db.Column(db.Boolean, default=False)
 
-    def default_shortlink(context):
-        """Generates a default shortlink out of the name of the event, by removing spaces and making it URL-safe."""
-        if context is not None:
-            return quote(context.get_current_parameters()["name"].replace(" ", ""))
-        else:
-            return "DEFAULT"
-
-    shortlink = db.Column(
-        db.String, default=default_shortlink, nullable=True, unique=True
-    )
+    shortlink = db.Column(db.String, default=None, nullable=True, unique=True)
 
     max_participants = db.Column(db.Integer)
 
