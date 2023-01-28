@@ -85,10 +85,10 @@ def init_event_database():
 @events.add_app_template_global
 def url_for_event(endpoint, event_id):
     """ "Returns the shortlink version of the url, if there is a shortlink."""
-    event = Event.query.get(event_id)
+    event = db.session.get(Event, event_id)
     if event.shortlink is None:
         return url_for(endpoint, event_id=event_id)
-    return url_for(endpoint + "_via_shortlink", name=event.shortlink)
+    return url_for(endpoint + "_via_shortlink", shortlink=event.shortlink)
 
 
 @events.route("/")
@@ -175,9 +175,9 @@ def add_shortlink_route(route, **options):
 
 
 @events.route("/<int:event_id>/registration/", methods=["GET", "POST"])
-@add_shortlink_route("/<string:name>/registration/", methods=["GET", "POST"])
+@add_shortlink_route("/<string:shortlink>/registration/", methods=["GET", "POST"])
 def registration(event_id):
-    event = Event.query.filter_by(id=event_id).first_or_404()
+    event = db.get_or_404(Event, event_id)
 
     free_places = get_free_places(event)
     if free_places is not None:
@@ -348,7 +348,7 @@ def resend_emails():
 
 
 @events.route("/<int:event_id>/")
-@add_shortlink_route("/<string:name>/")
+@add_shortlink_route("/<string:shortlink>/")
 @cross_origin(origins=["https://([a-z]+.)?pep-dortmund.(org|de)"])
 def get_event(event_id):
     event = Event.query.filter_by(id=event_id).first()
@@ -365,7 +365,7 @@ def get_event(event_id):
 
 
 @events.route("/<int:event_id>/participants/")
-@add_shortlink_route("/<string:name>/participants/")
+@add_shortlink_route("/<string:shortlink>/participants/")
 @access_required("get_participants")
 def participants(event_id):
     event = db.get_or_404(Event, event_id)
@@ -395,7 +395,7 @@ def participants(event_id):
 
 
 @events.route("/<int:event_id>/write_mail/", methods=["GET", "POST"])
-@add_shortlink_route("/<string:name>/write_mail/", methods=["GET", "POST"])
+@add_shortlink_route("/<string:shortlink>/write_mail/", methods=["GET", "POST"])
 @access_required("write_email")
 def write_mail(event_id):
     event = Event.query.get(event_id)
