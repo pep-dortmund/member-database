@@ -1,8 +1,9 @@
-# member-database
-
-![build status](https://www.travis-ci.org/pep-dortmund/member-database.svg?branch=master) ![coverage](https://contabo.pep-dortmund.org/travis-ci/coverage.svg)
+# member-database [![CI](https://github.com/pep-dortmund/member-database/actions/workflows/ci.yml/badge.svg)](https://github.com/pep-dortmund/member-database/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/pep-dortmund/member-database/branch/master/graph/badge.svg?token=YHXAdlITAd)](https://codecov.io/gh/pep-dortmund/member-database)
 
 Our member database application.
+
+This is a custom database application and webinterface for membership and event registrations for PeP et al. e.V.
+
 Hosted at [registration.pep-dortmund.org](https://registration.pep-dortmund.org).
 
 ## Design Choices
