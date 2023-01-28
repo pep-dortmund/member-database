@@ -81,13 +81,14 @@ def init_event_database():
         get_or_create(RegistrationStatus, name=name)
     db.session.commit()
 
+
 @events.add_app_template_global
 def url_for_event(endpoint, event_id):
-    """"Returns the shortlink version of the url, if there is a shortlink."""
+    """ "Returns the shortlink version of the url, if there is a shortlink."""
     event = Event.query.get(event_id)
     if event.shortlink is None:
         return url_for(endpoint, event_id=event_id)
-    return url_for(endpoint+"_by_name", name=event.shortlink)
+    return url_for(endpoint + "_via_shortlink", name=event.shortlink)
 
 
 @events.route("/")
@@ -152,34 +153,29 @@ def get_free_places(event):
     return None
 
 
-def route_name_to_id(route, **options):
-    """Decorator to add a route, which transforms the var 'name' in the route to 
-       the corresponding event and call the view func(event_id)"""
+def add_shortlink_route(route, **options):
+    """
+    Add a second route, transforming shortlink into id
+    """
+
     def route_name_to_id_decorator(func):
         @wraps(func)
-        def call_with_id(name):
-            # It'd be better to add a `.order_by(Event.date)`, but 
-            # events currently are not associated with a date (new github issue?)
-            event = Event.query.filter_by(shortlink=name).first()
-            
-            if event is None:
-                # event = None will return None for event.id query
-                # of wrapped function, to let the function deside 
-                # what to do: 404, status error, json...
-                return func(None)
+        def call_with_id(shortlink):
+            event = db.one_or_404(db.select(Event).filter_by(shortlink=shortlink))
             return func(event.id)
-       
-        # have to rename the function, becauce flask has to have 
+
+        # have to rename the function, becauce flask has to have
         # unique id's on view_functions
-        call_with_id.__name__ = call_with_id.__name__+"_by_name"
+        call_with_id.__name__ = call_with_id.__name__ + "_via_shortlink"
         events.add_url_rule(route, view_func=call_with_id, **options)
 
         return func
+
     return route_name_to_id_decorator
 
 
-@events.route('/<int:event_id>/registration/', methods=['GET', 'POST'])
-@route_name_to_id('/<string:name>/registration/', methods=['GET', 'POST'])
+@events.route("/<int:event_id>/registration/", methods=["GET", "POST"])
+@add_shortlink_route("/<string:name>/registration/", methods=["GET", "POST"])
 def registration(event_id):
     event = Event.query.filter_by(id=event_id).first_or_404()
 
@@ -351,8 +347,8 @@ def resend_emails():
         return render_template("events/resend_emails.html", form=form)
 
 
-@events.route('/<int:event_id>/')
-@route_name_to_id('/<string:name>/')
+@events.route("/<int:event_id>/")
+@add_shortlink_route("/<string:name>/")
 @cross_origin(origins=["https://([a-z]+.)?pep-dortmund.(org|de)"])
 def get_event(event_id):
     event = Event.query.filter_by(id=event_id).first()
@@ -368,9 +364,9 @@ def get_event(event_id):
     )
 
 
-@events.route('/<int:event_id>/participants/')
-@route_name_to_id('/<string:name>/participants/')
-@access_required('get_participants')
+@events.route("/<int:event_id>/participants/")
+@add_shortlink_route("/<string:name>/participants/")
+@access_required("get_participants")
 def participants(event_id):
     event = db.get_or_404(Event, event_id)
     participants = db.session.execute(
@@ -398,9 +394,9 @@ def participants(event_id):
     )
 
 
-@events.route('/<int:event_id>/write_mail/', methods=['GET', 'POST'])
-@route_name_to_id('/<string:name>/write_mail/', methods=['GET', 'POST'])
-@access_required('write_email')
+@events.route("/<int:event_id>/write_mail/", methods=["GET", "POST"])
+@add_shortlink_route("/<string:name>/write_mail/", methods=["GET", "POST"])
+@access_required("write_email")
 def write_mail(event_id):
     event = Event.query.get(event_id)
 
