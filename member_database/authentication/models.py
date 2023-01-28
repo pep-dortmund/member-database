@@ -70,7 +70,8 @@ class User(UserMixin, db.Model):
     person = db.relationship(
         "Person",
         backref=db.backref("user", lazy=True, cascade_backrefs=False),
-        lazy="subquery", cascade_backrefs=False
+        lazy="subquery",
+        cascade_backrefs=False,
     )
 
     def set_password(self, password):
