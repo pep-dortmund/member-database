@@ -96,3 +96,6 @@ def test_event(client, endpoint, admin_user):
 
     ret = client.get(f"/events/{event_id}/participants/")
     assert ret.status_code == 200
+
+    ret = client.post("/logout/")
+    assert ret.status_code == 302

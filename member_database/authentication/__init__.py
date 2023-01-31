@@ -121,7 +121,7 @@ def reset_password(token):
     return render_template("simple_form.html", title="Reset Password", form=form)
 
 
-@auth.route("/logout", methods=["GET", "POST"])
+@auth.route("/logout/", methods=["GET", "POST"])
 def logout():
     logout_user()
     return redirect(url_for("main.index"))
