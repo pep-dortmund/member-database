@@ -4,6 +4,7 @@ from member_database import (
     init_main_database,
     init_event_database,
 )
+from member_database.events import get_n_participants
 
 
 @pytest.fixture(scope="session")
@@ -52,10 +53,11 @@ def admin_user(client, test_person):
     from member_database.authentication import User, Role, AccessLevel
     from member_database.utils import get_or_create
 
-    member_management, _ = get_or_create(AccessLevel, id="member_management")
+    member_management = db.session.get(AccessLevel, "member_management")
+    get_participants = db.session.get(AccessLevel, "get_participants")
     admin = Role(
         id="admin",
-        access_levels=[member_management],
+        access_levels=[member_management, get_participants],
     )
     db.session.add(admin)
 

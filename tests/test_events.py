@@ -4,7 +4,7 @@ import re
 
 
 @pytest.mark.parametrize("endpoint", ["id", "shortlink"])
-def test_event(client, endpoint):
+def test_event(client, endpoint, admin_user):
     from member_database import db
     from member_database.events import EventRegistration, Event
     from member_database.mail import mail
@@ -84,3 +84,15 @@ def test_event(client, endpoint):
     alert = s.find("div", {"class": "alert alert-warning"})
     assert alert
     assert "Warteliste" in alert.text
+
+    # test participant page
+    # not logged in, should fail
+    ret = client.get(f"/events/{event_id}/participants/")
+    assert ret.status_code == 401
+
+    # login and try again
+    ret = client.post("/login/", data=admin_user.login_data)
+    assert ret.status_code == 302  # successul login redirects
+
+    ret = client.get(f"/events/{event_id}/participants/")
+    assert ret.status_code == 200
