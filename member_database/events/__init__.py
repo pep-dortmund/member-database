@@ -369,14 +369,14 @@ def get_event(event_id):
 @access_required("get_participants")
 def participants(event_id):
     event = db.get_or_404(Event, event_id)
-    participants = db.session.execute(
+    participants = db.session.scalars(
         db.select(EventRegistration)
         .filter_by(event_id=event_id)
         .order_by(EventRegistration.timestamp.is_(None), EventRegistration.timestamp)
-        .execution_options(joinedload(EventRegistration.person))
+        .options(joinedload(EventRegistration.person))
     )
 
-    if "application/json" in request.headers.get("Accept"):
+    if "application/json" in request.headers.get("Accept", ""):
         data = []
         for p in participants:
             d = as_dict(p)
