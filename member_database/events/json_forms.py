@@ -75,7 +75,7 @@ def create_wtf_field(name, schema, required=True):
         return wtforms.BooleanField(**kwargs)
 
     # this can be used to show only a message
-    if schema["type"] == "hidden":
+    if schema["type"] == "null":
         return HiddenField(**kwargs)
 
     # subform
