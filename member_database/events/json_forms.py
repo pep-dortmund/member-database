@@ -5,6 +5,7 @@ from wtforms.fields import (
     EmailField,
     IntegerField,
     DecimalField,
+    HiddenField,
 )
 from wtforms.validators import DataRequired, NumberRange, Regexp
 from markupsafe import Markup
@@ -16,6 +17,7 @@ def create_wtf_field(name, schema, required=True):
     validators = []
 
     kwargs = {
+        "default": schema.get("default"),
         "validators": validators,
         "label": Markup(schema.get("label", name.title())),
     }
@@ -71,6 +73,10 @@ def create_wtf_field(name, schema, required=True):
         if schema.get("const") is not None:
             validators.append(DataRequired())
         return wtforms.BooleanField(**kwargs)
+
+    # this can be used to show only a message
+    if schema["type"] == "hidden":
+        return HiddenField(**kwargs)
 
     # subform
     if schema["type"] == "object":
