@@ -7,6 +7,7 @@ from wtforms.fields import (
     DecimalField,
 )
 from wtforms.validators import DataRequired, NumberRange, Regexp
+from markupsafe import Markup
 
 from ..widgets import LatexInput
 
@@ -16,7 +17,7 @@ def create_wtf_field(name, schema, required=True):
 
     kwargs = {
         "validators": validators,
-        "label": schema.get("label", name.title()),
+        "label": Markup(schema.get("label", name.title())),
     }
 
     message = schema.get("error_hint")
