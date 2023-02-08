@@ -10,6 +10,7 @@ class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     description = db.Column(db.Text)
+    footer = db.Column(db.Text, default=None, nullable=True)
     notify_email = db.Column(db.Text)
     force_tu_mail = db.Column(db.Boolean, default=False)
 
