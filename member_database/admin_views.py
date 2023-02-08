@@ -75,7 +75,8 @@ class EventView(AuthorizedView):
     form_excluded_columns = ["registrations"]
     column_editable_list = ["name", "registration_open", "shortlink"]
     column_descriptions = {
-        "description": "HTML is allowed in this field.",
+        "description": "Description shown above on the registration page. HTML is allowed in this field.",
+        "footer": "Additional text to be shown below the form on the registration page. HTML is allowed in this field.",
         "shortlink": 'Makes event available via "events/{shortlink}".',
     }
     form_widget_args = {

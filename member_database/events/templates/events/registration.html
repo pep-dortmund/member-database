@@ -47,5 +47,11 @@
 
   {{ render_form(form, method='POST', action=submit_url, button_map={'submit': 'primary'}) }}
 
+  {% if event.footer is not none %}
+  <div class="event-footer">
+  {{ event.footer }}
+  </div>
+  {% endif %}
+
 
 {% endblock %}
