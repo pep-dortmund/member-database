@@ -16,6 +16,7 @@ def create_wtf_field(name, schema, required=True):
     validators = []
 
     kwargs = {
+        "default": schema.get("default"),
         "validators": validators,
         "label": Markup(schema.get("label", name.title())),
     }
