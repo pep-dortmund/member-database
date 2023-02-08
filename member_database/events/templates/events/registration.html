@@ -49,7 +49,7 @@
 
   {% if event.footer is not none %}
   <div class="event-footer">
-  {{ event.footer }}
+  {{ event.footer|safe }}
   </div>
   {% endif %}
 
