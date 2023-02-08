@@ -18,10 +18,6 @@
 
   <h1>Anmeldung {{ event.name }}</h1>
 
-  <p> Falls du dich bereits für diese Veranstaltung angemeldet hast,
-  aber keine Email bekommen hast, kannst du sie <a href="{{ url_for('events.resend_emails') }}">
-  hier erneut anfordern</a>.
-
   {% if free_places %}
   <div class="alert alert-success">
     Es sind noch {{ free_places }} Plätze verfügbar.
