@@ -29,7 +29,7 @@ flask-cors = "^3.0.10"
 deploy = ["gunicorn", "psycopg2-binary"]
 
 [tool.poetry.dev-dependencies]
-ipython = "^8.0"
+ipython = "^8.10"
 httpie = "^3.1"
 pytest = "^7.1"
 pytest-cov = "^3.0"
