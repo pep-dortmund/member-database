@@ -3,7 +3,9 @@
 
   <h1>Teilnehmer {{ event.name }}</h1>
 
-  <table class="table">
+  <a class="btn btn-primary" href="{{ url_for('events.write_mail', event_id=event.id) }}">Email an Teilnehmende schicken</a>
+
+  <table class="table mt-3">
     <thead>
       <th scope="col">#</th>
       <th scope="col">Name</th>

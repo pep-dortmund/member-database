@@ -409,18 +409,18 @@ def write_mail(event_id):
 
     if form.validate_on_submit():
         participants = EventRegistration.query.options(
+            # directly fetch persons
             joinedload(EventRegistration.person)
-        ).filter_by(  # directly fetch persons
-            event_id=event_id, status_name="confirmed"
-        )
+        ).filter_by(event_id=event_id, status_name="confirmed")
 
         attachments = [
             Attachment(
                 filename=f.filename,
-                data=f.read(),
+                data=data,
                 content_type=f.mimetype,
             )
             for f in request.files.getlist(form.attachments.name)
+            if f.filename != "" and len(data := f.read()) > 0
         ]
 
         # send to everyone in bcc
