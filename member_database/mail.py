@@ -1,10 +1,10 @@
+import logging
+import socket
+from threading import Thread
+
+import backoff
 from flask import current_app
 from flask_mail import Mail, Message
-from threading import Thread
-import socket
-import logging
-import backoff
-
 
 log = logging.getLogger(__name__)
 

@@ -1,6 +1,5 @@
 from jsonschema import validate
 
-
 ABSOLVENTENFEIER = {
     "type": "object",
     "properties": {

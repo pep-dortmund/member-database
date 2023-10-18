@@ -1,7 +1,8 @@
+import re
+from datetime import date, timedelta
+
 from member_database.mail import mail
 from member_database.models import Person
-from datetime import date, timedelta
-import re
 
 
 def test_person_edit_form(client, test_person):

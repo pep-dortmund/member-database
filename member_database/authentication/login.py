@@ -1,11 +1,10 @@
-from flask import flash, abort, request, jsonify
-from flask_login import LoginManager, login_required, current_user, AnonymousUserMixin
 import base64
-
 from functools import wraps
 
-from .models import User, get_user_by_name_or_email
+from flask import abort, flash, jsonify, request
+from flask_login import AnonymousUserMixin, LoginManager, current_user, login_required
 
+from .models import User, get_user_by_name_or_email
 
 login = LoginManager()
 

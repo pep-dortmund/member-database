@@ -1,6 +1,5 @@
 from wtforms.widgets import TextInput
 
-
 latex_div = """
 <div id="input_group_{id}" class="render-katex">
   <span class="latex-hint">LaTeX-Mathe möglich in $...$</span>

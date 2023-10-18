@@ -1,10 +1,9 @@
 from flask_wtf import FlaskForm
+from wtforms import MultipleFileField, StringField, SubmitField, TextAreaField
+from wtforms.fields import EmailField
+from wtforms.validators import DataRequired
 
 # from flask_wtf.file import FileField, FileRequired
-
-from wtforms.fields import EmailField
-from wtforms import StringField, TextAreaField, SubmitField, MultipleFileField
-from wtforms.validators import DataRequired
 
 
 class SendMailForm(FlaskForm):

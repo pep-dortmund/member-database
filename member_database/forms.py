@@ -1,12 +1,12 @@
 from datetime import date
 
-from flask_wtf import FlaskForm
 from flask_babel import lazy_gettext as _l
-from wtforms import StringField, SubmitField, ValidationError, RadioField
-from wtforms.fields import EmailField, DateField
+from flask_wtf import FlaskForm
+from wtforms import RadioField, StringField, SubmitField, ValidationError
+from wtforms.fields import DateField, EmailField
 from wtforms.validators import DataRequired, Email, Optional
 
-from .models import Person, MembershipType
+from .models import MembershipType, Person
 
 
 def known_email(form, field):

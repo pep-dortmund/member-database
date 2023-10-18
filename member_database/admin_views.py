@@ -1,16 +1,16 @@
 import json
-
-from flask import abort
-from flask_login import current_user
-from flask_admin import Admin, expose, AdminIndexView
-from flask_admin.contrib.sqla import ModelView
-from flask_admin.form import fields
-from wtforms.fields import PasswordField
 from urllib.parse import quote
 
-from .models import db, Person, TUStatus
+from flask import abort
+from flask_admin import Admin, AdminIndexView, expose
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.form import fields
+from flask_login import current_user
+from wtforms.fields import PasswordField
+
+from .authentication import ACCESS_LEVELS, AccessLevel, Role, User, handle_needs_login
 from .events import Event, EventRegistration
-from .authentication import User, Role, AccessLevel, handle_needs_login, ACCESS_LEVELS
+from .models import Person, TUStatus, db
 
 
 class PrettyJSONField(fields.JSONField):

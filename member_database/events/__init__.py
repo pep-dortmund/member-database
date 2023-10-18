@@ -1,39 +1,37 @@
-from flask import (
-    Blueprint,
-    render_template,
-    abort,
-    flash,
-    redirect,
-    url_for,
-    jsonify,
-    current_app,
-    request,
-)
-from flask_cors import cross_origin
-from flask_login import current_user
-from flask_wtf import FlaskForm
-from flask_mail import Attachment
-from wtforms.fields import StringField, SubmitField
-from wtforms.validators import DataRequired, Regexp
-from wtforms.fields import EmailField
-from itsdangerous import URLSafeSerializer, BadData
-from flask_babel import _
-from jsonschema import validate, ValidationError
-from sqlalchemy import func
-from sqlalchemy.orm import joinedload
+import logging
 from datetime import datetime, timezone
 from functools import wraps
-import logging
 
-from ..models import db, Person, as_dict
-from ..utils import get_or_create, ext_url_for, table_exists
-from ..mail import send_email
+from flask import (
+    Blueprint,
+    abort,
+    current_app,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from flask_babel import _
+from flask_cors import cross_origin
+from flask_login import current_user
+from flask_mail import Attachment
+from flask_wtf import FlaskForm
+from itsdangerous import BadData, URLSafeSerializer
+from jsonschema import ValidationError, validate
+from sqlalchemy import func
+from sqlalchemy.orm import joinedload
+from wtforms.fields import EmailField, StringField, SubmitField
+from wtforms.validators import DataRequired, Regexp
+
 from ..authentication import access_required
-
-from .models import Event, EventRegistration, RegistrationStatus
-from .json_forms import create_wtf_form
+from ..mail import send_email
+from ..models import Person, as_dict, db
+from ..utils import ext_url_for, get_or_create, table_exists
 from .forms import SendMailForm
-
+from .json_forms import create_wtf_form
+from .models import Event, EventRegistration, RegistrationStatus
 
 __all__ = [
     "events",

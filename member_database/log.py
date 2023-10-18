@@ -1,5 +1,5 @@
-from logging.handlers import SMTPHandler, TimedRotatingFileHandler
 import logging
+from logging.handlers import SMTPHandler, TimedRotatingFileHandler
 
 
 def setup_logging(app):

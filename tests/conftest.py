@@ -1,8 +1,9 @@
 import pytest
+
 from member_database import (
     init_authentication_database,
-    init_main_database,
     init_event_database,
+    init_main_database,
 )
 from member_database.events import get_n_participants
 
@@ -15,6 +16,7 @@ def db_path(tmp_path_factory):
 @pytest.fixture(scope="session")
 def app(db_path):
     from config import TestingConfig
+
     from member_database import create_app
 
     TestingConfig.SQLALCHEMY_DATABASE_URI = f"sqlite:///{db_path}"
@@ -49,8 +51,8 @@ def test_person(client):
 
 @pytest.fixture(scope="session")
 def admin_user(client, test_person):
+    from member_database.authentication import AccessLevel, Role, User
     from member_database.models import Person, db
-    from member_database.authentication import User, Role, AccessLevel
     from member_database.utils import get_or_create
 
     member_management = db.session.get(AccessLevel, "member_management")

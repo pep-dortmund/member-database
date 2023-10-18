@@ -1,5 +1,5 @@
 from .. import create_app
-from ..models import db, RegistrationStatus
+from ..models import RegistrationStatus, db
 from ..utils import get_or_create
 
 

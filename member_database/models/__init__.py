@@ -1,5 +1,5 @@
-from .base import db, as_dict
-from .person import Person, MembershipStatus, MembershipType, TUStatus
+from .base import as_dict, db
+from .person import MembershipStatus, MembershipType, Person, TUStatus
 
 __all__ = [
     "db",
