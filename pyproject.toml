@@ -29,7 +29,7 @@ deploy = ["gunicorn", "psycopg2-binary"]
 [tool.poetry.dev-dependencies]
 ipython = "^7.9"
 httpie = "^1.0"
-pytest = "^5.2"
+pytest = "^6.2.5"
 pytest-cov = "^2.8"
 coverage-badge = "^1.0"
 beautifulsoup4 = "^4.8"
