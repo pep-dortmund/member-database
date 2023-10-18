@@ -8,6 +8,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.8"
 flask = "^2.1,<=2.2.5"
+werkzeug = "<3.0.0"
 flask-sqlalchemy = "^3.0.2"
 sqlalchemy = "^1.4"
 flask-migrate = "^3.1"
