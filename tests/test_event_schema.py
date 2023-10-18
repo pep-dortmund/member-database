@@ -1,5 +1,5 @@
 import wtforms
-from wtforms.fields import html5
+from wtforms.fields import EmailField, IntegerField
 
 
 def has_validator(field, validator_cls):
@@ -7,43 +7,48 @@ def has_validator(field, validator_cls):
 
 
 def test_empty():
-    '''Test empty schema works'''
+    """Test empty schema works"""
     from member_database.events.json_forms import create_wtf_form
+
     schema = {}
 
-    Form = create_wtf_form(schema, baseclasses=(wtforms.Form, ))
+    Form = create_wtf_form(schema, baseclasses=(wtforms.Form,))
     form = Form()
     assert isinstance(form.submit, wtforms.SubmitField)
 
 
 def test_basic_elements():
     from member_database.events.json_forms import create_wtf_form
+
     schema = dict(
-        type='object',
+        type="object",
         properties={
-            'name': {'type': 'string', 'label': 'Name'},
-            'email': {'type': 'string', 'format': 'email'},
-            'semester': {'type': 'integer', 'label': 'Semester'},
-            'degree': {
-                'type': 'string', 'label': 'Abschluss',
-                'enum': ['Bachelor', 'Master', 'Promotion'],
+            "name": {"type": "string", "label": "Name"},
+            "email": {"type": "string", "format": "email"},
+            "semester": {"type": "integer", "label": "Semester"},
+            "degree": {
+                "type": "string",
+                "label": "Abschluss",
+                "enum": ["Bachelor", "Master", "Promotion"],
             },
-            'vegan': {'type': 'boolean'},
+            "vegan": {"type": "boolean"},
         },
-        required=['name', 'semester', 'degree'],
+        required=["name", "semester", "degree"],
     )
 
-    Form = create_wtf_form(schema, baseclasses=(wtforms.Form, ))
+    Form = create_wtf_form(schema, baseclasses=(wtforms.Form,))
     form = Form()
 
     assert isinstance(form.name, wtforms.StringField)
     assert has_validator(form.name, wtforms.validators.DataRequired)
-    assert isinstance(form.semester, html5.IntegerField)
+    assert isinstance(form.semester, IntegerField)
     assert isinstance(form.degree, wtforms.SelectField)
-    assert isinstance(form.email, html5.EmailField)
+    assert isinstance(form.email, EmailField)
 
     assert form.degree.choices == [
-        ('Bachelor', 'Bachelor'), ('Master', 'Master'), ('Promotion', 'Promotion')
+        ("Bachelor", "Bachelor"),
+        ("Master", "Master"),
+        ("Promotion", "Promotion"),
     ]
 
     assert isinstance(form.vegan, wtforms.BooleanField)
@@ -53,24 +58,24 @@ def test_subform():
     from member_database.events.json_forms import create_wtf_form
 
     subform = dict(
-        type='object',
+        type="object",
         properties=dict(
-            cpp=dict(type='boolean'),
-            c=dict(type='boolean'),
-            python=dict(type='boolean'),
-            other=dict(type='string'),
-        )
+            cpp=dict(type="boolean"),
+            c=dict(type="boolean"),
+            python=dict(type="boolean"),
+            other=dict(type="string"),
+        ),
     )
 
     schema = dict(
-        type='object',
+        type="object",
         properties=dict(
             languages=subform,
-            name=dict(type='string'),
-        )
+            name=dict(type="string"),
+        ),
     )
 
-    Form = create_wtf_form(schema, baseclasses=(wtforms.Form, ))
+    Form = create_wtf_form(schema, baseclasses=(wtforms.Form,))
     form = Form()
 
     assert isinstance(form.languages, wtforms.FormField)
