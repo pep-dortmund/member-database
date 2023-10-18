@@ -7,7 +7,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-flask = "^2.1"
+flask = "^2.1,<=2.2.5"
 flask-sqlalchemy = "^3.0.2"
 sqlalchemy = "^1.4"
 flask-migrate = "^3.1"
@@ -32,7 +32,7 @@ deploy = ["gunicorn", "psycopg2-binary"]
 ipython = "^8.10"
 httpie = "^3.1"
 pytest = "^7.1"
-pytest-cov = "^3.0"
+pytest-cov = "^4.0"
 coverage-badge = "^1.0"
 beautifulsoup4 = "^4.8"
 blinker = "^1.4"
