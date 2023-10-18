@@ -39,6 +39,9 @@ beautifulsoup4 = "^4.8"
 blinker = "^1.4"
 pyflakes = "^2.1"
 ruff = "^0.1.7"
+black = "^22.12.0"
+isort = "^5.11.0"
+pre-commit = "^2.21.0"
 
 [build-system]
 requires = ["poetry_core>=1.0.0"]
