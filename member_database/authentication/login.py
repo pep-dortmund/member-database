@@ -61,7 +61,6 @@ def load_user(id):
 
 @login.request_loader
 def load_user_from_request(request):
-
     basic_auth = request.headers.get("Authorization")
 
     if basic_auth:

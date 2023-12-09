@@ -223,5 +223,5 @@ SOMMERAKADEMIE = {
 
 
 if __name__ == "__main__":
-    validate(ABSOLVENTENFEIER, META_SCHEMA)
+    validate(ABSOLVENTENFEIER, META_SCHEMA)  # noqa
     print("All schemata validated successfully")

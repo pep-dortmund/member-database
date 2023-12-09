@@ -12,7 +12,6 @@ from flask import (
     url_for,
 )
 from flask_babel import _
-from flask_login import current_user, login_user, logout_user
 from itsdangerous import BadData, SignatureExpired, URLSafeTimedSerializer
 from sqlalchemy.exc import IntegrityError
 

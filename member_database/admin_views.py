@@ -1,5 +1,4 @@
 import json
-from urllib.parse import quote
 
 from flask import abort
 from flask_admin import Admin, AdminIndexView, expose

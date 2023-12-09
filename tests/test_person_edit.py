@@ -6,7 +6,6 @@ from member_database.models import Person
 
 
 def test_person_edit_form(client, test_person):
-
     assert client.get("/request_edit").status_code == 200
 
     with mail.record_messages() as outbox:

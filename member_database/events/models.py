@@ -1,5 +1,3 @@
-from urllib.parse import quote
-
 from jsonschema.validators import Draft7Validator
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import validates

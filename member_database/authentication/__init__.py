@@ -98,7 +98,6 @@ def send_password_reset():
 
 @auth.route("/password_reset/<token>", methods=["GET", "POST"])
 def reset_password(token):
-
     try:
         email = load_reset_token(token)
     except SignatureExpired:

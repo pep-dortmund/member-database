@@ -4,7 +4,6 @@ from logging.handlers import SMTPHandler, TimedRotatingFileHandler
 
 def setup_logging(app):
     if not app.debug and app.config["MAIL_SERVER"]:
-
         if app.config["MAIL_USE_SSL"]:
             app.logger.warning("SSL not supported by logging.SMTPHandler")
             return

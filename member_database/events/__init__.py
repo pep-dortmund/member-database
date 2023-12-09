@@ -113,7 +113,7 @@ def index():
     # for logged in users, we want to show all events, all others
     # only get to see the ones that are currently open
     if not current_user.is_authenticated:
-        query = query.filter(Event.registration_open == True)
+        query = query.filter(Event.registration_open is True)
 
     query = query.all()
 
@@ -187,7 +187,7 @@ def registration(event_id):
         if current_user.is_authenticated and current_user.has_access(
             "view_registration"
         ):
-            flash(f"Vorschau! Die Anmeldung ist Offline.", "warning")
+            flash("Vorschau! Die Anmeldung ist Offline.", "warning")
         else:
             flash(
                 f'Eine Anmeldung für "{event.name}" is derzeit nicht möglich', "danger"
