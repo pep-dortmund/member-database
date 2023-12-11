@@ -7,10 +7,10 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-flask = "^2.1"
-flask-sqlalchemy = "^3.0.2"
-sqlalchemy = "^1.4"
-flask-migrate = "^3.1"
+flask = "^2.3"
+flask-sqlalchemy = "^3.1.1"
+sqlalchemy = "^2.0"
+flask-migrate = "^4.0"
 flask-mail = "^0.9.1"
 python-dotenv = "^0.10"
 flask-login = "^0.6"
@@ -45,9 +45,3 @@ pre-commit = "^2.21.0"
 [build-system]
 requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-
-[tool.pytest.ini_options]
-filterwarnings = [
-    "error::sqlalchemy.exc.RemovedIn20Warning",
-]

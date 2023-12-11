@@ -27,7 +27,7 @@ def upgrade():
     # enabled.
     con = op.get_bind()
     if con.engine.name == "sqlite":
-        con.execute("PRAGMA foreign_keys = OFF;")
+        con.execute(sa.text("PRAGMA foreign_keys = OFF;"))
 
     op.create_table(
         "membership_status",
