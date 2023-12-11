@@ -1,4 +1,4 @@
-from flask.json import JSONEncoder
+from json import JSONEncoder
 from datetime import date
 
 
