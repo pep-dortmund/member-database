@@ -20,7 +20,7 @@ jsonschema = "^3.1"
 bootstrap-flask = "^2.2"
 flask-admin = "^1.6.0"
 backoff = "^1.10.0"
-gunicorn = {version = "^20.0", optional = true}
+gunicorn = {version = "^21.2", optional = true}
 psycopg2-binary = {version = "^2.9", optional = true}
 email-validator = "^1.1"
 flask-cors = "^3.0.10"
@@ -28,7 +28,8 @@ flask-cors = "^3.0.10"
 [tool.poetry.extras]
 deploy = ["gunicorn", "psycopg2-binary"]
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^2.21.0"
 ipython = "^8.10"
 httpie = "^3.1"
 pytest = "^7.1"
@@ -37,10 +38,7 @@ coverage-badge = "^1.0"
 beautifulsoup4 = "^4.8"
 blinker = "^1.4"
 pyflakes = "^2.1"
-
-[tool.poetry.group.dev.dependencies]
-black = "^22.12.0"
-pre-commit = "^2.21.0"
+ruff = "^0.1.7"
 
 [build-system]
 requires = ["poetry_core>=1.0.0"]
