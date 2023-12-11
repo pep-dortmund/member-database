@@ -1,5 +1,6 @@
-import pytest
 import re
+
+import pytest
 
 OLD_PW = "test"
 NEW_PW = "foo"
@@ -9,8 +10,8 @@ def test_new_user(client):
     """
     Check if we can create a new user and set its password.
     """
-    from member_database.models import Person, db
     from member_database.authentication import User
+    from member_database.models import Person, db
 
     p = Person(name="Alfred Nobel", email="alfred.nobel@tu-dortmund.de")
     u = User(person=p)
@@ -24,8 +25,8 @@ def test_new_user(client):
 
 @pytest.fixture(scope="module")
 def test_user(client):
-    from member_database.models import Person, db
     from member_database.authentication import User
+    from member_database.models import Person, db
 
     p = Person(name="Albert Einstein", email="albert.einstein@tu-dortmund.de")
     u = User(person=p, username="aeinstein")
@@ -39,8 +40,8 @@ def test_user(client):
 
 @pytest.fixture(scope="module")
 def test_user2(client):
-    from member_database.models import Person, db
     from member_database.authentication import User
+    from member_database.models import Person, db
 
     p = Person(name="Marie Curie", email="marie.curie@tu-dortmund.de")
     u = User(person=p, username="mcurie")

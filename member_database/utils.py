@@ -1,6 +1,7 @@
-from sqlalchemy.sql.expression import ClauseElement
+from flask import current_app, url_for
 from sqlalchemy import inspect
-from flask import url_for, current_app
+from sqlalchemy.sql.expression import ClauseElement
+
 from .models import db
 
 

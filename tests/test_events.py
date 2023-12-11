@@ -1,12 +1,13 @@
+import re
+
 import pytest
 from bs4 import BeautifulSoup
-import re
 
 
 @pytest.mark.parametrize("endpoint", ["id", "shortlink"])
 def test_event(client, endpoint, admin_user):
     from member_database import db
-    from member_database.events import EventRegistration, Event
+    from member_database.events import Event, EventRegistration
     from member_database.mail import mail
 
     event = Event(

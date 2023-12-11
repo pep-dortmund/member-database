@@ -1,13 +1,8 @@
-from flask_wtf import FlaskForm
 import wtforms
-from wtforms.fields import (
-    TextAreaField,
-    EmailField,
-    IntegerField,
-    DecimalField,
-)
-from wtforms.validators import DataRequired, NumberRange, Regexp
+from flask_wtf import FlaskForm
 from markupsafe import Markup
+from wtforms.fields import DecimalField, EmailField, IntegerField, TextAreaField
+from wtforms.validators import DataRequired, NumberRange, Regexp
 
 from ..widgets import LatexInput
 

@@ -1,25 +1,23 @@
-from flask import Flask, request
-from flask_migrate import Migrate
-from flask_bootstrap import Bootstrap4
-from flask_babel import Babel
-
-
-from sqlalchemy import event
-from sqlalchemy.engine import Engine
+import logging
 from sqlite3 import Connection as SQLite3Connection
 
-import logging
+from flask import Flask, request
+from flask_babel import Babel
+from flask_bootstrap import Bootstrap4
+from flask_migrate import Migrate
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
 
+from .admin_views import create_admin_views
+from .authentication import auth, init_authentication_database, login
 from .config import Config
-from .models import db
-from .authentication import auth, login, init_authentication_database
-from .mail import mail
-from .errors import not_found_error, internal_error, unauthorized_error
-from .log import setup_logging
+from .errors import internal_error, not_found_error, unauthorized_error
 from .events import events, init_event_database
 from .json import JSONEncoderISO8601
-from .main import main, init_main_database
-from .admin_views import create_admin_views
+from .log import setup_logging
+from .mail import mail
+from .main import init_main_database, main
+from .models import db
 
 
 @event.listens_for(Engine, "connect")

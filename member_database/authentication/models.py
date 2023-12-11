@@ -1,7 +1,7 @@
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from werkzeug.security import check_password_hash, generate_password_hash
 
-from ..models import db, Person
+from ..models import Person, db
 
 
 def get_user_by_name_or_email(name_or_email):

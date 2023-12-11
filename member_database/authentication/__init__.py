@@ -1,31 +1,28 @@
 from flask import (
     Blueprint,
+    abort,
+    current_app,
+    flash,
     redirect,
+    render_template,
     request,
     url_for,
-    flash,
-    abort,
-    render_template,
-    current_app,
 )
-from flask_login import logout_user, current_user, login_user
-from itsdangerous import SignatureExpired, BadData, URLSafeTimedSerializer
+from flask_login import current_user, login_user, logout_user
+from itsdangerous import BadData, SignatureExpired, URLSafeTimedSerializer
 
-
+from ..mail import send_email
+from ..models import db
+from ..utils import ext_url_for, get_or_create, table_exists
+from .forms import LoginForm, PasswordResetForm, SendPasswordResetForm
 from .login import (
-    login,
-    access_required,
-    AnonymousUser,
     ACCESS_LEVELS,
+    AnonymousUser,
+    access_required,
     handle_needs_login,
+    login,
 )
 from .models import AccessLevel, Role, User, get_user_by_name_or_email
-from .forms import LoginForm, SendPasswordResetForm, PasswordResetForm
-
-from ..utils import get_or_create, ext_url_for, table_exists
-from ..models import db
-from ..mail import send_email
-
 
 __all__ = [
     "auth",
@@ -101,7 +98,6 @@ def send_password_reset():
 
 @auth.route("/password_reset/<token>", methods=["GET", "POST"])
 def reset_password(token):
-
     try:
         email = load_reset_token(token)
     except SignatureExpired:

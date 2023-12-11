@@ -1,7 +1,8 @@
+import decimal
+import json
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
-import json
-import decimal
 
 
 class DecimalEncoder(json.JSONEncoder):

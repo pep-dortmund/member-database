@@ -1,34 +1,25 @@
 from datetime import date
+
 from flask import (
+    Blueprint,
+    abort,
+    current_app,
+    flash,
     jsonify,
+    redirect,
+    render_template,
     request,
     url_for,
-    render_template,
-    redirect,
-    flash,
-    abort,
-    Blueprint,
-    current_app,
 )
-from flask_login import current_user, login_user, logout_user
 from flask_babel import _
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadData
-
+from itsdangerous import BadData, SignatureExpired, URLSafeTimedSerializer
 from sqlalchemy.exc import IntegrityError
 
-from .models import (
-    db,
-    Person,
-    as_dict,
-    MembershipStatus,
-    MembershipType,
-    TUStatus,
-)
-from .utils import get_or_create, ext_url_for, table_exists
 from .authentication import access_required
-from .forms import PersonEditForm, MembershipForm, RequestLinkForm
+from .forms import MembershipForm, PersonEditForm, RequestLinkForm
 from .mail import send_email
-
+from .models import MembershipStatus, MembershipType, Person, TUStatus, as_dict, db
+from .utils import ext_url_for, get_or_create, table_exists
 
 main = Blueprint("main", __name__)
 
