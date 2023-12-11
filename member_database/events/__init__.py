@@ -113,7 +113,8 @@ def index():
     # for logged in users, we want to show all events, all others
     # only get to see the ones that are currently open
     if not current_user.is_authenticated:
-        query = query.filter(Event.registration_open is True)
+        # this comparison must be == since `is` always checks object identity
+        query = query.filter(Event.registration_open == True)  # noqa: E712
 
     query = query.all()
 
