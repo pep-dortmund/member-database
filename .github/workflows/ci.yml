@@ -55,7 +55,7 @@ jobs:
       - name: Prepare postgres env
         if: matrix.db == 'postgres'
         run: |
-          sed < env-template -e 's/DATABASE_URL=.*$/DATABASE_URL=postgresql:\/\/pep:pep@localhost\/memberdb/' > .env
+          sed < env-template -e 's|DATABASE_URL=.*$|DATABASE_URL=postgresql://pep:pep@localhost/memberdb|' > .env
 
       - name: "Perform migrations"
         run: poetry run flask db upgrade
@@ -66,7 +66,9 @@ jobs:
           grep 'No changes in schema detected.' migrate.log
 
       - name: tests
-        run: poetry run python -m pytest --cov member_database --cov-report=xml
+        run: |
+          export USE_CONFIG_DB=1
+          poetry run python -m pytest --cov member_database --cov-report=xml
 
       - uses: codecov/codecov-action@v1
         if: matrix.db == 'postgres'
