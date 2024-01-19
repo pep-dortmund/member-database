@@ -1,4 +1,5 @@
 import pytest
+import os
 
 from member_database import (
     init_authentication_database,
@@ -18,7 +19,14 @@ def app(db_path):
 
     from member_database import create_app
 
-    TestingConfig.SQLALCHEMY_DATABASE_URI = f"sqlite:///{db_path}"
+    # in the CI, we rely on the normal configuration db
+    # to test vs sqlite and postgres
+    # locally we create a fresh temporary sqlite db database
+    if os.getenv("USE_CONFIG_DB", "0") != "1":
+        print("Using tmp sqlite db")
+        TestingConfig.SQLALCHEMY_DATABASE_URI = f"sqlite:///{db_path}"
+    else:
+        print("Using configured database")
     app = create_app(TestingConfig)
     return app
 
