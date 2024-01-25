@@ -58,7 +58,7 @@ def create_email_field(force_tu_mail=False):
             )
         )
     else:
-        label = "Email"
+        label = "E-mail"
         render_kw = None
 
     return EmailField(
