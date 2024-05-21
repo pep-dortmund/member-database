@@ -23,7 +23,7 @@ backoff = "^1.10.0"
 gunicorn = {version = "^22.0", optional = true}
 psycopg2-binary = {version = "^2.9", optional = true}
 email-validator = "^1.1"
-flask-cors = "^3.0.10"
+flask-cors = "^4.0.1"
 
 [tool.poetry.extras]
 deploy = ["gunicorn", "psycopg2-binary"]
