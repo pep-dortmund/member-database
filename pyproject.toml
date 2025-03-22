@@ -20,7 +20,7 @@ jsonschema = "^3.1"
 bootstrap-flask = "^2.2"
 flask-admin = "^1.6.0"
 backoff = "^1.10.0"
-gunicorn = {version = "^22.0", optional = true}
+gunicorn = {version = "^23.0", optional = true}
 psycopg2-binary = {version = "^2.9", optional = true}
 email-validator = "^1.1"
 flask-cors = "^5.0.0"
