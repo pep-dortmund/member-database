@@ -48,13 +48,15 @@ def create_email_field(force_tu_mail=False):
     mail_validators = [DataRequired()]
 
     if force_tu_mail:
-        label = "Email (@tu-dortmund.de)"
-        regex = r"^.*@tu-dortmund.de$"
+        label = "Email (Format: vorname.nachname@tu-dortmund.de)"
+        regex = r"^.*\..*@tu-dortmund.de$"
         render_kw = {"pattern": regex}
         mail_validators.append(
             Regexp(
                 regex,
-                message=_("Bitte nutze deine @tu-dortmund.de Email-Adresse"),
+                message=_(
+                    "Bitte nutze deine UniMail-Adresse im Format vorname.nachname@tu-dortmund.de"
+                ),
             )
         )
     else:
@@ -124,7 +126,10 @@ def index():
     for event in query:
         if not event.registration_open:
             closed_events.append(event)
-        elif event.max_participants and event.n_participants >= event.max_participants:
+        elif (
+            event.max_participants
+            and event.n_participants >= event.max_participants
+        ):
             full_events.append(event)
         else:
             events.append(event)
@@ -160,7 +165,9 @@ def add_shortlink_route(route, **options):
     def route_name_to_id_decorator(func):
         @wraps(func)
         def call_with_id(shortlink):
-            event = db.one_or_404(db.select(Event).filter_by(shortlink=shortlink))
+            event = db.one_or_404(
+                db.select(Event).filter_by(shortlink=shortlink)
+            )
             return func(event.id)
 
         # have to rename the function, becauce flask has to have
@@ -174,7 +181,9 @@ def add_shortlink_route(route, **options):
 
 
 @events.route("/<int:event_id>/registration/", methods=["GET", "POST"])
-@add_shortlink_route("/<string:shortlink>/registration/", methods=["GET", "POST"])
+@add_shortlink_route(
+    "/<string:shortlink>/registration/", methods=["GET", "POST"]
+)
 def registration(event_id):
     event = db.get_or_404(Event, event_id)
 
@@ -191,7 +200,8 @@ def registration(event_id):
             flash("Vorschau! Die Anmeldung ist Offline.", "warning")
         else:
             flash(
-                f'Eine Anmeldung für "{event.name}" is derzeit nicht möglich', "danger"
+                f'Eine Anmeldung für "{event.name}" is derzeit nicht möglich',
+                "danger",
             )
             return redirect(url_for("events.index"))
 
@@ -213,7 +223,9 @@ def registration(event_id):
             validate(data, event.registration_schema)
         except ValidationError as e:
             flash(e.message, "danger")
-            return render_template("events/registration.html", form=form, event=event)
+            return render_template(
+                "events/registration.html", form=form, event=event
+            )
 
         person, new_person = get_or_create(
             Person, email=email, defaults={"name": data["name"]}
@@ -232,7 +244,9 @@ def registration(event_id):
         if not new:
             if registration.status_name == "pending":
                 flash(
-                    render_template("events/pending.html", registration=registration),
+                    render_template(
+                        "events/pending.html", registration=registration
+                    ),
                     category="danger",
                 )
             elif registration.status_name == "confirmed":
@@ -244,7 +258,9 @@ def registration(event_id):
                 )
             elif registration.status_name == "waitinglist":
                 flash(
-                    render_template("events/waiting.html", registration=registration),
+                    render_template(
+                        "events/waiting.html", registration=registration
+                    ),
                     category="danger",
                 )
         else:
@@ -316,7 +332,9 @@ def resend_emails():
 
     class ResendForm(FlaskForm):
         email = EmailField(validators=[DataRequired()])
-        submit = SubmitField("Emails für aktuelle Anmeldungen erneut versenden.")
+        submit = SubmitField(
+            "Emails für aktuelle Anmeldungen erneut versenden."
+        )
 
     form = ResendForm()
 
@@ -371,7 +389,9 @@ def participants(event_id):
     participants = db.session.scalars(
         db.select(EventRegistration)
         .filter_by(event_id=event_id)
-        .order_by(EventRegistration.timestamp.is_(None), EventRegistration.timestamp)
+        .order_by(
+            EventRegistration.timestamp.is_(None), EventRegistration.timestamp
+        )
         .options(joinedload(EventRegistration.person))
     )
 
@@ -394,12 +414,16 @@ def participants(event_id):
 
 
 @events.route("/<int:event_id>/write_mail/", methods=["GET", "POST"])
-@add_shortlink_route("/<string:shortlink>/write_mail/", methods=["GET", "POST"])
+@add_shortlink_route(
+    "/<string:shortlink>/write_mail/", methods=["GET", "POST"]
+)
 @access_required("write_email")
 def write_mail(event_id):
     event = Event.query.get(event_id)
 
-    form = SendMailForm(name=current_user.person.name, email=current_user.person.email)
+    form = SendMailForm(
+        name=current_user.person.name, email=current_user.person.email
+    )
     n_participants = get_n_participants(event)
 
     if n_participants == 0:
@@ -439,7 +463,10 @@ def write_mail(event_id):
         return redirect(url_for("events.index"))
 
     return render_template(
-        "events/write_mail.html", event=event, form=form, n_participants=n_participants
+        "events/write_mail.html",
+        event=event,
+        form=form,
+        n_participants=n_participants,
     )
 
 
@@ -459,7 +486,9 @@ def confirmation(token):
     registration = db.session.get(EventRegistration, registration_id)
     event = registration.event
     n_participants = get_n_participants(event)
-    booked_out = event.max_participants and n_participants >= event.max_participants
+    booked_out = (
+        event.max_participants and n_participants >= event.max_participants
+    )
 
     log.info(f"Confirmation for {event} by {person} ({registration})")
 
@@ -507,7 +536,9 @@ def confirmation(token):
         registration.event.registration_schema,
         additional_fields={
             "name": StringField("Name", [DataRequired()]),
-            "email": EmailField("Email", [DataRequired()], render_kw={"disabled": ""}),
+            "email": EmailField(
+                "Email", [DataRequired()], render_kw={"disabled": ""}
+            ),
         },
     )
     form = Form(data={**registration.data, "email": person.email})
