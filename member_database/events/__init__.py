@@ -48,13 +48,15 @@ def create_email_field(force_tu_mail=False):
     mail_validators = [DataRequired()]
 
     if force_tu_mail:
-        label = "Email (@tu-dortmund.de)"
-        regex = r"^.*@tu-dortmund.de$"
+        label = "Email (Format: vorname.nachname@tu-dortmund.de)"
+        regex = r"^.*\..*@tu-dortmund.de$"
         render_kw = {"pattern": regex}
         mail_validators.append(
             Regexp(
                 regex,
-                message=_("Bitte nutze deine @tu-dortmund.de Email-Adresse"),
+                message=_(
+                    "Bitte nutze deine UniMail-Adresse im Format vorname.nachname@tu-dortmund.de"
+                ),
             )
         )
     else:
@@ -191,7 +193,8 @@ def registration(event_id):
             flash("Vorschau! Die Anmeldung ist Offline.", "warning")
         else:
             flash(
-                f'Eine Anmeldung für "{event.name}" is derzeit nicht möglich', "danger"
+                f'Eine Anmeldung für "{event.name}" is derzeit nicht möglich',
+                "danger",
             )
             return redirect(url_for("events.index"))
 
@@ -439,7 +442,10 @@ def write_mail(event_id):
         return redirect(url_for("events.index"))
 
     return render_template(
-        "events/write_mail.html", event=event, form=form, n_participants=n_participants
+        "events/write_mail.html",
+        event=event,
+        form=form,
+        n_participants=n_participants,
     )
 
 
