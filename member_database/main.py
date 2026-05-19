@@ -31,6 +31,7 @@ main = Blueprint("main", __name__)
 _CAPTCHA_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 _captcha_image = ImageCaptcha()
 
+
 @main.route("/register/captcha.png")
 def captcha_image():
     text = "".join(random.choices(_CAPTCHA_CHARS, k=5))

@@ -66,7 +66,10 @@ class MembershipForm(FlaskForm):
     captcha = StringField(
         _l("Captcha"),
         validators=[DataRequired()],
-        render_kw={"autocomplete": "off", "placeholder": "Bitte den Code aus dem Bild eingeben"},
+        render_kw={
+            "autocomplete": "off",
+            "placeholder": "Bitte den Code aus dem Bild eingeben",
+        },
     )
     submit = SubmitField(_l("Mitgliedsantrag abschicken"))
 
