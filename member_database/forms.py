@@ -63,6 +63,11 @@ class MembershipForm(FlaskForm):
             " Für alle anderen besteht die Möglichkeit einer außerordentlichen Mitgliedschaft."
         ),
     )
+    captcha = StringField(
+        _l("Captcha"),
+        validators=[DataRequired()],
+        render_kw={"autocomplete": "off", "placeholder": "Bitte den Code aus dem Bild eingeben"},
+    )
     submit = SubmitField(_l("Mitgliedsantrag abschicken"))
 
 
