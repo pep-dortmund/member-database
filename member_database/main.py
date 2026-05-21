@@ -1,7 +1,11 @@
+import random
 from datetime import date
+from io import BytesIO
 
+from captcha.image import ImageCaptcha
 from flask import (
     Blueprint,
+    Response,
     abort,
     current_app,
     flash,
@@ -9,6 +13,7 @@ from flask import (
     redirect,
     render_template,
     request,
+    session,
     url_for,
 )
 from flask_babel import _
@@ -22,6 +27,19 @@ from .models import MembershipStatus, MembershipType, Person, TUStatus, as_dict,
 from .utils import ext_url_for, get_or_create, table_exists
 
 main = Blueprint("main", __name__)
+
+_CAPTCHA_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+_captcha_image = ImageCaptcha()
+
+
+@main.route("/register/captcha.png")
+def captcha_image():
+    text = "".join(random.choices(_CAPTCHA_CHARS, k=5))
+    session["captcha_text"] = text.lower()
+    buf = BytesIO()
+    _captcha_image.generate_image(text).save(buf, format="PNG")
+    buf.seek(0)
+    return Response(buf, mimetype="image/png")
 
 
 def init_main_database():
@@ -113,6 +131,16 @@ def register():
     form = MembershipForm()
 
     if form.validate_on_submit():
+        if request.form.get("website"):
+            return redirect(url_for("main.index"))
+
+        expected = session.pop("captcha_text", "")
+        if form.captcha.data.lower() != expected:
+            form.captcha.errors.append("Falscher Sicherheitscode")
+            return render_template("member_registration.html", form=form)
+
+        session.pop("register_ts", None)
+
         p, _new = get_or_create(
             Person,
             email=form.email.data,

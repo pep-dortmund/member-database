@@ -8,10 +8,13 @@ def test_member_registration(app, client, admin_user):
     name = "Enrico Fermi"
     email = "fermi@example.org"
 
+    with client.session_transaction() as sess:
+        sess["captcha_text"] = "abcde"
+
     with mail.record_messages() as outbox:
         ret = client.post(
             "/register/",
-            data=dict(name=name, email=email),
+            data=dict(name=name, email=email, captcha="abcde"),
             follow_redirects=True,
         )
 
@@ -61,3 +64,20 @@ def test_member_registration(app, client, admin_user):
 
     person = Person.query.filter_by(email=email).one()
     assert person.membership_status_id == "confirmed"
+
+
+def test_register_wrong_captcha(client):
+    from member_database.models import Person
+
+    with client.session_transaction() as sess:
+        sess["captcha_text"] = "abcde"
+
+    ret = client.post(
+        "/register/",
+        data=dict(name="Ada Lovelace", email="ada@example.org", captcha="wrong"),
+        follow_redirects=True,
+    )
+
+    assert ret.status_code == 200
+    assert "Falscher Sicherheitscode" in ret.data.decode("utf-8")
+    assert Person.query.filter_by(email="ada@example.org").one_or_none() is None
