@@ -7,27 +7,6 @@
   <p>Der jährliche Mitgliedsbeitrag beträgt 10€ für Promovierende bzw. 25€ für Alumni. Sie können uns aber auch gerne durch eine größere Spende und aktive Mitarbeit unterstützen. Für Studierende ist die Mitgliedschaft kostenlos.
 </p>
 
-<p>Um Mitglied zu werden, melden Sie sich hier an. Nachdem Sie Ihre E-Mail Adresse über einen Bestätigungs-Link verifiziert haben, können Sie freigeschaltet werden:</p>
-
-{% from 'bootstrap4/form.html' import render_field %}
-<form method="POST" action="{{ action }}">
-  {{ form.hidden_tag() }}
-  {{ render_field(form.name) }}
-  {{ render_field(form.email) }}
-  {{ render_field(form.membership_type) }}
-  <div style="position:absolute;opacity:0;top:0;left:0;height:0;width:0;z-index:-1;" aria-hidden="true">
-    <label for="website">Website</label>
-    <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
-  </div>
-  <div class="mb-3">
-    <label class="form-label" for="{{ form.captcha.id }}">{{ form.captcha.label.text }}</label>
-    <img src="{{ url_for('main.captcha_image') }}" alt="CAPTCHA" class="d-block mb-1 border rounded">
-    {{ form.captcha(class="form-control" + (" is-invalid" if form.captcha.errors else "")) }}
-    {% for error in form.captcha.errors %}
-      <div class="invalid-feedback">{{ error }}</div>
-    {% endfor %}
-  </div>
-  {{ render_field(form.submit) }}
-</form>
+<p><strong>Wegen eines erhöhten Spam aufkommens ist die Online-Anmeldung im Moment nicht möglich, bitte schreibt uns eine Email.</strong></p>
 
 {% endblock %}
