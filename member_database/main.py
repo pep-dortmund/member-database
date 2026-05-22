@@ -21,7 +21,7 @@ from itsdangerous import BadData, SignatureExpired, URLSafeTimedSerializer
 from sqlalchemy.exc import IntegrityError
 
 from .authentication import access_required
-from .forms import MembershipForm, PersonEditForm, RequestLinkForm
+from .forms import PersonEditForm, RequestLinkForm
 from .mail import send_email
 from .models import MembershipStatus, MembershipType, Person, TUStatus, as_dict, db
 from .utils import ext_url_for, get_or_create, table_exists
@@ -116,7 +116,7 @@ def get_members():
     return jsonify(status="success", members=members)
 
 
-@main.route("/register/", methods=["GET", "POST"])
+@main.route("/register/", methods=["GET"])
 def register():
     """
     Endpoint for membership registration.
@@ -128,83 +128,83 @@ def register():
     was made and can accept/deny it.
     """
 
-    form = MembershipForm()
+    # form = MembershipForm()
 
-    if form.validate_on_submit():
-        if request.form.get("website"):
-            return redirect(url_for("main.index"))
+    # if form.validate_on_submit():
+    #     if request.form.get("website"):
+    #         return redirect(url_for("main.index"))
 
-        expected = session.pop("captcha_text", "")
-        if form.captcha.data.lower() != expected:
-            form.captcha.errors.append("Falscher Sicherheitscode")
-            return render_template("member_registration.html", form=form)
+    #     expected = session.pop("captcha_text", "")
+    #     if form.captcha.data.lower() != expected:
+    #         form.captcha.errors.append("Falscher Sicherheitscode")
+    #         return render_template("member_registration.html", form=form)
 
-        session.pop("register_ts", None)
+    #     session.pop("register_ts", None)
 
-        p, _new = get_or_create(
-            Person,
-            email=form.email.data,
-            defaults={"name": form.name.data},
-        )
+    #     p, _new = get_or_create(
+    #         Person,
+    #         email=form.email.data,
+    #         defaults={"name": form.name.data},
+    #     )
 
-        if p.membership_status_id == MembershipStatus.DENIED:
-            flash(
-                "Du hast bereits einen Mitgliedsantrag eingereicht, der abgelehnt wurde."
-                " Bitte kontaktiere uns, falls du dies für einen Irrtum hälst."
-            )
-            return redirect(url_for("main.index"))
+    #     if p.membership_status_id == MembershipStatus.DENIED:
+    #         flash(
+    #             "Du hast bereits einen Mitgliedsantrag eingereicht, der abgelehnt wurde."
+    #             " Bitte kontaktiere uns, falls du dies für einen Irrtum hälst."
+    #         )
+    #         return redirect(url_for("main.index"))
 
-        if p.membership_status_id == MembershipStatus.EMAIL_UNVERIFIED:
-            flash(
-                "Du hast bereits einen Mitgliedsantrag eingereicht,"
-                " aber deine Email noch nicht bestätigt."
-                f" Wir haben die Bestätigungsemail erneut an {p.email} versendet.",
-                category="warning",
-            )
+    #     if p.membership_status_id == MembershipStatus.EMAIL_UNVERIFIED:
+    #         flash(
+    #             "Du hast bereits einen Mitgliedsantrag eingereicht,"
+    #             " aber deine Email noch nicht bestätigt."
+    #             f" Wir haben die Bestätigungsemail erneut an {p.email} versendet.",
+    #             category="warning",
+    #         )
 
-        if p.membership_status_id == MembershipStatus.PENDING:
-            flash(
-                "Du hast bereits einen Mitgliedsantrag eingereicht,"
-                " aber dieser ist noch nicht vom Vorstand bestätigt worden."
-                " Dies kann ein paar Tage dauern.",
-                category="info",
-            )
-            return redirect(url_for("main.index"))
+    #     if p.membership_status_id == MembershipStatus.PENDING:
+    #         flash(
+    #             "Du hast bereits einen Mitgliedsantrag eingereicht,"
+    #             " aber dieser ist noch nicht vom Vorstand bestätigt worden."
+    #             " Dies kann ein paar Tage dauern.",
+    #             category="info",
+    #         )
+    #         return redirect(url_for("main.index"))
 
-        if p.membership_status_id == MembershipStatus.CONFIRMED:
-            flash("Du bist bereits Mitglied", category="danger")
-            return redirect(url_for("main.index"))
+    #     if p.membership_status_id == MembershipStatus.CONFIRMED:
+    #         flash("Du bist bereits Mitglied", category="danger")
+    #         return redirect(url_for("main.index"))
 
-        p.name = form.name.data
-        p.membership_status_id = MembershipStatus.EMAIL_UNVERIFIED
-        p.membership_type_id = form.membership_type.data
-        db.session.add(p)
-        db.session.commit()
+    #     p.name = form.name.data
+    #     p.membership_status_id = MembershipStatus.EMAIL_UNVERIFIED
+    #     p.membership_type_id = form.membership_type.data
+    #     db.session.add(p)
+    #     db.session.commit()
 
-        ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
-        token = ts.dumps(p.email, salt="edit-key")
+    #     ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+    #     token = ts.dumps(p.email, salt="edit-key")
 
-        send_email(
-            subject=_("PeP et al. Mitgliedsantrag: Email bestätigen"),
-            sender=current_app.config["MAIL_SENDER"],
-            recipients=[p.email],
-            body=render_template(
-                "mail/verify.txt",
-                new_member=p,
-                url=ext_url_for("main.edit", token=token),
-            ),
-        )
+    #     send_email(
+    #         subject=_("PeP et al. Mitgliedsantrag: Email bestätigen"),
+    #         sender=current_app.config["MAIL_SENDER"],
+    #         recipients=[p.email],
+    #         body=render_template(
+    #             "mail/verify.txt",
+    #             new_member=p,
+    #             url=ext_url_for("main.edit", token=token),
+    #         ),
+    #     )
 
-        max_age = current_app.config["TOKEN_MAX_AGE"] // 60
-        flash(
-            "Um den Vorgang abzuschließen, klicke auf den Link in der"
-            " Bestätigungsemail. Vorher können wir deinen Antrag"
-            f" nicht bearbeiten. Der Link ist {max_age} Minuten gültig.",
-            category="warning",
-        )
-        return redirect(url_for("main.index"))
+    #     max_age = current_app.config["TOKEN_MAX_AGE"] // 60
+    #     flash(
+    #         "Um den Vorgang abzuschließen, klicke auf den Link in der"
+    #         " Bestätigungsemail. Vorher können wir deinen Antrag"
+    #         f" nicht bearbeiten. Der Link ist {max_age} Minuten gültig.",
+    #         category="warning",
+    #     )
+    #     return redirect(url_for("main.index"))
 
-    return render_template("member_registration.html", form=form)
+    return render_template("member_registration.html")
 
 
 @main.route("/request_edit", methods=["POST", "GET"])
